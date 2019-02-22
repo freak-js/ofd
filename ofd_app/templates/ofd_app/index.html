@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/stylesheet.css">
+    <title>Страница авторизации</title>
+  </head>
+  <body class="text-center">
+    <div class="div_form">
+      <!--<form class="form-signin" id="input_form" method="POST" action="/login/">{% csrf_token %}
+        <h1 class="h3 mb-3 font-weight-normal" id="h1_form">Авторизация</h1>
+        <input type="login" class="form-control input_top" placeholder="Email" required autofocus name="username">
+        <input type="password" class="form-control input_top" placeholder="Пароль" required name="password">
+        <input type="hidden" name="next" value="/product/add">
+        <div class="div_button">
+          <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
+        </div>
+     </form>-->
+     <form class="form-signin" id="input_form" method="POST" action="/login/">
+         {{ form }}
+        {% csrf_token %}
+        <input type="hidden" name="next" value="/product/add">
+        <div class="div_button">
+          <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
+        </div>
+    </form>
+      <!--<a class="registration" href="index_recovery.html">Забыли пароль?</a>&nbsp&nbsp
+      <a class="registration" href="index_registration.html">Зарегистрироваться</a>-->
+     </div>
+  </body>
+</html>

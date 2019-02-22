@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/stylesheet.css">
+    <title>Добавление продукта</title>
+  </head>
+  <body class="text-center">
+    {% include "ofd_app/menu.html" %}
+    <!-- Блок отступа от шапки -->
+    <div class="top_padding_box">
+
+    </div>
+    <div class="div_form">
+      <form class="form-signin" id="input_form" method="post" action="/product/add">{% csrf_token %}
+        <h1 class="h3 mb-3 font-weight-normal h1_recovery" id="h1_form">Добавление продукта</h1>
+            {{form.as_p}}
+        <div class="div_button">
+          <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Добавить</button>
+        </div>
+      </form>
+     </div>
+  </body>
+</html>
