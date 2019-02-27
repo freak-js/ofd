@@ -27,5 +27,5 @@ def product(request, **kwargs):
 
 @login_required(login_url='/login/')
 def products(request):
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('product_cost')
     return render(request, 'ofd_app/index_top.html', {'products': products})

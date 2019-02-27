@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../static/stylesheet.css">
+    <!--<link rel="stylesheet" type="text/css" href="../static/stylesheet.css">-->
     <title>Страница авторизации</title>
   </head>
   <body class="text-center">
@@ -17,15 +17,18 @@
         <div class="div_button">
           <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
         </div>
-     </form>-->
-     <form class="form-signin" id="input_form" method="POST" action="/login/">
-         {{ form }}
-        {% csrf_token %}
-        <input type="hidden" name="next" value="/product/">
-        <div class="div_button">
-          <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
-        </div>
-    </form>
+    </form>-->
+    {% load crispy_forms_tags %}
+    <div class="col-md-4 offset-md-4">
+         <form class="form-signin" id="input_form" method="POST" action="/login/">
+             {{ form|crispy }}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/product/">
+            <div class="div_button">
+              <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
+            </div>
+        </form>
+    </div>
       <!--<a class="registration" href="index_recovery.html">Забыли пароль?</a>&nbsp&nbsp
       <a class="registration" href="index_registration.html">Зарегистрироваться</a>-->
      </div>
