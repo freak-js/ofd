@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='ofd_app/index.html'), name="login"),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name="logout"),
-    path('product/add', views.product_add, name='product_add'),
-    path('product/all', views.product_get_all, name='product_get_all'),
+    path('product/', views.product, name='product'),
+    path('product/<int:id>/', views.product, name='product'),
+    path('products/', views.products, name='products'),
 ]
