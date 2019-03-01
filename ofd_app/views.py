@@ -79,5 +79,20 @@ def user(request, **kwargs):
 
 @login_required(login_url='/login/')
 def users(request):
-    users = User.objects.all()
+    users = User.objects.all().filter(is_active = True)
     return render(request, 'ofd_app/users.html', {'users': users})
+
+@login_required(login_url='/login/')
+@require_POST
+def user_delete(request):
+    ids = request.POST.getlist('user_to_delete')
+    cnt_delete = 0
+    for id in ids:
+        try:
+            user = User.objects.get(id=id)
+            user.is_active = False
+            user.save()
+            cnt_delete += 1
+        except User.DoesNotExist:
+            pass
+    return redirect('users')
