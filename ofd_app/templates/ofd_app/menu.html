@@ -2,6 +2,6 @@
 <div class="row">
   <a href="/products/" class="nav-link col-1">Продукция</a>
   <a href="/users/" class="nav-link col-1">Пользователи</a>
-  <a href="/user/" class="nav-link col-2">Моя карточка</a>
+  <a href="/user/{{request.user.id}}" class="nav-link col-2">Моя карточка</a>
   <a href="/logout" class="nav-link col-1 offset-6 offset-sm-7">Выход</a>
 </div>
