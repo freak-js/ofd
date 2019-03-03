@@ -35,12 +35,12 @@
   		<div class="tab-pane fade show active" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
   			<div class="row">
         		<div class="col-md-4 offset-md-4">
-          			
+
             			<h1 class="h3 mb-3 font-weight-normal">Карточка пользователя</h1>
             			{% csrf_token %}
             			{{ user_form|crispy }}
             			{{ profile_form|crispy }}
-            			
+
         		</div>
       		</div>
   		</div>
@@ -58,12 +58,12 @@
 	            </thead>
 	            <tbody>
                 {% for product in products %}
-	                <tr>  
+	                <tr>
 	                    <td>{{ product.product_name }}</td>
 	                    <td>{{ product.product_cost }}</td>
-	                    <td></td>
+	                    <td>{{product.productuserrel__cost}}</td>
 	                    <td>
-	                        <input type="nuber" class="form-control" name="product_{{product.product_id}}">
+	                        <input type="number" class="form-control" name="product_{{product.product_id}}" value="{{product.productuserrel__cost}}">
 	                    </td>
 	                </tr>
 	                {% endfor %}
@@ -79,5 +79,3 @@
 	</div>
   </body>
 </html>
-
-
