@@ -5,6 +5,7 @@ from ofd_app.forms import ProductForm
 from ofd_app.forms import UserForm
 from ofd_app.forms import ProfileForm
 from ofd_app.models import Product
+from ofd_app.models import ProductUserRel
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django import forms
@@ -33,7 +34,9 @@ def product(request, **kwargs):
 
 @login_required(login_url='/login/')
 def products(request):
-    products = Product.objects.all().order_by('product_cost')
+    #products = Product.objects.all().order_by('product_cost')
+    products = Product.objects.all().values('product_id', 'product_name', 'product_cost', 'productuserrel__cost').order_by('product_cost')
+    print(products.query)
     return render(request, 'ofd_app/index_top.html', {'products': products})
 
 @login_required(login_url='/login/')
@@ -50,7 +53,8 @@ def product_delete(request):
             pass
     return redirect('products')
 
-@login_required(login_url='/login/')
+#@login_required(login_url='/login/')
+@csrf_exempt
 def user(request, **kwargs):
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
@@ -59,6 +63,8 @@ def user(request, **kwargs):
             profile_form = ProfileForm(request.POST, instance = user.profile)
             if user_form.is_valid() and profile_form.is_valid():
                 user_form.save()
+                ##TODO проверить права на сохранение цен для продуктов
+                save_product_user_rel(request.POST, user.profile, request.user.id)
                 profile_form.save()
         else:
             user_form = UserForm(instance = user)
@@ -72,6 +78,8 @@ def user(request, **kwargs):
             profile = profile_form.save(commit = False)
             profile.user = user
             profile.save()
+            ##TODO проверить права на сохранение цен для продуктов
+            save_product_user_rel(request.POST, profile, request.user.id)
     else:
         user_form = UserForm()
         profile_form = ProfileForm()
@@ -96,3 +104,11 @@ def user_delete(request):
         except User.DoesNotExist:
             pass
     return redirect('users')
+
+def save_product_user_rel(costs, profile, user_mod_id):
+    products = Product.objects.all()
+    for product in products:
+        cost = costs.get('product_' + str(product.product_id))
+        if cost is not None:
+            relation = ProductUserRel(user=profile, product=product, cost=cost, user_mod=user_mod_id)
+            relation.save()

@@ -18,9 +18,21 @@ class Profile(models.Model):
     org = models.CharField("Организация", max_length=100, null=True)
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
     parent = models.ForeignKey(User, models.SET_NULL, null=True, related_name='children')
+    products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
 
 #@receiver(post_save, sender=User)
 #def create_or_update_user_profile(sender, instance, created, **kwargs):
 #    if created:
 #        Profile.objects.create(user=instance)
 #    instance.profile.save()
+
+
+class ProductUserRel(models.Model):
+  user = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="Пользователь")
+  product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Продукт")
+  cost = models.IntegerField("Стоимость продукта",)
+  moddate = models.DateTimeField("Дата модификации связи", auto_now=True)
+  adddate = models.DateTimeField("Дата добавления связи", auto_now_add=True)
+  user_mod = models.IntegerField("Пользователь, который последний раз модифицировал запись",)
+  class Meta:
+    unique_together = ('user', 'product')
