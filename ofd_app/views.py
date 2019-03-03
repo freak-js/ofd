@@ -34,10 +34,7 @@ def product(request, **kwargs):
 
 @login_required(login_url='/login/')
 def products(request):
-    #products = Product.objects.all().order_by('product_cost')
-    products = Product.objects.all().values('product_id', 'product_name', 'product_cost', 'productuserrel__cost').order_by('product_cost')
-    print(products.query)
-    return render(request, 'ofd_app/index_top.html', {'products': products})
+    return render(request, 'ofd_app/index_top.html', {'products': get_products(None)})
 
 @login_required(login_url='/login/')
 #@csrf_exempt
@@ -53,11 +50,15 @@ def product_delete(request):
             pass
     return redirect('products')
 
-#@login_required(login_url='/login/')
-@csrf_exempt
+@login_required(login_url='/login/')
+#@csrf_exempt
 def user(request, **kwargs):
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
+        try:
+            products = get_products(user.profile)
+        except User.profile.RelatedObjectDoesNotExist:
+            products = get_products(None)
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user)
             profile_form = ProfileForm(request.POST, instance = user.profile)
@@ -68,7 +69,10 @@ def user(request, **kwargs):
                 profile_form.save()
         else:
             user_form = UserForm(instance = user)
-            profile_form = ProfileForm(instance = user.profile)
+            try:
+                profile_form = ProfileForm(instance = user.profile)
+            except User.profile.RelatedObjectDoesNotExist:
+                profile_form = ProfileForm()
     elif request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(request.POST)
@@ -83,7 +87,8 @@ def user(request, **kwargs):
     else:
         user_form = UserForm()
         profile_form = ProfileForm()
-    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form})
+        products = get_products(None)
+    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form, 'products': products})
 
 @login_required(login_url='/login/')
 def users(request):
@@ -110,5 +115,17 @@ def save_product_user_rel(costs, profile, user_mod_id):
     for product in products:
         cost = costs.get('product_' + str(product.product_id))
         if cost is not None:
-            relation = ProductUserRel(user=profile, product=product, cost=cost, user_mod=user_mod_id)
+            try:
+                relation = ProductUserRel.objects.get(user=profile, product=product)
+                relation.cost = cost
+                relation.user_mod = user_mod_id
+            except ProductUserRel.DoesNotExist:
+                relation = ProductUserRel(user=profile, product=product, cost=cost, user_mod=user_mod_id)
             relation.save()
+
+def get_products(profile):
+    if profile is not None:
+        products = Product.objects.all().filter(productuserrel__user=profile).values('product_id', 'product_name', 'product_cost', 'productuserrel__cost').order_by('product_cost')
+    else:
+        products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
+    return products
