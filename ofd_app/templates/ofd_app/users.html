@@ -1,38 +1,39 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-  <title>Пользователи</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <title>Пользователи</title>
 </head>
-  <body class="text-center">
+<body class="text-center">
     <div class="container-fluid">
-      {% include "ofd_app/menu.html" %}
+        {% include "ofd_app/menu.html" %}
         <div class="row">
-          <form action="/user/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
-            <a href="/user/" class="btn btn-info" role="button">Добавить</a>
-            <button type="submit" id="" name="" class="btn btn-info">Удалить</button>
-          </form>
+            <form action="/user/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
+                <a href="/user/" class="btn btn-info" role="button">Добавить</a>
+                <button type="submit" id="" name="" class="btn btn-info">Удалить</button>
+            </form>
         </div>
         {% load crispy_forms_tags %}
         <table class="table">
-          <thead>
-              <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Имя пользователя</th>
-                  <th scope="col">Имя</th>
-                  <th scope="col">Фамилия</th>
-                  <th scope="col">ИНН</th>
-                  <th scope="col">Организация</th>
-                  <th scope="col">Город</th>
-                  <th scope="col">Юр. лицо?</th>
-                  <th scope="col"></th>
-              </tr>
-          </thead>
-              <tbody>
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Имя пользователя</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">ИНН</th>
+                    <th scope="col">Организация</th>
+                    <th scope="col">Город</th>
+                    <th scope="col">Юр. лицо?</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for user in users %}
                 <tr>
                     <td><a href="/user/{{user.id}}"><i class="fas fa-edit"></i></a></td>
@@ -44,12 +45,12 @@
                     <td>{{ user.profile.city }}</td>
                     <td>{{ user.profile.is_legal }}</td>
                     <td>
-                      <input type="checkbox" class="form-check-input" name="user_to_delete" value="{{user.id}}" form="top_form">
+                        <input type="checkbox" class="form-check-input" name="user_to_delete" value="{{user.id}}" form="top_form">
                     </td>
                 </tr>
                 {% endfor %}
-              </tbody>
+            </tbody>
         </table>
     </div>
-  </body>
+</body>
 </html>
