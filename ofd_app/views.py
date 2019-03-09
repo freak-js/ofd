@@ -56,6 +56,10 @@ def user(request, **kwargs):
     user = None
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
+        try:
+            products = get_products(user.profile)
+        except User.profile.RelatedObjectDoesNotExist:
+            products = get_products(None)
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user)
             profile_form = ProfileForm(request.POST, instance = user.profile)

@@ -1,25 +1,27 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-  <title>Страница авторизации</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Страница авторизации</title>
 </head>
-  <body class="text-center">
-    <div class="div_form">
+<body class="text-center">
+    <div class="d-flex justify-content-center">
     {% load crispy_forms_tags %}
-      <div class="col-md-4 offset-md-4">
-        <form class="form-signin" id="input_form" method="POST" action="/login/">
-          {{ form|crispy }}
-          {% csrf_token %}
-          <input type="hidden" name="next" value="/product/">
-          <div class="div_button">
-            <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Войти</button>
-          </div>
-        </form>
-      </div>
+        <div class="registration_form">
+	        <form class="form-signin" id="input_form" method="POST" action="/login/">
+	            {{ form|crispy }}
+	            {% csrf_token %}
+	            <input type="hidden" name="next" value="/product/">
+	            <div class="div_button">
+	            	<button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Войти</button>
+	            </div>
+	        </form>
+        </div>
     </div>
-  </body>
+</body>
 </html>

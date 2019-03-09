@@ -1,45 +1,47 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-  <title>Добавление продукта</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <title>Добавление продукта</title>
 </head>
-  <body class="text-center">
+<body class="text-center">
     <div class="container-fluid">
       {% include "ofd_app/menu.html" %}
         <div class="row">
-          <form action="/products/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
-            <a href="/product/" class="btn btn-info" role="button">Добавить</a>
-            <button type="submit" id="" name="" class="btn btn-info">Удалить</button>
-          </form>
+            <form action="/products/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
+            	<a href="/product/" class="btn btn-info" role="button">Добавить</a>
+            	<button type="submit" id="" name="" class="btn btn-info">Удалить</button>
+            </form>
         </div>
         {% load crispy_forms_tags %}
         <table class="table">
-          <thead>
-              <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Наименование продукта</th>
-                  <th scope="col">Стоимость</th>
-                  <th scope="col"></th>
-              </tr>
-          </thead>
-              <tbody>
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Наименование продукта</th>
+                    <th scope="col">Стоимость</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for product in products %}
                 <tr>
                     <td><a href="/product/{{product.product_id}}"><i class="fas fa-edit"></i></a></td>  
                     <td>{{ product.product_name }}</td>
                     <td>{{ product.product_cost }}</td>
                     <td>
-                      <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+                        <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
                     </td>
                 </tr>
                 {% endfor %}
-              </tbody>
+            </tbody>
         </table>
     </div>
-  </body>
+</body>
 </html>
