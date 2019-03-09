@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Индивидуальные цены</title>
+</head>
+<body class="text-center">
+    <div class="container-fluid">
+        {% load crispy_forms_tags %}
+        {% include "ofd_app/menu.html" %}
+	    <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
+  			<table class="table">
+	            <thead>
+	                <tr>
+	                    <th scope="col">Наименование продукта</th>
+	                    <th scope="col">Базовая стоимость</th>
+	                    <th scope="col">Индив. стоимость</th>
+	                    <th scope="col">Изм. индив. стоимость</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+                	{% for product in products %}
+	                <tr>
+	                    <td>{{ product.product_name }}</td>
+	                    <td>{{ product.product_cost }}</td>
+	                    <td>{{product.productuserrel__cost}}</td>
+	                    <td>
+	                        <input type="number" class="form-control" name="product_{{product.product_id}}" value="{{product.productuserrel__cost}}">
+	                    </td>
+	                </tr>
+	                {% endfor %}
+	            </tbody>
+        	</table>
+    		<div class="div_button col-md-2 offset-md-5">
+	            <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Сохранить</button>
+	        </div>
+        </form>
+	</div>
+</body>
+</html>
