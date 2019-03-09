@@ -56,18 +56,17 @@ def user(request, **kwargs):
     user = None
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
-        try:
-            products = get_products(user.profile)
-        except User.profile.RelatedObjectDoesNotExist:
-            products = get_products(None)
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user)
-            profile_form = ProfileForm(request.POST, instance = user.profile)
+            try:
+                profile_form = ProfileForm(request.POST, instance = user.profile)
+            except User.profile.RelatedObjectDoesNotExist:
+                profile_form = ProfileForm(request.POST)
             if user_form.is_valid() and profile_form.is_valid():
                 user_form.save()
-                ##TODO проверить права на сохранение цен для продуктов
-                save_product_user_rel(request.POST, user.profile, request.user.id)
-                profile_form.save()
+                profile = profile_form.save(commit = False)
+                profile.user = user
+                profile.save()
         else:
             user_form = UserForm(instance = user)
             try:
@@ -83,16 +82,24 @@ def user(request, **kwargs):
             profile = profile_form.save(commit = False)
             profile.user = user
             profile.save()
-            ##TODO проверить права на сохранение цен для продуктов
-            save_product_user_rel(request.POST, profile, request.user.id)
     else:
         user_form = UserForm()
         profile_form = ProfileForm()
-    try:
-        products = get_products(user.profile if user is not None else None)
-    except User.profile.RelatedObjectDoesNotExist:
-        products = get_products(None)
-    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form, 'products': products})
+    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form})
+
+@login_required(login_url='/login/')
+def user_product(request, **kwargs):
+    #TODO проверить права на сохранение цен для продуктов
+    if 'id' in kwargs:
+        user = get_object_or_404(User, id=kwargs['id'])
+        try:
+            profile = user.profile
+        except User.profile.RelatedObjectDoesNotExist:
+            return redirect('users')
+        if request.method == 'POST':
+            save_product_user_rel(request.POST, profile, request.user.id)
+        products = get_products(profile)
+    return render(request, 'ofd_app/user_product.html', {'products': products})
 
 @login_required(login_url='/login/')
 def users(request):

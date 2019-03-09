@@ -39,11 +39,11 @@
                 {% for user in users %}
                 <tr>
                     <td><a href="/user/{{user.id}}"><i class="fas fa-edit"></i></a></td>
-                    
+
                     <td>
                         {% if user.profile %}
-                        <a href="/product/{{product.product_id}}"><i class="fas fa-hand-holding-usd"></i></a>
-                        {% endif %}</td> 
+                        <a href="/user_product/{{user.id}}"><i class="fas fa-hand-holding-usd"></i></a>
+                        {% endif %}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>

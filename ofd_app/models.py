@@ -12,7 +12,7 @@ class Product(models.Model):
     product_cost = models.IntegerField("Базовая стоимость продукта", )
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, primary_key = True)
     city = models.CharField("Город пользователя", max_length=100, null=True)
     inn = models.CharField("ИНН", max_length = 12, unique=True)
     org = models.CharField("Организация", max_length=100, null=True)
