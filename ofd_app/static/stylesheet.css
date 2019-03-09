@@ -2,132 +2,13 @@ body{
 	background-color: #e4e8ea;
 }
 
-.div_navbar{
-
-}
-
-.div_button{
-	margin: 10px auto;
-}
-
-.div_form{
+/* Страница авторизации */
+.registration_form{
 	width: 300px;
-	height: 480px;
-	position: relative;
-  	top: 50px;
-  	bottom: 0;
-  	left: 0;
-  	right: 0;
-  	margin: auto;
+	margin-top: 10%;
 }
-
-/*Для формы регистрации пользователя*/
-
-.registration{
-	color: #485967;
-}
-
-.registration:hover{
-	text-decoration: none;
-}
-
-#input_form{
-	width: 300px;
-}
-
-#button_registration{
-	background-color: #485967;
-	border-color: #485967;
-}
-
-#button_registration:hover{
-	background-color: #426786;
-	border-color: #426786;
-}
-
-#h1_form{
-	color: #485967;
-}
-
-.input_top{
-	margin: 5px 0 0 0;
-}
-
-/*Для страницы после авторизации */
-
-.nav_block{
-	width: 100%;
-	height: 50px;
-	background-color: #485967;
-	display: flex;
-	border-radius: 0 0 5px 5px
-}
-
-.nav_box_width{
-	width: 100%;
-}
-
-.nav_box{
-	flex: none;
-	width: 90px;
-}
-
-.nav_a{
-	display: block;
-	height: 100%;
-	width: 100%;
-	padding: 13px 0;
-	color: #e4e8ea;
-}
-
-.nav_a:hover{
-	text-decoration: none;
-	background-color: #426786;
-	color: #e4e8ea;
-}
-
-#left_nav_button:hover{
-	border-radius: 0 0 0 5px;
-}
-
-#right_nav_button:hover{
-	border-radius: 0 0 5px 0;
-}
-
-/*Для страницы восстановления пароля*/
-
-.h1_recovery{
-	font-size: 24px;
-}
-
-.p_recovery{
-	color:#485967;
-}
-
-/* Flex-box в центре экрана */
-
-.top_padding_box{
-	height: 3vh;
-	width:100%;
-}
-
-.center_flex_box{
-	display: flex;
-	width: 100%;
-}
-
-.center_flex_box_left{
-	width: 50%;
-}
-
-.center_flex_box_center{
-	width: 30%;
-}
-
-.center_flex_box_right{
-	width: 20%;
-}
-
-.font_vw {
-  font-size: 1rem;
+.btn_registration_form{
+	width: 150px;
+	background-color: #2399a9;
+	border-color: #2399a9;
 }
