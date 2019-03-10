@@ -13,15 +13,13 @@
     <div class="d-flex justify-content-center">
     {% load crispy_forms_tags %}
 	    <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
-  			<div class="row">
-        		<div class="col-md-4 offset-md-4">
-            		<h1 class="h3 mb-3 font-weight-normal">Регистрация пользователя</h1>
-            		{% csrf_token %}
-            		{{ reg_form|crispy }}
-        		</div>
+  			<div class="registration_form">
+        		<h1 class="h3 font-weight-normal">Регистрация</h1>
+        		{% csrf_token %}
+        		{{ reg_form|crispy }}
       		</div>
-		    <div class="div_button col-md-2 offset-md-5">
-	            <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Зарегестрироваться</button>
+		    <div>
+	            <button class="btn btn-lg btn-primary btn-block btn_registration_form" type="submit" id="button_registration">Зарегестрироваться</button>
 	        </div>
         </form>
     </div>
