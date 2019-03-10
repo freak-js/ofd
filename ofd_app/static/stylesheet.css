@@ -2,7 +2,7 @@ body{
 	background-color: #e4e8ea;
 }
 
-/* Страница авторизации */
+/* Экран авторизации */
 .registration_form{
 	width: 300px;
 	margin-top: 10%;
@@ -11,6 +11,7 @@ body{
 	width: 300px;
 	background-color: #485967;
 	border-color: #485967;
+	margin-top: 10px;
 }
 .registration_div_link{
 	margin-top: 10px;
@@ -25,4 +26,15 @@ body{
 .registration_link:hover{
 	text-decoration: none;
 	color: #426786;
+}
+
+/* Экран регистрации */
+.form-group{
+	margin-bottom: 0 !important;
+}
+.col-form-label{
+	padding-bottom: 0 !important;
+}
+.form-check {
+    margin-top: 5px !important;
 }
