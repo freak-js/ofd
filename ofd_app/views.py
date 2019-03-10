@@ -149,7 +149,7 @@ def save_product_user_rel(costs, profile, user_mod_id):
 def get_products(profile):
     if profile is not None and profile.products.count() > 0:
         products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=profile))).filter(Q(by_user__isnull = True) | Q(by_user__user=profile)).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
-        print(products.query)
+        print(products)
     else:
         products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
     return products
