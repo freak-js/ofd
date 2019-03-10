@@ -19,6 +19,7 @@ class Profile(models.Model):
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
     parent = models.ForeignKey(User, models.SET_NULL, null=True, related_name='children')
     products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
+    phone_number = models.CharField("Номер телефона", max_length = 18, unique=True)
 
 #@receiver(post_save, sender=User)
 #def create_or_update_user_profile(sender, instance, created, **kwargs):
