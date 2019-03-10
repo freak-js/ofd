@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import FilteredRelation, Q, F
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -125,7 +126,7 @@ def save_product_user_rel(costs, profile, user_mod_id):
     products = Product.objects.all()
     for product in products:
         cost = costs.get('product_' + str(product.product_id))
-        if cost is not None and int(cost.strip()) if cost else 0 > 0 :
+        if cost is not None and int(cost.strip()) > 0 if cost else 0 > 0 :
             try:
                 relation = ProductUserRel.objects.get(user=profile, product=product)
                 relation.cost = cost
@@ -136,7 +137,8 @@ def save_product_user_rel(costs, profile, user_mod_id):
 
 def get_products(profile):
     if profile is not None and profile.products.count() > 0:
-        products = Product.objects.all().filter(productuserrel__user=profile).values('product_id', 'product_name', 'product_cost', 'productuserrel__cost').order_by('product_cost')
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=profile))).filter(Q(by_user__isnull = True) | Q(by_user__user=profile)).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
+        print(products.query)
     else:
         products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
     return products
