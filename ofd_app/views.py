@@ -1,14 +1,10 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import QueryDict
-from ofd_app.forms import ProductForm
-from ofd_app.forms import UserForm
-from ofd_app.forms import ProfileForm
-from ofd_app.forms import UserCreationFormCustom
-from ofd_app.models import Product
-from ofd_app.models import ProductUserRel
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from ofd_app.forms import ProductForm, UserForm, ProfileForm, UserCreationFormCustom
+from ofd_app.models import Product, ProductUserRel
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.decorators import login_required, permission_required
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -19,6 +15,8 @@ from django.db.models import FilteredRelation, Q, F
 @login_required(login_url='/login/')
 def product(request, **kwargs):
     if 'id' in kwargs:
+        if not request.user.has_perm('ofd_app.change_product'):
+            return redirect('products')
         product = get_object_or_404(Product, product_id=kwargs['id'])
         if request.method == 'POST':
             form = ProductForm(request.POST, instance = product)
@@ -27,20 +25,26 @@ def product(request, **kwargs):
         else:
             form = ProductForm(instance=product)
     elif request.method == 'POST':
+        if not request.user.has_perm('ofd_app.add_product'):
+            return redirect('products')
         form = ProductForm(request.POST)
         if form.is_valid():
             product = form.save()
     else:
+        if not request.user.has_perm('ofd_app.add_product'):
+            return redirect('products')
         form = ProductForm()
     return render(request, 'ofd_app/index_product_add.html', {'form': form})
 
 @login_required(login_url='/login/')
+@permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
     return render(request, 'ofd_app/index_top.html', {'products': get_products(None)})
 
 @login_required(login_url='/login/')
 #@csrf_exempt
 @require_POST
+@permission_required('ofd_app.delete_product', login_url='/products/')
 def product_delete(request):
     ids = request.POST.getlist('product_to_delete')
     cnt_delete = 0
@@ -57,6 +61,8 @@ def product_delete(request):
 def user(request, **kwargs):
     user = None
     if 'id' in kwargs:
+        if not request.user.has_perm('auth.change_user') and kwargs['id'] != request.user.id:
+            return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user)
@@ -65,7 +71,8 @@ def user(request, **kwargs):
             except User.profile.RelatedObjectDoesNotExist:
                 profile_form = ProfileForm(request.POST)
             if user_form.is_valid() and profile_form.is_valid():
-                user_form.save()
+                user = user_form.save()
+                user_assign_group(user, request.user.is_superuser)
                 profile = profile_form.save(commit = False)
                 profile.user = user
                 profile.save()
@@ -76,22 +83,27 @@ def user(request, **kwargs):
             except User.profile.RelatedObjectDoesNotExist:
                 profile_form = ProfileForm()
     elif request.method == 'POST':
+        if not request.user.has_perm('auth.change_user'):
+            return redirect('products')
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(request.POST)
         ##TODO: implement via @receiver
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
+            user_assign_group(user, request.user.is_superuser)
             profile = profile_form.save(commit = False)
             profile.user = user
             profile.save()
     else:
+        if not request.user.has_perm('auth.view_user'):
+            return redirect('products')
         user_form = UserForm()
         profile_form = ProfileForm()
     return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form})
 
 @login_required(login_url='/login/')
+@permission_required('ofd_app.change_productuserrel', login_url='/products/')
 def user_product(request, **kwargs):
-    #TODO проверить права на сохранение цен для продуктов
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
         try:
@@ -104,12 +116,14 @@ def user_product(request, **kwargs):
     return render(request, 'ofd_app/user_product.html', {'products': products})
 
 @login_required(login_url='/login/')
+@permission_required('auth.view_user', login_url='/products/')
 def users(request):
     users = User.objects.all().filter(is_active = True)
     return render(request, 'ofd_app/users.html', {'users': users})
 
 @login_required(login_url='/login/')
 @require_POST
+@permission_required('auth.delete_user', login_url='/products/')
 def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
@@ -149,7 +163,13 @@ def save_product_user_rel(costs, profile, user_mod_id):
 def get_products(profile):
     if profile is not None and profile.products.count() > 0:
         products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=profile))).filter(Q(by_user__isnull = True) | Q(by_user__user=profile)).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
-        print(products.query)
     else:
         products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
     return products
+
+def user_assign_group(user, is_manager):
+    if is_manager:
+        name = 'Manager'
+    else:
+        name = 'User'
+    group = Group.objects.get(name=name).user_set.add(user)

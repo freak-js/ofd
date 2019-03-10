@@ -3,6 +3,7 @@ from .models import Product
 from .models import User
 from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
+from ofd_app import views
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -32,7 +33,8 @@ class UserCreationFormCustom(UserCreationForm):
         for fieldname in ['username', 'password1', 'password2']:
             self.fields[fieldname].help_text = None
     def save(self):
-        user = super().save(commit=True)
+        user = super().save()
+        views.user_assign_group(user, True)
         profile = Profile(user=user, city=self.cleaned_data['city'], inn=self.cleaned_data['city'], org=self.cleaned_data['org'], is_legal=self.cleaned_data['is_legal'])
         profile.save()
         return user, profile
