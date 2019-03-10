@@ -128,7 +128,7 @@ def user_reg(request):
         reg_form = UserCreationFormCustom(request.POST)
         if reg_form.is_valid():
             reg_form.save()
-            redirect('login')
+            return redirect('login')
     else:
         reg_form = UserCreationFormCustom()
     return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})

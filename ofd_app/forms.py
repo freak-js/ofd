@@ -26,7 +26,11 @@ class UserCreationFormCustom(UserCreationForm):
     is_legal = forms.BooleanField(label="Юридичиское лицо?")
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'password', 'inn', 'org', 'city', 'is_legal')
+        fields = ('username', 'inn', 'org', 'city', 'password1', 'password2','is_legal')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for fieldname in ['username', 'password1', 'password2']:
+            self.fields[fieldname].help_text = None
     def save(self):
         user = super().save(commit=True)
         profile = Profile(user=user, city=self.cleaned_data['city'], inn=self.cleaned_data['city'], org=self.cleaned_data['org'], is_legal=self.cleaned_data['is_legal'])
