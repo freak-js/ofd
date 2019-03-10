@@ -28,9 +28,9 @@
 	                <tr>
 	                    <td>{{ product.product_name }}</td>
 	                    <td>{{ product.product_cost }}</td>
-	                    <td>{{product.productuserrel__cost}}</td>
+	                    <td>{{product.by_user__cost}}</td>
 	                    <td>
-	                        <input type="number" class="form-control" name="product_{{product.product_id}}" value="{{product.productuserrel__cost}}">
+	                        <input type="number" class="form-control" name="product_{{product.product_id}}" value="{{product.by_user__cost}}">
 	                    </td>
 	                </tr>
 	                {% endfor %}
