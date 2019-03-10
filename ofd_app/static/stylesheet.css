@@ -8,7 +8,21 @@ body{
 	margin-top: 10%;
 }
 .btn_registration_form{
-	width: 150px;
-	background-color: #2399a9;
-	border-color: #2399a9;
+	width: 300px;
+	background-color: #485967;
+	border-color: #485967;
+}
+.registration_div_link{
+	margin-top: 10px;
+}
+.btn_registration_form:hover{
+	background-color: #426786;
+	border-color: #426786;
+}
+.registration_link {
+	color: #485967;
+}
+.registration_link:hover{
+	text-decoration: none;
+	color: #426786;
 }
