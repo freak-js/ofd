@@ -4,6 +4,7 @@ from django.http import QueryDict
 from ofd_app.forms import ProductForm
 from ofd_app.forms import UserForm
 from ofd_app.forms import ProfileForm
+from ofd_app.forms import UserCreationFormCustom
 from ofd_app.models import Product
 from ofd_app.models import ProductUserRel
 from django.contrib.auth.models import User
@@ -121,6 +122,16 @@ def user_delete(request):
         except User.DoesNotExist:
             pass
     return redirect('users')
+
+def user_reg(request):
+    if request.method == 'POST':
+        reg_form = UserCreationFormCustom(request.POST)
+        if reg_form.is_valid():
+            reg_form.save()
+            redirect('login')
+    else:
+        reg_form = UserCreationFormCustom()
+    return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})
 
 def save_product_user_rel(costs, profile, user_mod_id):
     products = Product.objects.all()
