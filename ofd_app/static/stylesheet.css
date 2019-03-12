@@ -1,5 +1,37 @@
 body{
 	background-color: #e4e8ea;
+	color: #485967;
+}
+
+/* Глобальное меню сверху */
+.nav_div{
+	display: flex;
+	width: 100%;
+	background-color: #485967;
+	margin-bottom: 10px;
+}
+.top_menu_link_div{
+	flex: none;
+	width: 120px;
+	height: 50px;
+}
+.top_menu_width_div{
+	width: 100%;
+}
+.nav_link {
+	display: block;
+	margin-top: 12px;
+	color: #e4e8ea;
+}
+.nav_link:hover{
+	text-decoration: none;
+	color: #ffffff;
+}
+
+/* Кнопки "Добавить", "Удалить" */
+.btn_sub_top{
+	width: 100px;
+	margin-bottom: 10px;
 }
 
 /* Экран авторизации */
@@ -13,19 +45,29 @@ body{
 	border-color: #485967;
 	margin-top: 10px;
 }
-.registration_div_link{
-	margin-top: 10px;
-}
 .btn_registration_form:hover{
 	background-color: #426786;
 	border-color: #426786;
 }
+.registration_div_link{
+	margin-top: 10px;
+}
+
 .registration_link {
 	color: #485967;
 }
 .registration_link:hover{
 	text-decoration: none;
 	color: #426786;
+}
+.alert {
+    padding: 0;
+    margin-bottom: 0;
+    border: 0;
+}
+.alert ul{
+	list-style-type: none;
+	padding: 0;
 }
 
 /* Экран регистрации */
@@ -34,7 +76,44 @@ body{
 }
 .col-form-label{
 	padding-bottom: 0 !important;
+	padding-top: 2px !important;
 }
 .form-check {
     margin-top: 5px !important;
+}
+.registration_form_start{
+	width: 300px;
+	margin-top: 2%;
+}
+
+/* Краточка добавления продукта */
+.registration_form_mt_menu{
+	width: 300px;
+	margin-top: 5%;
+}
+
+/* Оформление таблиц */
+.table_div{
+	width: 80%;
+}
+.custom_table{
+	border-collapse: collapse;
+	
+}
+.fontawesome_link{
+	color: #485967;
+}
+.fontawesome_link:hover{
+	color: #426786;
+}
+
+/* Инпуты ввода цены */
+.cost_input{
+	width: 85px;
+	display: inline;
+}
+
+/* Доб/Ред польз. после авториз. */
+.registration_form_in{
+	width: 300px;
 }
