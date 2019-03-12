@@ -8,40 +8,50 @@
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <title>Добавление продукта</title>
+    <title>Список продуктов</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
       {% include "ofd_app/menu.html" %}
-        <div class="row">
-            <form action="/products/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
-            	<a href="/product/" class="btn btn-info" role="button">Добавить</a>
-            	<button type="submit" id="" name="" class="btn btn-info">Удалить</button>
+        <div class="container-fluid p-0">
+            <form action="/products/delete" method="POST" name="" id="top_form">{% csrf_token %}
+            	{% if perms.ofd_app.change_product %}
+            	<a href="/product/" class="btn btn-info btn_sub_top" role="button">Добавить</a>
+            	<button type="submit" id="" name="" class="btn btn-info btn_sub_top">Удалить</button>
+            	{% endif %}
             </form>
         </div>
         {% load crispy_forms_tags %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Наименование продукта</th>
-                    <th scope="col">Стоимость</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td><a href="/product/{{product.product_id}}"><i class="fas fa-edit"></i></a></td> 
-                    <td>{{ product.product_name }}</td>
-                    <td>{{ product.product_cost }}</td>
-                    <td>
-                        <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table_div">
+	        <table class="table custom_table">
+	            <thead>
+	                <tr>
+	                    <th scope="col"></th>
+	                    <th scope="col">Наименование продукта</th>
+	                    <th scope="col">Стоимость</th>
+	                    <th scope="col"></th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                {% for product in products %}
+	                <tr>
+	                    <td>
+	                    	{% if perms.ofd_app.change_product %}
+	                    	<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
+	                    	{% endif %}
+	                    </td> 
+	                    <td>{{ product.product_name }}</td>
+	                    <td>{{ product.product_cost }}</td>
+	                    {% if perms.ofd_app.change_product %}
+	                    <td>
+	                        <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+	                    </td>
+	                    {% endif %}
+	                </tr>
+	                {% endfor %}
+	            </tbody>
+	        </table>
+    	</div>
     </div>
 </body>
 </html>

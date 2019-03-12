@@ -10,22 +10,20 @@
     <title>Карточка пользователя</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
         {% load crispy_forms_tags %}
-        {% include "ofd_app/menu.html" %}
-	    <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
-  			<div class="row">
-        		<div class="col-md-4 offset-md-4">
-            		<h1 class="h3 mb-3 font-weight-normal">Карточка пользователя</h1>
-            		{% csrf_token %}
-            		{{ user_form|crispy }}
-            		{{ profile_form|crispy }}
-        		</div>
-      		</div>
-		    <div class="div_button col-md-2 offset-md-5">
-	            <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Сохранить</button>
-	        </div>
-        </form>
+		{% include "ofd_app/menu.html" %}
+		<div class="d-flex justify-content-center">
+			<form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
+				<div class="registration_form_in">
+					<h1 class="h3 font-weight-normal">Карточка пользователя</h1>
+					{% csrf_token %}
+					{{ user_form|crispy }}
+					{{ profile_form|crispy }}
+				</div>
+				<button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Сохранить</button>
+			</form>
+		</div>
 	</div>
 </body>
 </html>

@@ -1,7 +1,20 @@
 <!-- Навигационная панель сверху страницы -->
-<div class="row">
-  <a href="/products/" class="nav-link col-1">Продукция</a>
-  <a href="/users/" class="nav-link col-1">Пользователи</a>
-  <a href="/user/{{request.user.id}}" class="nav-link col-2">Моя карточка</a>
-  <a href="/logout" class="nav-link col-1 offset-6 offset-sm-7">Выход</a>
+<div class="nav_div">
+	<div class="top_menu_link_div">
+    	<a href="/products/" class="nav_link">Продукция</a>
+    </div>
+	{% if perms.auth.view_user %}
+    <div class="top_menu_link_div">
+    	<a href="/users/" class="nav_link">Пользователи</a>
+    </div>
+    {% endif %}
+    <div class="top_menu_link_div">
+    	<a href="/user/{{request.user.id}}" class="nav_link">Моя карточка</a>
+    </div>
+
+    <div class="top_menu_width_div"></div>
+
+    <div class="top_menu_link_div">
+    	<a href="/logout" class="nav_link">Выход</a>
+    </div>
 </div>

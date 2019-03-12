@@ -12,16 +12,14 @@
 <body class="text-center">
     <div class="d-flex justify-content-center">
     {% load crispy_forms_tags %}
-	    <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
-  			<div class="registration_form">
-        		<h1 class="h3 font-weight-normal">Регистрация</h1>
-        		{% csrf_token %}
-        		{{ reg_form|crispy }}
-      		</div>
-		    <div>
-	            <button class="btn btn-lg btn-primary btn-block btn_registration_form" type="submit" id="button_registration">Зарегестрироваться</button>
-	        </div>
-        </form>
+        <div class="registration_form_start">
+            <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
+                <h1 class="h3 font-weight-normal">Регистрация</h1>
+                {% csrf_token %}
+                {{ reg_form|crispy }}
+                <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Зарегестрироваться</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

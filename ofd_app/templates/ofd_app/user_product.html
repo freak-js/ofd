@@ -10,7 +10,7 @@
     <title>Индивидуальные цены</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
         {% load crispy_forms_tags %}
         {% include "ofd_app/menu.html" %}
 	    <form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
@@ -30,15 +30,13 @@
 	                    <td>{{ product.product_cost }}</td>
 	                    <td>{{product.by_user__cost}}</td>
 	                    <td>
-	                        <input type="number" class="form-control" name="product_{{product.product_id}}" value="{{product.by_user__cost}}">
+	                        <input type="number" class="form-control cost_input" name="product_{{product.product_id}}" value="{{product.by_user__cost}}">
 	                    </td>
 	                </tr>
 	                {% endfor %}
 	            </tbody>
         	</table>
-    		<div class="div_button col-md-2 offset-md-5">
-	            <button class="btn btn-lg btn-primary btn-block" type="submit" id="button_registration">Сохранить</button>
-	        </div>
+	        <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Сохранить</button>
         </form>
 	</div>
 </body>

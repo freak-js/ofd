@@ -11,14 +11,12 @@
     <title>Пользователи</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
         {% include "ofd_app/menu.html" %}
-        <div class="row">
             <form action="/user/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">{% csrf_token %}
-                <a href="/user/" class="btn btn-info" role="button">Добавить</a>
-                <button type="submit" id="" name="" class="btn btn-info">Удалить</button>
+                <a href="/user/" class="btn btn-info btn_sub_top" role="button">Добавить</a>
+                <button type="submit" id="" name="" class="btn btn-info btn_sub_top">Удалить</button>
             </form>
-        </div>
         {% load crispy_forms_tags %}
         <table class="table">
             <thead>
@@ -38,12 +36,15 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td><a href="/user/{{user.id}}"><i class="fas fa-edit"></i></a></td>
-
                     <td>
+                        <a href="/user/{{user.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a></td>
+                    <td>
+                        {% if perms.ofd_app.change_product %}
                         {% if user.profile %}
-                        <a href="/user_product/{{user.id}}"><i class="fas fa-hand-holding-usd"></i></a>
-                        {% endif %}</td>
+                        <a href="/user_product/{{user.id}}" class="fontawesome_link"><i class="fas fa-hand-holding-usd"></i></a>
+                        {% endif %}
+                        {% endif %}
+                    </td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>
