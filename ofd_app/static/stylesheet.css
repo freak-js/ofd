@@ -27,6 +27,16 @@ body{
 	text-decoration: none;
 	color: #ffffff;
 }
+.fontawesome_link_basket{
+	display: block;
+    margin-top: 12px;
+    margin-left: 95px;
+    color: #e4e8ea;
+    width: 25px;
+}
+.fontawesome_link_basket:hover{
+	color: #ffffff;
+}
 
 /* Кнопки "Добавить", "Удалить" */
 .btn_sub_top{
