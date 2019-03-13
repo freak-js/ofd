@@ -39,7 +39,7 @@ def product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
-    return render(request, 'ofd_app/index_top.html', {'products': get_products(None)})
+    return render(request, 'ofd_app/index_top.html', {'products': get_products(None if request.user.is_superuser else request.user.profile)})
 
 @login_required(login_url='/login/')
 #@csrf_exempt
