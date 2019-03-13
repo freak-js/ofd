@@ -37,3 +37,11 @@ class ProductUserRel(models.Model):
   user_mod = models.IntegerField("Пользователь, который последний раз модифицировал запись",)
   class Meta:
     unique_together = ('user', 'product')
+
+
+class Order(models.Model):
+  user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Номер заказа")
+  product = models.ForeignKey(Product, on_delete=models.PROTECT)
+  amount = models.IntegerField("Количество")
+  adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
+  cost = models.IntegerField("Итоговая стоимость для одного продукта")
