@@ -1,4 +1,5 @@
 <!-- Навигационная панель сверху страницы -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <div class="nav_div">
 	<div class="top_menu_link_div">
     	<a href="/products/" class="nav_link">Продукция</a>
@@ -11,9 +12,15 @@
     <div class="top_menu_link_div">
     	<a href="/user/{{request.user.id}}" class="nav_link">Моя карточка</a>
     </div>
+    <div class="top_menu_link_div">
+            <a href="/my_order" class="nav_link">Мои заказы</a>
+    </div>
 
     <div class="top_menu_width_div"></div>
 
+    <div class="top_menu_link_div">
+            <a href="/basket" class="fontawesome_link_basket"><i class="fa fa-shopping-cart"></i></i></a>
+    </div>
     <div class="top_menu_link_div">
     	<a href="/logout" class="nav_link">Выход</a>
     </div>
