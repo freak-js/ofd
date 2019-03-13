@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <title>Список продуктов</title>
 </head>
 <body class="text-center">
@@ -28,7 +27,8 @@
 	                <tr>
 	                    <th scope="col"></th>
 	                    <th scope="col">Наименование продукта</th>
-	                    <th scope="col">Стоимость</th>
+						<th scope="col">Стоимость</th>
+						<th scope="col">Количество</th>
 	                    <th scope="col"></th>
 	                </tr>
 	            </thead>
@@ -41,21 +41,29 @@
 	                    	{% endif %}
 	                    </td> 
 	                    <td>{{ product.product_name }}</td>
-	                    <td>{% if product.by_user__cost is not None %}
+	                    <td>
+							{% if product.by_user__cost is not None %}
 							{{ product.by_user__cost }}
 							{% else %}
 							{{ product.product_cost }} 
-							{% endif %}</td>
-	                    {% if perms.ofd_app.change_product %}
+							{% endif %}
+						</td>
+						<td>
+							<input type="number" class="form-control cost_input" name="product_to_basket" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
+						</td>
 	                    <td>
+							{% if perms.ofd_app.change_product %}
 	                        <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
-	                    </td>
-	                    {% endif %}
+							{% endif %}
+						</td>
 	                </tr>
 	                {% endfor %}
 	            </tbody>
 	        </table>
-    	</div>
+		</div>
+		<form action="" method="POST" id="basket_form">{% csrf_token %}
+			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
+		</form>
     </div>
 </body>
 </html>
