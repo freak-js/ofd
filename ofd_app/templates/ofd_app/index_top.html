@@ -41,7 +41,11 @@
 	                    	{% endif %}
 	                    </td> 
 	                    <td>{{ product.product_name }}</td>
-	                    <td>{{ product.product_cost }}</td>
+	                    <td>{% if product.by_user__cost is not None %}
+							{{ product.by_user__cost }}
+							{% else %}
+							{{ product.product_cost }} 
+							{% endif %}</td>
 	                    {% if perms.ofd_app.change_product %}
 	                    <td>
 	                        <input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">

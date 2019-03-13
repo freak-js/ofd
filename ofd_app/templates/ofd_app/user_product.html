@@ -28,7 +28,12 @@
 	                <tr>
 	                    <td>{{ product.product_name }}</td>
 	                    <td>{{ product.product_cost }}</td>
-	                    <td>{{product.by_user__cost}}</td>
+	                    <td>
+							{% if product.by_user__cost is not None %}
+							{{product.by_user__cost}}
+							{% else %}
+							<p></p>
+							{% endif %}</td>
 	                    <td>
 	                        <input type="number" class="form-control cost_input" name="product_{{product.product_id}}" value="{{product.by_user__cost}}">
 	                    </td>
