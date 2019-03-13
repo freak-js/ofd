@@ -16,9 +16,14 @@ class UserForm(forms.ModelForm):
         fields = ('username', 'first_name', 'last_name')
 
 class ProfileForm(forms.ModelForm):
+    parent = forms.ModelChoiceField(label="Менеджер", queryset=User.objects.filter(groups__name__in=['Manager']))
     class Meta:
         model = Profile
-        fields = ('inn', 'org', 'city', 'is_legal')
+        fields = ('inn', 'org', 'city', 'parent', 'is_legal')
+    def __init__(self, *args, hideParent, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hideParent:
+            self.fields.pop('parent')
 
 class UserCreationFormCustom(UserCreationForm):
     city = forms.CharField(label="Город пользователя", max_length=100)

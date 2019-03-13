@@ -39,7 +39,15 @@ def product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
-    return render(request, 'ofd_app/index_top.html', {'products': get_products(None if request.user.is_superuser else request.user.profile)})
+    products = get_products(None if request.user.is_superuser else request.user.profile);
+    if request.method == 'POST':
+        request.session['basket'] = {}
+        for product in products:
+            quantity = int(equest.POST.get('product_to_basket_' + str(product.id), 0))
+            if quantity > 0:
+                request.session['basket'][product.id] = quantity
+        return render(request, 'ofd_app/basket.html')
+    return render(request, 'ofd_app/index_top.html', {'products': products})
 
 @login_required(login_url='/login/')
 #@csrf_exempt
@@ -60,37 +68,39 @@ def product_delete(request):
 #@csrf_exempt
 def user(request, **kwargs):
     user = None
+    hideParent = request.user.groups.filter(name__in=['Manager', 'User']).exists()
     if 'id' in kwargs:
         if not request.user.has_perm('auth.change_user') and kwargs['id'] != request.user.id:
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
+        hideParent = hideParent or request.user.id == kwargs['id'] or not user.groups.filter(name__in=['User']).exists()
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user)
             try:
-                profile_form = ProfileForm(request.POST, instance = user.profile)
+                profile_form = ProfileForm(request.POST, hideParent=hideParent, instance = user.profile)
             except User.profile.RelatedObjectDoesNotExist:
-                profile_form = ProfileForm(request.POST)
+                profile_form = ProfileForm(request.POST, hideParent=hideParent)
             if user_form.is_valid() and profile_form.is_valid():
                 user = user_form.save()
-                user_assign_group(user, request.user.is_superuser)
+                user_assign_group(user, request.user)
                 profile = profile_form.save(commit = False)
                 profile.user = user
                 profile.save()
         else:
             user_form = UserForm(instance = user)
             try:
-                profile_form = ProfileForm(instance = user.profile)
+                profile_form = ProfileForm(hideParent=hideParent, instance = user.profile)
             except User.profile.RelatedObjectDoesNotExist:
-                profile_form = ProfileForm()
+                profile_form = ProfileForm(hideParent=hideParent)
     elif request.method == 'POST':
         if not request.user.has_perm('auth.change_user'):
             return redirect('products')
         user_form = UserForm(request.POST)
-        profile_form = ProfileForm(request.POST)
+        profile_form = ProfileForm(request.POST, hideParent=hideParent)
         ##TODO: implement via @receiver
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
-            user_assign_group(user, request.user.is_superuser)
+            user_assign_group(user, request.user)
             profile = profile_form.save(commit = False)
             profile.user = user
             profile.save()
@@ -98,7 +108,7 @@ def user(request, **kwargs):
         if not request.user.has_perm('auth.view_user'):
             return redirect('products')
         user_form = UserForm()
-        profile_form = ProfileForm()
+        profile_form = ProfileForm(hideParent=hideParent)
     return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form})
 
 @login_required(login_url='/login/')
@@ -118,7 +128,10 @@ def user_product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('auth.view_user', login_url='/products/')
 def users(request):
-    users = User.objects.all().filter(is_active = True)
+    if request.user.groups.filter(name__in=['Manager']).exists():
+        users = User.objects.all().filter(is_active = True).filter(profile__parent=request.user)
+    else:
+        users = User.objects.all().filter(is_active = True)
     return render(request, 'ofd_app/users.html', {'users': users})
 
 @login_required(login_url='/login/')
@@ -167,9 +180,10 @@ def get_products(profile):
         products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
     return products
 
-def user_assign_group(user, is_manager):
-    if is_manager:
-        name = 'Manager'
-    else:
-        name = 'User'
-    group = Group.objects.get(name=name).user_set.add(user)
+def user_assign_group(user, parent):
+    if user.groups.all().count() == 0:
+        if user.groups.filter(name='Manager').exists:
+            name = 'User'
+        else:
+            name = 'Manager'
+        group = Group.objects.get(name=name).user_set.add(user)
