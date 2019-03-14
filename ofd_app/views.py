@@ -11,6 +11,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import FilteredRelation, Q, F
+from functools import reduce
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -48,19 +49,23 @@ def products(request):
             value = request.POST.get(input_id, '').strip()
             quantity = int(value) if value else 0
             if quantity > 0:
-                request.session['basket'].append({'id': product.get('product_id'), 'name': product.get('product_name'), 'quantity': quantity})
+                request.session['basket'].append({'id': product.get('product_id'), 'name': product.get('product_name'), 'cost': product.get('product_cost'), 'quantity': quantity})
         return redirect('basket')
     return render(request, 'ofd_app/index_top.html', {'products': products})
 
 @login_required(login_url='/login/')
 def get_basket(request):
+    products = []
+    total = 0
     if request.method == 'POST':
         pass
     else:
-        products = []
-        if 'basket' in request.session and request.session['basket'].len() > 0:
-            products = request.session['basket']
-            total = reduce(lambda i1, i2: i1['quantity'] + i2['quantity'], products)
+        if 'basket' in request.session and len(request.session['basket']) > 0:
+            for item in request.session['basket']:
+                product = item
+                product['sum'] = item['cost'] * item['quantity']
+                products.append(product)
+                total += product['sum']
     return render(request, 'ofd_app/basket.html', {'products': products, 'total': total})
 
 @login_required(login_url='/login/')
