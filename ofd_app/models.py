@@ -41,7 +41,11 @@ class ProductUserRel(models.Model):
 
 class Order(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Номер заказа")
-  product = models.ForeignKey(Product, on_delete=models.PROTECT)
-  amount = models.IntegerField("Количество")
+  products = models.ManyToManyField(Product, through="OrderProduct", verbose_name="Продукты заказанные пользователем")
   adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
+
+class OrderProduct(models.Model):
+  order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name="Отношение к номеру заказа")
+  product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name="Отношение к продукту")
+  amount = models.IntegerField("Количество")
   cost = models.IntegerField("Итоговая стоимость для одного продукта")

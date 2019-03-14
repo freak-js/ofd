@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import QueryDict
 from ofd_app.forms import ProductForm, UserForm, ProfileForm, UserCreationFormCustom
-from ofd_app.models import Product, ProductUserRel
+from ofd_app.models import Product, ProductUserRel, Order, OrderProduct
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, permission_required
 from django import forms
@@ -41,7 +41,6 @@ def product(request, **kwargs):
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
     products = get_products(None if request.user.is_superuser else request.user.profile);
-    print(request.session['basket'])
     if request.method == 'POST':
         request.session['basket'] = []
         for product in products:
@@ -58,7 +57,15 @@ def get_basket(request):
     products = []
     total = 0
     if request.method == 'POST':
-        pass
+        if 'basket' in request.session and len(request.session['basket']) > 0:
+            order = Order(user = request.user)
+            order.save()
+            for item in request.session['basket']:
+                product = Product.objects.get(product_id=item['id'])
+                ##TODO обработать ситуацию, когда продукта нет
+                order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
+                order_product.save()
+
     else:
         if 'basket' in request.session and len(request.session['basket']) > 0:
             for item in request.session['basket']:
@@ -67,6 +74,7 @@ def get_basket(request):
                 products.append(product)
                 total += product['sum']
     return render(request, 'ofd_app/basket.html', {'products': products, 'total': total})
+
 
 @login_required(login_url='/login/')
 #@csrf_exempt
@@ -174,7 +182,7 @@ def user_reg(request):
         reg_form = UserCreationFormCustom(request.POST)
         if reg_form.is_valid():
             reg_form.save()
-            return redirect('login')
+            return redirect('products')
     else:
         reg_form = UserCreationFormCustom()
     return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})
