@@ -39,17 +39,17 @@
 	                    	{% if perms.ofd_app.change_product %}
 	                    	<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
 	                    	{% endif %}
-	                    </td> 
+	                    </td>
 	                    <td>{{ product.product_name }}</td>
 	                    <td>
 							{% if product.by_user__cost is not None %}
 							{{ product.by_user__cost }}
 							{% else %}
-							{{ product.product_cost }} 
+							{{ product.product_cost }}
 							{% endif %}
 						</td>
 						<td>
-							<input type="number" class="form-control cost_input" name="product_to_basket" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
+							<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
 						</td>
 	                    <td>
 							{% if perms.ofd_app.change_product %}
@@ -61,7 +61,7 @@
 	            </tbody>
 	        </table>
 		</div>
-		<form action="" method="POST" id="basket_form">{% csrf_token %}
+		<form action="/products/" method="POST" id="basket_form">{% csrf_token %}
 			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
 		</form>
     </div>

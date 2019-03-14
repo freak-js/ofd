@@ -40,14 +40,28 @@ def product(request, **kwargs):
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
     products = get_products(None if request.user.is_superuser else request.user.profile);
+    print(request.session['basket'])
     if request.method == 'POST':
-        request.session['basket'] = {}
+        request.session['basket'] = []
         for product in products:
-            quantity = int(equest.POST.get('product_to_basket_' + str(product.id), 0))
+            input_id = 'product_to_basket_id_' + str(product.get('product_id'))
+            value = request.POST.get(input_id, '').strip()
+            quantity = int(value) if value else 0
             if quantity > 0:
-                request.session['basket'][product.id] = quantity
-        return render(request, 'ofd_app/basket.html')
+                request.session['basket'].append({'id': product.get('product_id'), 'name': product.get('product_name'), 'quantity': quantity})
+        return redirect('basket')
     return render(request, 'ofd_app/index_top.html', {'products': products})
+
+@login_required(login_url='/login/')
+def get_basket(request):
+    if request.method == 'POST':
+        pass
+    else:
+        products = []
+        if 'basket' in request.session and request.session['basket'].len() > 0:
+            products = request.session['basket']
+            total = reduce(lambda i1, i2: i1['quantity'] + i2['quantity'], products)
+    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total})
 
 @login_required(login_url='/login/')
 #@csrf_exempt

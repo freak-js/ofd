@@ -32,5 +32,6 @@ urlpatterns = [
     path('user/<int:id>/', views.user, name='user'),
     path('user/delete', views.user_delete, name='user_delete'),
     path('user_product/<int:id>/', views.user_product, name='user_product'),
-    path('reg/', views.user_reg, name='user_reg')
+    path('reg/', views.user_reg, name='user_reg'),
+    path('basket/', views.get_basket, name='basket')
 ]
