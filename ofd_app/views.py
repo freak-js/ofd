@@ -86,7 +86,9 @@ def product_delete(request):
     cnt_delete = 0
     for id in ids:
         try:
-            Product.objects.get(product_id=id).delete()
+            product = Product.objects.get(product_id=id)
+            product.product_is_active = False
+            product.save()
             cnt_delete += 1
         except Product.DoesNotExist:
             pass
@@ -207,9 +209,9 @@ def save_product_user_rel(costs, profile, user_mod_id):
 
 def get_products(profile):
     if profile is not None and profile.products.count() > 0:
-        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=profile))).filter(Q(by_user__isnull = True) | Q(by_user__user=profile)).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=profile))).filter(Q(by_user__isnull = True) | Q(by_user__user=profile)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
     else:
-        products = Product.objects.all().values('product_id', 'product_name', 'product_cost').order_by('product_cost')
+        products = Product.objects.all().filter(product_is_active=True).values('product_id', 'product_name', 'product_cost').order_by('product_cost')
     return products
 
 def user_assign_group(user, parent):

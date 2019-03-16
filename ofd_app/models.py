@@ -10,6 +10,7 @@ class Product(models.Model):
     product_moddate = models.DateTimeField("Дата модификации продукта", auto_now = True)
     product_adddate = models.DateTimeField("Дата добавления продукта", auto_now_add = True)
     product_cost = models.IntegerField("Базовая стоимость продукта", )
+    product_is_active = models.BooleanField("Продукт активен?", default=True)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, primary_key = True)
