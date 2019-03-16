@@ -49,7 +49,11 @@
                     <td>{{ user.profile.inn }}</td>
                     <td>{{ user.profile.org }}</td>
                     <td>{{ user.profile.city }}</td>
-                    <td>{{ user.profile.is_legal }}</td>
+                    {% if user.profile.is_legal %}
+                        <td><span style="color: green;"><i class="fas fa-check"></i></span></td>
+                    {% else %}
+                        <td><span style="color: red;"><i class="fas fa-times"></i></span></td>
+                    {% endif %}
                     <td>
                         <input type="checkbox" class="form-check-input" name="user_to_delete" value="{{user.id}}" form="top_form">
                     </td>
