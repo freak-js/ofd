@@ -1,5 +1,8 @@
 <!-- Навигационная панель сверху страницы -->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <div class="nav_div">
     <div class="top_menu_link_div">
         <img src="/static/logo.png" alt="Логотип mir-ofd.ru">
@@ -25,6 +28,20 @@
             <a href="/basket" class="fontawesome_link_basket"><i class="fa fa-shopping-cart"></i></a>
             <i class="fa fa-plus-circle fontawesome_add_basket"></i>
     </div>
+    <div class="btn-group dropleft top_select_box">
+        <button type="button" class="btn dropdown-toggle top_select_box_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-cog fontawesome_gear"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/user/">Добавить работника</a>
+          {% if perms.ofd_app.change_product %}
+          <a class="dropdown-item" href="/product/">Добавить продукт</a>
+          {% endif %}
+          <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Сменить пароль</a>
+        </div>
+      </div>
     <div class="top_menu_link_div_exit">
     	<a href="/logout" class="nav_link">Выход</a>
     </div>
