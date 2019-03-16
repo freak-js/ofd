@@ -169,8 +169,15 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    orders = Order.objects().all().filter(user=request.user)
-    return render(request, 'ofd_app/orders.html', {'orders': orders})
+    orders = Order.objects.all().filter(user=request.user)
+    order_data = []
+    cnt = 0
+    for order in orders:
+        rels = OrderProduct.objects.all().filter(order=order)
+        total = sum(i.amount * i.cost for i in rels)
+        cnt += 1
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total})
+    return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
 def user_reg(request):
     if request.method == 'POST':
