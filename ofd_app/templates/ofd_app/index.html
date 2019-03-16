@@ -15,8 +15,8 @@
         <div class="registration_form">
             <form class="form-signin" id="input_form" method="POST" action="/login/">
                 {% csrf_token %}
-	            {{ form|crispy }}    
-	            <input type="hidden" name="next" value="/product/">
+	            {{ form|crispy }}
+	            <input type="hidden" name="next" value="/products/">
 	            <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Войти</button>
 	        </form>
 	        <div class="registration_div_link">
