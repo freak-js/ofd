@@ -67,6 +67,11 @@ body{
 .fontawesome_link:hover{
 	color: #426786;
 }
+.fontawesome_gear{
+    position: relative;
+    left: 2px;
+    top: 2px;
+}
 
 /* БЛОКИ-ХРАНИТЕЛИ */
 .nav_div{
@@ -96,6 +101,18 @@ body{
 .table_div{
 	width: 80%;
 }
+.gear_hover:hover{
+	color: #ffffff;
+}
+.top_select_box{
+	height: 50px;
+}
+.dropdown-menu.show {
+	margin-top: 45px;
+}
+.dropdown-item {
+	color: #485967;
+}
 
 /* КНОПКИ */
 .btn_sub_top{
@@ -111,6 +128,16 @@ body{
 .btn_registration_form:hover{
 	background-color: #426786;
 	border-color: #426786;
+}
+.top_select_box_button{
+	color: #e4e8ea;
+	width: 60px;
+}
+.top_select_box_button:hover{
+	color: #ffffff;
+}
+.top_select_box_button:focus{
+	box-shadow: none;
 }
 
 /* ФОРМЫ */
@@ -131,13 +158,11 @@ body{
 }
 
 /* ТАБЛИЦЫ */
-.custom_table{
-	border-collapse: collapse;
-	
-}
+
 
 /* ИНПУТЫ */
 .cost_input{
-	width: 85px;
+	width: 70px;
 	display: inline;
+	height: 24px;
 }
