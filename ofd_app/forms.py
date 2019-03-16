@@ -19,28 +19,17 @@ class ProfileForm(forms.ModelForm):
     parent = forms.ModelChoiceField(label="Менеджер", queryset=User.objects.filter(groups__name__in=['Manager']))
     class Meta:
         model = Profile
-        fields = ('inn', 'org', 'city', 'parent', 'is_legal')
+        fields = ('inn', 'phone_number', 'org', 'city', 'parent', 'is_legal')
     def __init__(self, *args, hideParent, **kwargs):
         super().__init__(*args, **kwargs)
         if hideParent:
             self.fields.pop('parent')
 
 class UserCreationFormCustom(UserCreationForm):
-    city = forms.CharField(label="Город пользователя", max_length=100)
-    inn = forms.CharField(label="ИНН", max_length = 12)
-    phone_number = forms.CharField(label="Номер телефона", max_length = 18)
-    org = forms.CharField(label="Организация", max_length=100)
-    is_legal = forms.BooleanField(label="Юридичиское лицо?")
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username','phone_number', 'inn', 'org', 'city', 'password1', 'password2','is_legal')
+        fields = ('username', 'first_name', 'last_name', 'password1', 'password2')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for fieldname in ['username', 'password1', 'password2']:
             self.fields[fieldname].help_text = None
-    def save(self):
-        user = super().save()
-        views.user_assign_group(user, True)
-        profile = Profile(user=user, city=self.cleaned_data['city'],phone_number=self.cleaned_data['phone_number'], inn=self.cleaned_data['city'], org=self.cleaned_data['org'], is_legal=self.cleaned_data['is_legal'])
-        profile.save()
-        return user, profile

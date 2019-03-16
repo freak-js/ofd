@@ -11,7 +11,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import FilteredRelation, Q, F
-from functools import reduce
+from django.contrib.auth import login
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -65,6 +65,7 @@ def get_basket(request):
                 ##TODO обработать ситуацию, когда продукта нет
                 order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
                 order_product.save()
+            request.session.pop('basket')
 
     else:
         if 'basket' in request.session and len(request.session['basket']) > 0:
@@ -107,12 +108,7 @@ def user(request, **kwargs):
                 profile_form = ProfileForm(request.POST, hideParent=hideParent, instance = user.profile)
             except User.profile.RelatedObjectDoesNotExist:
                 profile_form = ProfileForm(request.POST, hideParent=hideParent)
-            if user_form.is_valid() and profile_form.is_valid():
-                user = user_form.save()
-                user_assign_group(user, request.user)
-                profile = profile_form.save(commit = False)
-                profile.user = user
-                profile.save()
+            user_save(user_form, profile_form, request.user)
         else:
             user_form = UserForm(instance = user)
             try:
@@ -122,19 +118,13 @@ def user(request, **kwargs):
     elif request.method == 'POST':
         if not request.user.has_perm('auth.change_user'):
             return redirect('products')
-        user_form = UserForm(request.POST)
+        user_form = UserCreationFormCustom(request.POST)
         profile_form = ProfileForm(request.POST, hideParent=hideParent)
-        ##TODO: implement via @receiver
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user_assign_group(user, request.user)
-            profile = profile_form.save(commit = False)
-            profile.user = user
-            profile.save()
+        user_save(user_form, profile_form, request.user, True if request.user.groups.filter(name='Manager').exists else False)
     else:
         if not request.user.has_perm('auth.view_user'):
             return redirect('products')
-        user_form = UserForm()
+        user_form = UserCreationFormCustom()
         profile_form = ProfileForm(hideParent=hideParent)
     return render(request, 'ofd_app/user.html', {'user_form': user_form, 'profile_form': profile_form})
 
@@ -177,15 +167,23 @@ def user_delete(request):
             pass
     return redirect('users')
 
+@login_required(login_url='/login/')
+def orders(request):
+    orders = Order.objects().all().filter(user=request.user)
+    return render(request, 'ofd_app/orders.html', {'orders': orders})
+
 def user_reg(request):
     if request.method == 'POST':
         reg_form = UserCreationFormCustom(request.POST)
-        if reg_form.is_valid():
-            reg_form.save()
+        profile_form = ProfileForm(request.POST, hideParent=True)
+        user, profile = user_save(reg_form, profile_form)
+        if user is not None and profile is not None:
+            login(request, user)
             return redirect('products')
     else:
         reg_form = UserCreationFormCustom()
-    return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})
+        profile_form = ProfileForm(hideParent=True)
+    return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form, 'profile_form': profile_form})
 
 def save_product_user_rel(costs, profile, user_mod_id):
     products = Product.objects.all()
@@ -208,9 +206,27 @@ def get_products(profile):
     return products
 
 def user_assign_group(user, parent):
-    if user.groups.all().count() == 0:
-        if user.groups.filter(name='Manager').exists:
+    name = None
+    ##registration
+    if parent is None:
+        name = 'Manager'
+    elif user.groups.all().count() == 0:
+        if parent.groups.filter(name='Manager').exists:
             name = 'User'
         else:
             name = 'Manager'
+    if name is not None:
         group = Group.objects.get(name=name).user_set.add(user)
+
+def user_save(user_form, profile_form, request_user=None, assign_parent=None):
+    user = None
+    profile = None
+    if user_form.is_valid() and profile_form.is_valid():
+        user = user_form.save()
+        user_assign_group(user, request_user)
+        profile = profile_form.save(commit = False)
+        profile.user = user
+        if assign_parent:
+            profile.parent = request_user
+        profile.save()
+    return user, profile

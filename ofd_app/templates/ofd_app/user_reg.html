@@ -18,7 +18,8 @@
                 <h4>Регистрация</h4>
                 {% csrf_token %}
                 {{ reg_form|crispy }}
-                <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Зарегестрироваться</button>
+                {{ profile_form|crispy }}
+                <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Зарегистрироваться</button>
             </form>
         </div>
     </div>
