@@ -15,10 +15,8 @@
         {% include "ofd_app/menu.html" %}
         <form action="/user/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">
             {% csrf_token %}
-            <a href="/user/" class="btn btn-info btn_sub_top" role="button">Добавить</a>
-            <button type="submit" id="" name="" class="btn btn-info btn_sub_top">Удалить</button>
         </form>
-        <table class="table">
+        <table class="table table-striped table-sm">
             <thead>
                 <tr>
                     <th scope="col"></th>

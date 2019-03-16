@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	{% load static %}
+	{% load crispy_forms_tags %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Информация о заказе</title>
+</head>
+<body class="text-center">
+    <div class="container-fluid p-0">
+	{% include "ofd_app/menu.html" %}
+		<table class="table table-striped table-sm">
+			<thead>
+				<tr>
+					<th scope="col">Наименование продукта</th>
+					<th scope="col">Стоимость</th>
+					<th scope="col">Количество</th>
+					<th scope="col">Сумма</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for product in products %}
+				<tr>
+					<td>{{ product.name }}</td>
+					<td>{{ product.cost }}</td>
+					<td>{{ product.quantity }}</td>
+					<td>{{ product.sum }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<h4>Итог: {{total}}</h4>
+    </div>
+</body>
+</html>
