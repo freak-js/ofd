@@ -2,73 +2,19 @@ body{
 	background-color: #e4e8ea;
 	color: #485967;
 }
-
-/* Глобальное меню сверху */
-.nav_div{
-	display: flex;
-	width: 100%;
-	background-color: #485967;
-	margin-bottom: 10px;
+/* ПЕРЕНАЗНАЧЕНИЕ DJANGO CSS */
+.form-group{
+	margin-bottom: 0 !important;
 }
-.top_menu_link_div{
-	flex: none;
-	width: 120px;
-	height: 50px;
+.col-form-label{
+	padding-bottom: 0 !important;
+	padding-top: 2px !important;
 }
-.top_menu_width_div{
-	width: 100%;
+.form-check {
+    margin-top: 5px !important;
 }
-.nav_link {
-	display: block;
-	margin-top: 12px;
-	color: #e4e8ea;
-}
-.nav_link:hover{
-	text-decoration: none;
-	color: #ffffff;
-}
-.fontawesome_link_basket{
-	display: block;
-    margin-top: 12px;
-    margin-left: 95px;
-    color: #e4e8ea;
-    width: 25px;
-}
-.fontawesome_link_basket:hover{
-	color: #ffffff;
-}
-
-/* Кнопки "Добавить", "Удалить" */
-.btn_sub_top{
-	width: 100px;
-	margin-bottom: 10px;
-}
-
-/* Экран авторизации */
-.registration_form{
-	width: 300px;
-	margin-top: 10%;
-}
-.btn_registration_form{
-	width: 300px;
-	background-color: #485967;
-	border-color: #485967;
-	margin-top: 10px;
-}
-.btn_registration_form:hover{
-	background-color: #426786;
-	border-color: #426786;
-}
-.registration_div_link{
-	margin-top: 10px;
-}
-
-.registration_link {
-	color: #485967;
-}
-.registration_link:hover{
-	text-decoration: none;
-	color: #426786;
+.form-text{
+	display: none !important;
 }
 .alert {
     padding: 0;
@@ -80,35 +26,40 @@ body{
 	padding: 0;
 }
 
-/* Экран регистрации */
-.form-group{
-	margin-bottom: 0 !important;
+/* ССЫЛКИ */
+.nav_link {
+	display: block;
+	margin-top: 12px;
+	color: #e4e8ea;
 }
-.col-form-label{
-	padding-bottom: 0 !important;
-	padding-top: 2px !important;
+.nav_link:hover{
+	text-decoration: none;
+	color: #ffffff;
 }
-.form-check {
-    margin-top: 5px !important;
+.registration_link {
+	color: #485967;
 }
-.registration_form_start{
-	width: 300px;
-	margin-top: 2%;
-}
-
-/* Краточка добавления продукта */
-.registration_form_mt_menu{
-	width: 300px;
-	margin-top: 5%;
+.registration_link:hover{
+	text-decoration: none;
+	color: #426786;
 }
 
-/* Оформление таблиц */
-.table_div{
-	width: 80%;
+/* FONTAWESOME */
+.fontawesome_link_basket{
+	display: block;
+    margin-top: 12px;
+    color: #e4e8ea;
+    margin-right: 10px;
+    width: 25px;
 }
-.custom_table{
-	border-collapse: collapse;
-	
+.fontawesome_link_basket:hover{
+	color: #ffffff;
+}
+.fontawesome_add_basket{
+	color: #ff7541;
+    position: relative;
+    bottom: 18px;
+    left: 7px;
 }
 .fontawesome_link{
 	color: #485967;
@@ -117,13 +68,76 @@ body{
 	color: #426786;
 }
 
-/* Инпуты ввода цены */
+/* БЛОКИ-ХРАНИТЕЛИ */
+.nav_div{
+	display: flex;
+	width: 100%;
+	background-color: #485967;
+	margin-bottom: 10px;
+	box-shadow: 0 6px 10px rgba(0,0,0,0.25);
+}
+.top_menu_link_div{
+	flex: none;
+	height: 50px;
+	margin-left: 10px;
+}
+.top_menu_link_div_exit{
+	flex: none;
+	height: 50px;
+	margin-left: 10px;
+	margin-right: 20px;
+}
+.top_menu_width_div{
+	width: 100%;
+}
+.registration_div_link{
+	margin-top: 10px;
+}
+.table_div{
+	width: 80%;
+}
+
+/* КНОПКИ */
+.btn_sub_top{
+	width: 100px;
+	margin-bottom: 10px;
+}
+.btn_registration_form{
+	width: 300px;
+	background-color: #485967;
+	border-color: #485967;
+	margin-top: 10px;
+}
+.btn_registration_form:hover{
+	background-color: #426786;
+	border-color: #426786;
+}
+
+/* ФОРМЫ */
+.registration_form{
+	width: 300px;
+	margin-top: 10%;
+}
+.registration_form_start{
+	width: 300px;
+	margin-top: 2%;
+}
+.registration_form_mt_menu{
+	width: 300px;
+	margin-top: 5%;
+}
+.registration_form_in{
+	width: 300px;
+}
+
+/* ТАБЛИЦЫ */
+.custom_table{
+	border-collapse: collapse;
+	
+}
+
+/* ИНПУТЫ */
 .cost_input{
 	width: 85px;
 	display: inline;
-}
-
-/* Доб/Ред польз. после авториз. */
-.registration_form_in{
-	width: 300px;
 }
