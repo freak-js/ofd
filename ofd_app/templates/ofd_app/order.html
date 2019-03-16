@@ -23,12 +23,12 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for product in products %}
+				{% for product in order %}
 				<tr>
-					<td>{{ product.name }}</td>
+					<td>{{ product.product_name }}</td>
 					<td>{{ product.cost }}</td>
-					<td>{{ product.quantity }}</td>
-					<td>{{ product.sum }}</td>
+					<td>{{ product.amount }}</td>
+					<td>{{ product.full_cost }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>

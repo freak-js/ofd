@@ -50,7 +50,7 @@ def products(request):
             if quantity > 0:
                 request.session['basket'].append({'id': product.get('product_id'), 'name': product.get('product_name'), 'cost': product.get('product_cost'), 'quantity': quantity})
         return redirect('basket')
-    return render(request, 'ofd_app/index_top.html', {'products': products})
+    return render(request, 'ofd_app/index_top.html', {'products': products, 'can_delete': request.user.has_perm('ofd_app.delete_product')})
 
 @login_required(login_url='/login/')
 def get_basket(request):
@@ -151,7 +151,7 @@ def users(request):
         users = User.objects.all().filter(is_active = True).filter(profile__parent=request.user)
     else:
         users = User.objects.all().filter(is_active = True)
-    return render(request, 'ofd_app/users.html', {'users': users})
+    return render(request, 'ofd_app/users.html', {'users': users, 'can_delete': request.user.has_perm('auth.delete_user')})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -180,6 +180,21 @@ def orders(request):
         cnt += 1
         order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
+
+@login_required(login_url='/login/')
+def order(request, **kwargs):
+    if 'id' in kwargs:
+        order = get_object_or_404(Order, id=kwargs['id'])
+        if order.user.id != request.user.id:
+            return redirect('products')
+        rels = OrderProduct.objects.all().filter(order=order)
+        order_data = []
+        total = 0
+        for rel in rels:
+            total += rel.amount * rel.cost
+            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
+        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
+
 
 def user_reg(request):
     if request.method == 'POST':
