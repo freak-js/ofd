@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="ru">
 <head>
+	{% load static %}
+	{% load crispy_forms_tags %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
@@ -12,7 +13,6 @@
 <body class="text-center">
     <div class="container-fluid p-0">
         {% include "ofd_app/menu.html" %}
-        {% load crispy_forms_tags %}
         <div class="table_div">
 	        <table class="table custom_table">
 	            <thead>
@@ -34,7 +34,7 @@
 	                {% endfor %}
 	            </tbody>
             </table>
-            <h3>Итог: {{total}}</h3>
+            <h4>Итог: {{total}}</h4>
 		</div>
 		<form action="/basket/" method="POST" id="basket_form">{% csrf_token %}
 			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">Оформить</button>

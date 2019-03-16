@@ -1,10 +1,13 @@
 <!-- Навигационная панель сверху страницы -->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <div class="nav_div">
-	<div class="top_menu_link_div">
+    <div class="top_menu_link_div">
+        <img src="/static/logo.png" alt="Логотип mir-ofd.ru">
+    </div>
+    <div class="top_menu_link_div">
     	<a href="/products/" class="nav_link">Продукция</a>
     </div>
-	{% if perms.auth.view_user %}
+    {% if perms.auth.view_user %}
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link">Пользователи</a>
     </div>
@@ -19,9 +22,10 @@
     <div class="top_menu_width_div"></div>
 
     <div class="top_menu_link_div">
-            <a href="/basket" class="fontawesome_link_basket"><i class="fa fa-shopping-cart"></i></i></a>
+            <a href="/basket" class="fontawesome_link_basket"><i class="fa fa-shopping-cart"></i></a>
+            <i class="fa fa-plus-circle fontawesome_add_basket"></i>
     </div>
-    <div class="top_menu_link_div">
+    <div class="top_menu_link_div_exit">
     	<a href="/logout" class="nav_link">Выход</a>
     </div>
 </div>

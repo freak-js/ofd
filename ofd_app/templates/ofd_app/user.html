@@ -1,9 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="ru">
 <head>
+	{% load static %}
+	{% load crispy_forms_tags %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
@@ -11,12 +12,12 @@
 </head>
 <body class="text-center">
     <div class="container-fluid p-0">
-        {% load crispy_forms_tags %}
 		{% include "ofd_app/menu.html" %}
 		<div class="d-flex justify-content-center">
-			<form class="form-signin" id="input_form" method="post" action="">{% csrf_token %}
+			<form class="form-signin" id="input_form" method="post" action="">
+				{% csrf_token %}
 				<div class="registration_form_in">
-					<h1 class="h3 font-weight-normal">Карточка пользователя</h1>
+					<h4>Карточка пользователя</h4>
 					{% csrf_token %}
 					{{ user_form|crispy }}
 					{{ profile_form|crispy }}
