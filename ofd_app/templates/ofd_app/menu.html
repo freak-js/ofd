@@ -10,10 +10,18 @@
     <div class="top_menu_link_div">
     	<a href="/products/" class="nav_link">Продукция</a>
     </div>
+    {% if perms.ofd_app.change_product %}
     {% if perms.auth.view_user %}
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link">Пользователи</a>
     </div>
+    {% endif %}
+    {% else %}
+    {% if perms.auth.view_user %}
+    <div class="top_menu_link_div">
+    	<a href="/users/" class="nav_link">Сотрудники</a>
+    </div>
+    {% endif %}
     {% endif %}
     <div class="top_menu_link_div">
     	<a href="/user/{{request.user.id}}" class="nav_link">Моя карточка</a>
@@ -35,8 +43,12 @@
             <i class="fa fa-cog fontawesome_gear"></i>
         </button>
         <div class="dropdown-menu">
+          {% if perms.ofd_app.change_product %}
+          <a class="dropdown-item" href="/user/">Добавить менеджера</a>
+          {% else %}
           {% if perms.auth.view_user %}
           <a class="dropdown-item" href="/user/">Добавить работника</a>
+          {% endif %}
           {% endif %}
           {% if perms.ofd_app.change_product %}
           <a class="dropdown-item" href="/product/">Добавить продукт</a>
