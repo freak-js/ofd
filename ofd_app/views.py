@@ -230,11 +230,11 @@ def get_products(profile):
 def user_assign_group(user, group_name):
     group = Group.objects.get(name=group_name).user_set.add(user)
 
-def user_resolve_group(user, creator):
+def user_resolve_group(user, request_user):
     group_name = 'Manager'
-    if creator is not None and creator.groups.filter(name='Manager').exists:
+    if request_user is not None and request_user.groups.filter(name='Manager').exists():
         group_name = 'User'
-    elif creator is not None and creator.user.is_superuser:
+    elif request_user is not None and request_user.user.is_superuser:
         group_name = 'Admin'
     user_assign_group(user, group_name)
 
@@ -244,11 +244,11 @@ def user_save(user_form, profile_form, request_user=None):
     if user_form.is_valid() and profile_form.is_valid():
         user = user_form.save()
         ##Resolve group
-        if user.groups.all().count() == 0:
+        if user.groups.all().count() == 0 and not user.is_superuser:
             user_resolve_group(user, request_user)
         profile = profile_form.save(commit = False)
         profile.user = user
-        if profile.parent is None and request_user is not None and request_user.groups.filter(name='Manager').exists:
+        if profile.parent is None and request_user is not None and request_user.groups.filter(name='Manager').exists():
             profile.parent = request_user
         profile.save()
     return user, profile
