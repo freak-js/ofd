@@ -5,7 +5,9 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <div class="nav_div">
     <div class="top_menu_link_div">
+      <a href="/products/">  
         <img src="/static/logo.png" alt="Логотип mir-ofd.ru">
+      </a>
     </div>
     <div class="top_menu_link_div">
     	<a href="/products/" class="nav_link">Продукция</a>
@@ -47,7 +49,7 @@
           <a class="dropdown-item" href="/user/">Добавить менеджера</a>
           {% else %}
           {% if perms.auth.view_user %}
-          <a class="dropdown-item" href="/user/">Добавить работника</a>
+          <a class="dropdown-item" href="/user/">Добавить сотрудника</a>
           {% endif %}
           {% endif %}
           {% if perms.ofd_app.change_product %}
@@ -55,6 +57,8 @@
           {% endif %}
           {% if can_delete %}
           <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
+          {% else %}
+          <button type="submit" class="btn dropdown-item disabled" form="top_form">Удалить отмеченное</button>
           {% endif %}
           <a class="dropdown-item" href="#">Сменить пароль</a>
         </div>
