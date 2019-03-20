@@ -38,9 +38,7 @@
                         <a href="/user/{{user.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a></td>
                     <td>
                         {% if perms.ofd_app.change_product %}
-                        {% if user.profile %}
                         <a href="/user_product/{{user.id}}" class="fontawesome_link"><i class="fas fa-hand-holding-usd"></i></a>
-                        {% endif %}
                         {% endif %}
                     </td>
                     <td>{{ user.username }}</td>
