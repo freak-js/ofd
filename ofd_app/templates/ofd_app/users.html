@@ -11,8 +11,8 @@
     <title>Пользователи</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid p-0">
-        {% include "ofd_app/menu.html" %}
+    {% include "ofd_app/menu.html" %}
+    <div class="container">
         <form action="/user/delete" method="POST" name="" id="top_form" class="col-md-4 offset-md-4">
             {% csrf_token %}
         </form>

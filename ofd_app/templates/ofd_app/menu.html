@@ -55,10 +55,12 @@
           {% if perms.ofd_app.change_product %}
           <a class="dropdown-item" href="/product/">Добавить продукт</a>
           {% endif %}
+          {% if perms.auth.view_user %}
           {% if can_delete %}
           <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
           {% else %}
           <button type="submit" class="btn dropdown-item disabled" form="top_form">Удалить отмеченное</button>
+          {% endif %}
           {% endif %}
           <a class="dropdown-item" href="#">Сменить пароль</a>
         </div>
