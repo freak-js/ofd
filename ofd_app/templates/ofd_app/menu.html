@@ -5,7 +5,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <div class="nav_div">
     <div class="top_menu_link_div">
-      <a href="/products/">  
+      <a href="/products/">
         <img src="/static/logo.png" alt="Логотип mir-ofd.ru">
       </a>
     </div>
@@ -13,13 +13,13 @@
     	<a href="/products/" class="nav_link">Продукция</a>
     </div>
     {% if perms.ofd_app.change_product %}
-    {% if perms.auth.view_user %}
+    {% if perms.ofd_app.view_user %}
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link">Пользователи</a>
     </div>
     {% endif %}
     {% else %}
-    {% if perms.auth.view_user %}
+    {% if perms.ofd_app.view_user %}
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link">Сотрудники</a>
     </div>
@@ -48,7 +48,7 @@
           {% if perms.ofd_app.change_product %}
           <a class="dropdown-item" href="/user/">Добавить менеджера</a>
           {% else %}
-          {% if perms.auth.view_user %}
+          {% if perms.ofd_app.view_user %}
           <a class="dropdown-item" href="/user/">Добавить сотрудника</a>
           {% endif %}
           {% endif %}

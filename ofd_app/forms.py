@@ -1,7 +1,7 @@
 from django import forms
 from .models import Product
 from .models import User
-from .models import Profile
+#from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
 from ofd_app import views
 
@@ -13,17 +13,17 @@ class ProductForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name')
+        fields = ('username', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city', 'is_legal')
 
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('inn', 'phone_number', 'org', 'city', 'is_legal')
+#class ProfileForm(forms.ModelForm):
+#    class Meta:
+#        model = Profile
+#        fields = ('inn', 'phone_number', 'org', 'city', 'is_legal')
 
 class UserCreationFormCustom(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'password1', 'password2', 'inn', 'phone_number', 'org', 'city', 'is_legal')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for fieldname in ['username', 'password1', 'password2']:

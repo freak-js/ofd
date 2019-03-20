@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'ofd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ofd',
-        'USER': 'ofd',
-        'PASSWORD': 'ofd',
+        'NAME': 'ofd_user',
+        'USER': 'ofd_user',
+        'PASSWORD': 'ofd_user',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -125,3 +125,5 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+AUTH_USER_MODEL = 'ofd_app.User'

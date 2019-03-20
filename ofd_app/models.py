@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 # Create your models here.
 class Product(models.Model):
@@ -12,15 +14,14 @@ class Product(models.Model):
     product_cost = models.IntegerField("Базовая стоимость продукта", )
     product_is_active = models.BooleanField("Продукт активен?", default=True)
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, primary_key = True)
+class User(AbstractUser):
     city = models.CharField("Город пользователя", max_length=100, null=True)
-    inn = models.CharField("ИНН", max_length = 12, unique=True)
+    inn = models.CharField("ИНН", max_length = 12, null=True)
     org = models.CharField("Организация", max_length=100, null=True)
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
-    parent = models.ForeignKey(User, models.SET_NULL, null=True, related_name='children')
+    parent = models.ForeignKey("self", models.SET_NULL, null=True, related_name='children')
     products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
-    phone_number = models.CharField("Номер телефона", max_length = 18, unique=True)
+    phone_number = models.CharField("Номер телефона", max_length = 18)
 
 #@receiver(post_save, sender=User)
 #def create_or_update_user_profile(sender, instance, created, **kwargs):
@@ -30,7 +31,7 @@ class Profile(models.Model):
 
 
 class ProductUserRel(models.Model):
-  user = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="Пользователь")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Пользователь")
   product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Продукт")
   cost = models.IntegerField("Стоимость продукта",)
   moddate = models.DateTimeField("Дата модификации связи", auto_now=True)
@@ -41,7 +42,7 @@ class ProductUserRel(models.Model):
 
 
 class Order(models.Model):
-  user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Номер заказа")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
   products = models.ManyToManyField(Product, through="OrderProduct", verbose_name="Продукты заказанные пользователем")
   adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
 
