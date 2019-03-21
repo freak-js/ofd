@@ -27,7 +27,6 @@
                     <th scope="col">ИНН</th>
                     <th scope="col">Организация</th>
                     <th scope="col">Город</th>
-                    <th scope="col">Юр. лицо?</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -47,7 +46,6 @@
                     <td>{{ user.profile.inn }}</td>
                     <td>{{ user.profile.org }}</td>
                     <td>{{ user.profile.city }}</td>
-                    <td>{{ user.profile.is_legal }}</td>
                     <td>
                         <input type="checkbox" class="form-check-input" name="user_to_delete" value="{{user.id}}" form="top_form">
                     </td>
@@ -56,5 +54,6 @@
             </tbody>
         </table>
     </div>
+    {% include "ofd_app/footer.html" %}
 </body>
 </html>
