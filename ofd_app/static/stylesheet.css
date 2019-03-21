@@ -136,6 +136,9 @@ body{
 .container{
 	flex-grow: 1;
 }
+.none_basket_div{
+	margin-top: 70px;
+}
 
 /* КНОПКИ */
 .btn_sub_top{
