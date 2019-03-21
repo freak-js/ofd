@@ -11,55 +11,53 @@
     <title>Список продуктов</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid p-0">
-      	{% include "ofd_app/menu.html" %}
-        <div class="container-fluid p-0">
+	{% include "ofd_app/menu.html" %}
+    <div class="container">
 			<form action="/products/delete" method="POST" name="" id="top_form">
-				{% csrf_token %}
-            </form>
-        </div>
-		<table class="table table-striped table-sm">
-			<thead>
-				<tr>
-					<th scope="col"></th>
-					<th scope="col">Наименование продукта</th>
-					<th scope="col">Стоимость</th>
-					<th scope="col">Количество</th>
-					<th scope="col"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for product in products %}
-				<tr>
-					<td>
-						{% if perms.ofd_app.change_product %}
-						<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
-						{% endif %}
-					</td>
-					<td>{{ product.product_name }}</td>
-					<td>
-						{% if product.by_user__cost is not None %}
-						{{ product.by_user__cost }}
-						{% else %}
-						{{ product.product_cost }}
-						{% endif %}
-					</td>
-					<td>
-						<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
-					</td>
-					<td>
-						{% if perms.ofd_app.change_product %}
-						<input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
-						{% endif %}
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<form action="/products/" method="POST" id="basket_form">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
-		</form>
+			</form>
+			<table class="table table-striped table-sm">
+				<thead>
+					<tr>
+						<th scope="col"></th>
+						<th scope="col">Наименование продукта</th>
+						<th scope="col">Стоимость</th>
+						<th scope="col">Количество</th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for product in products %}
+					<tr>
+						<td>
+							{% if perms.ofd_app.change_product %}
+							<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
+							{% endif %}
+						</td>
+						<td>{{ product.product_name }}</td>
+						<td>
+							{% if product.by_user__cost is not None %}
+							{{ product.by_user__cost }}
+							{% else %}
+							{{ product.product_cost }}
+							{% endif %}
+						</td>
+						<td>
+							<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
+						</td>
+						<td>
+							{% if perms.ofd_app.change_product %}
+							<input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<form action="/products/" method="POST" id="basket_form">
+				{% csrf_token %}
+				<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
+			</form>
     </div>
 </body>
 </html>

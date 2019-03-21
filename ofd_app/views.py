@@ -58,7 +58,8 @@ def get_basket(request):
     total = 0
     if request.method == 'POST':
         if 'basket' in request.session and len(request.session['basket']) > 0:
-            order = Order(user = request.user)
+            basket_comment = request.POST.get('basket_comment', '').strip()
+            order = Order(user = request.user, comment = basket_comment)
             order.save()
             for item in request.session['basket']:
                 product = Product.objects.get(product_id=item['id'])
@@ -66,7 +67,6 @@ def get_basket(request):
                 order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
                 order_product.save()
             request.session.pop('basket')
-
     else:
         if 'basket' in request.session and len(request.session['basket']) > 0:
             for item in request.session['basket']:

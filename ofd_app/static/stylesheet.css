@@ -1,6 +1,10 @@
+html{
+	height: 100%;
+}
 body{
 	background-color: #e4e8ea;
 	color: #485967;
+	min-width: 100%;
 }
 /* ПЕРЕНАЗНАЧЕНИЕ DJANGO CSS */
 .form-group{
@@ -46,11 +50,12 @@ body{
 
 /* FONTAWESOME */
 .fontawesome_link_basket{
-	display: block;
-    margin-top: 14px;
+    display: block;
+    margin-top: 15px;
     color: #e4e8ea;
-    margin-right: 10px;
+    margin-right: 5px;
     width: 25px;
+    font-size: 16px;
 }
 .fontawesome_link_basket:hover{
 	color: #ffffff;
@@ -59,7 +64,7 @@ body{
 	color: #ff7541;
     position: relative;
     bottom: 18px;
-    left: 7px;
+    left: 10px;
 }
 .fontawesome_link{
 	color: #485967;
@@ -95,9 +100,6 @@ body{
 .top_menu_width_div{
 	width: 100%;
 }
-.registration_div_link{
-	margin-top: 10px;
-}
 .table_div{
 	width: 80%;
 }
@@ -124,6 +126,7 @@ body{
 	background-color: #485967;
 	border-color: #485967;
 	margin-top: 10px;
+	margin-bottom: 5px;
 }
 .btn_registration_form:hover{
 	background-color: #426786;

@@ -11,8 +11,8 @@
     <title>Индивидуальные цены</title>
 </head>
 <body class="text-center">
-    <div class="container-fluid p-0">
-        {% include "ofd_app/menu.html" %}
+	{% include "ofd_app/menu.html" %}
+    <div class="container">
 	    <form class="form-signin" id="input_form" method="post" action="">
 			{% csrf_token %}
   			<table class="table table-striped table-sm">

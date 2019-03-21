@@ -47,6 +47,7 @@ class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
   products = models.ManyToManyField(Product, through="OrderProduct", verbose_name="Продукты заказанные пользователем")
   adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
+  comment = models.TextField("Комментарий к заказу", null=True)
 
 class OrderProduct(models.Model):
   order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name="Отношение к номеру заказа")
