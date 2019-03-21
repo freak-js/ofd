@@ -15,7 +15,7 @@ class Product(models.Model):
     product_is_active = models.BooleanField("Продукт активен?", default=True)
 
 class User(AbstractUser):
-    city = models.CharField("Город пользователя", max_length=100, null=True, blank=True)
+    city = models.CharField("Город проживания", max_length=100, null=True, blank=True)
     inn = models.CharField("ИНН", max_length = 12, null=True, blank=True)
     org = models.CharField("Организация", max_length=100, null=True)
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
