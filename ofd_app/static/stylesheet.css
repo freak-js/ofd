@@ -141,6 +141,13 @@ body{
 	margin-top: 100px;
     color: #aab3ba;
 }
+.global_order_nav_div{
+	background-color: #dee2e6;
+	margin-top: 5px;
+}
+.card_div{
+	width: 100%;
+}
 
 /* КНОПКИ */
 .btn_sub_top{
@@ -168,7 +175,17 @@ body{
 .top_select_box_button:focus{
 	box-shadow: none;
 }
-
+.card_btn{
+    width: 50px;
+    background-color: #dee2e6;
+    color: #485967;
+}
+.card_btn:hover{
+    color: #ffffff;
+}
+.card_btn:focus{
+	box-shadow: none;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;
