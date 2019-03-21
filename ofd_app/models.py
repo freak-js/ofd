@@ -15,20 +15,23 @@ class Product(models.Model):
     product_is_active = models.BooleanField("Продукт активен?", default=True)
 
 class User(AbstractUser):
-    city = models.CharField("Город пользователя", max_length=100, null=True)
-    inn = models.CharField("ИНН", max_length = 12, null=True)
+    city = models.CharField("Город пользователя", max_length=100, null=True, blank=True)
+    inn = models.CharField("ИНН", max_length = 12, null=True, blank=True)
     org = models.CharField("Организация", max_length=100, null=True)
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
     parent = models.ForeignKey("self", models.SET_NULL, null=True, related_name='children')
     products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
     phone_number = models.CharField("Номер телефона", max_length = 18)
 
-#@receiver(post_save, sender=User)
-#def create_or_update_user_profile(sender, instance, created, **kwargs):
-#    if created:
-#        Profile.objects.create(user=instance)
-#    instance.profile.save()
-
+    def is_manager(self, user=None):
+        user = self if user is None else user
+        return user.groups.filter(name='Manager').exists()
+    def is_user(self, user=None):
+        user = self if user is None else user
+        return user.groups.filter(name='User').exists()
+    def is_admin(self, user=None):
+        user = self if user is None else user
+        return user.groups.filter(name='Admin').exists()
 
 class ProductUserRel(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Пользователь")
@@ -39,7 +42,6 @@ class ProductUserRel(models.Model):
   user_mod = models.IntegerField("Пользователь, который последний раз модифицировал запись",)
   class Meta:
     unique_together = ('user', 'product')
-
 
 class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")

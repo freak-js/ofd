@@ -103,10 +103,10 @@ def user(request, **kwargs):
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
         if request.method == 'POST':
-            user_form = UserForm(request.POST, instance = user)
+            user_form = UserForm(request.POST, instance = user, requested_user = request.user)
             user_save(user_form, request.user)
         else:
-            user_form = UserForm(instance = user)
+            user_form = UserForm(instance = user, requested_user = request.user)
     elif request.method == 'POST':
         if not request.user.has_perm('ofd_app.change_user'):
             return redirect('products')
@@ -124,6 +124,8 @@ def user(request, **kwargs):
 def user_product(request, **kwargs):
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
+        if not user.groups.filter(name='Manager').exists():
+            return redirect('users');
         if request.method == 'POST':
             save_product_user_rel(request.POST, user, request.user.id)
         products = get_products(user)
@@ -205,8 +207,12 @@ def save_product_user_rel(costs, user, user_mod_id):
             relation.save()
 
 def get_products(user):
-    if user is not None and user.products.count() > 0:
-        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=user))).filter(Q(by_user__isnull = True) | Q(by_user__user=user)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
+    if user is not None:
+        if user.groups.filter(name='User').exists():
+            filtered_user = user.parent
+        else:
+            filtered_user = user
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
     else:
         products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=user))).filter(Q(by_user__isnull = True)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
     return products
@@ -218,7 +224,7 @@ def user_resolve_group(user, request_user):
     group_name = 'Manager'
     if request_user is not None and request_user.groups.filter(name='Manager').exists():
         group_name = 'User'
-    elif request_user is not None and request_user.user.is_superuser:
+    elif request_user is not None and request_user.is_superuser:
         group_name = 'Admin'
     user_assign_group(user, group_name)
 

@@ -11,14 +11,30 @@ class ProductForm(forms.ModelForm):
         fields = ('product_name', 'product_cost')
 
 class UserForm(forms.ModelForm):
+    email = forms.EmailField(required = True)
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city', 'is_legal')
-
-#class ProfileForm(forms.ModelForm):
-#    class Meta:
-#        model = Profile
-#        fields = ('inn', 'phone_number', 'org', 'city', 'is_legal')
+        fields = ('username', 'first_name', 'last_name', 'email', 'inn', 'phone_number', 'org', 'city', 'is_legal')
+    def __init__(self, *args, **kwargs):
+        self.requested_user = kwargs.pop('requested_user', None)
+        instance = kwargs.get('instance', None)
+        if instance.is_user():
+            kwargs.update(initial={'inn': instance.parent.inn, 'org': instance.parent.org})
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['readonly'] = True
+        if self.requested_user is not None and not self.requested_user.is_superuser:
+            self.fields['inn'].widget.attrs['readonly'] = True
+            self.fields['org'].widget.attrs['readonly'] = True
+    def clean_inn(self):
+        if self.requested_user is not None and not self.requested_user.is_superuser:
+            return self.instance.inn
+        return self.cleaned_data['inn']
+    def clean_org(self):
+        if self.requested_user is not None and not self.requested_user.is_superuser:
+            return self.instance.org
+        return self.cleaned_data['org']
+    def clean_username(self):
+        return self.instance.username
 
 class UserCreationFormCustom(UserCreationForm):
     class Meta(UserCreationForm.Meta):
