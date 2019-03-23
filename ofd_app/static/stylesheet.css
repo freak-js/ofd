@@ -205,6 +205,16 @@ body{
 	background-color: #426786;
 	border-color: #426786;
 }
+.comment_show_button{
+	width: 60px;
+	color: #426786;
+}
+.comment_show_button:hover{
+    color: #ffffff;
+}
+.comment_show_button:focus{
+	box-shadow: none;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;

@@ -27,12 +27,12 @@
                 <span>Итог</span>
             </div>
             <div class="col-sm-2">
-                <span>Коммент</span>
+                <span>Комментарий</span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <span>Чекбокс</span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <span>Кнопка</span>
             </div>
         </div>
@@ -52,15 +52,16 @@
             </div>
             <div class="col-sm-2">
                 {% if order.comment %}
-                <button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}">Отобразить</button>
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i>
+                </i></button>
                 {% else %}
-                Отсутствует
+                <span>Отсутствует</span>
                 {% endif %}
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <input type="checkbox" class="form-check-input" name="order_to_status" value="3" form="top_form">
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <button class="btn card_btn" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-chevron-down"></i></button>
             </div>
             <div class="collapse card_div" id="collapseExample">
@@ -125,6 +126,11 @@
         </table>
         -->
     </div>
+    <form action="/orders/" method="POST" id="status" name="status">
+    {% csrf_token %}
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="a">Подтвердить</button>
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="r">Отклонить</button>
+    </form>
     {% include "ofd_app/footer.html" %}
 </body>
 </html>
