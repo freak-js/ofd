@@ -170,7 +170,7 @@ def orders(request):
         rels = OrderProduct.objects.all().filter(order=order)
         total = sum(i.amount * i.cost for i in rels)
         cnt += 1
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
 @login_required(login_url='/login/')
