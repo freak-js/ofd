@@ -14,6 +14,7 @@
     {% include "ofd_app/menu.html" %}
     <div class="container">
         <form action="/orders/" method="POST" id="status" name="status">
+        {% csrf_token %}
         <div class="row global_order_nav_div">
             <div class="col-sm-1">
                 <span>Заказ №</span>
@@ -63,7 +64,7 @@
                 {% endif %}
             </div>
             <div class="col-sm-1">
-                <input type="checkbox" class="form-check-input" name="order_to_status" value="order_ids{{order.id}}" form="top_form">
+                <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
             </div>
             <div class="col-sm-1">
                 <i class="fa fa-spinner fa-spin" title="Администратор обрабатывает ваш заказ"></i>
@@ -95,7 +96,7 @@
         {% endfor %}
         </form>
     </div>
-    
+
 
         <!--
         <table class="table table-striped table-sm">
@@ -130,10 +131,9 @@
         </table>
         -->
     </div>
-    {% csrf_token %}
     <div>
-        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="a" form="status">Подтвердить</button>
-        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="r" form="status">Отклонить</button>
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" name="status" value="A" form="status">Подтвердить</button>
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" name="status" value="R" form="status">Отклонить</button>
     </div>
     {% include "ofd_app/footer.html" %}
 </body>

@@ -165,7 +165,7 @@ def orders(request):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
         Order.assign_status(ids, status)
-    orders = Order.objects.all().filter(user=request.user)
+    orders = Order.get_orders_by_role(request.user)
     order_data = []
     cnt = 0
     for order in orders:
