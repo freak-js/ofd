@@ -43,11 +43,37 @@ class ProductUserRel(models.Model):
   class Meta:
     unique_together = ('user', 'product')
 
+class OrderStatus(models.Model):
+    code = models.CharField("Код статуса", max_length = 1, primary_key = True)
+    name = models.CharField("Название статуса", max_length = 30)
+    def is_in_progress(self):
+        return self.code == 'I'
+    def is_approved(self):
+        return self.code == 'A'
+    def is_rejected(self):
+        return self.code == 'R'
+
 class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
   products = models.ManyToManyField(Product, through="OrderProduct", verbose_name="Продукты заказанные пользователем")
   adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
   comment = models.TextField("Комментарий к заказу", null=True)
+  status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT, default='I', verbose_name="Статус")
+
+  @staticmethod
+  def assign_status(ids, status):
+      try:
+          new_status = OrderStatus.objects.get(code=status);
+          for id in ids:
+              try:
+                  order = Order.objects.get(id=id)
+                  if order.status.is_in_progress() and not new_status.is_in_progress():
+                      order.status = new_status
+                      order.save()
+              except Order.DoesNotExist:
+                  pass
+      except OrderStatus.DoesNotExist:
+          pass
 
 class OrderProduct(models.Model):
   order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name="Отношение к номеру заказа")

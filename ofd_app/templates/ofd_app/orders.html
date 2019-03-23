@@ -21,6 +21,7 @@
                     <th scope="col">Дата заказа</th>
                     <th scope="col">Количество продуктов</th>
                     <th scope="col">Итог</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,11 @@
                     <td>{{ order.adddate }}</td>
                     <td>{{ order.cnt_products }}</td>
                     <td>{{ order.total }}</td>
+                    <td>
+                        {% if perms.ofd_app.manage_order_status %}
+                        <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}" form="top_form">
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
