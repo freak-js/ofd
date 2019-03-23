@@ -64,7 +64,7 @@
                 {% endif %}
             </div>
             <div class="col-sm-1">
-                <input type="checkbox" class="form-check-input" name="order_to_status" value="order_ids{{order.id}}" form="top_form">
+                <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
             </div>
             <div class="col-sm-1">
                 <i class="fa fa-circle-notch fa-spin" title="Администратор обрабатывает ваш заказ"></i>
@@ -96,7 +96,7 @@
         {% endfor %}
         </form>
     </div>
-    
+
 
         <!--
         <table class="table table-striped table-sm">
@@ -132,8 +132,13 @@
         -->
     </div>
     <div>
+<<<<<<< HEAD
         <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="A" form="status" name="123">Подтвердить</button>
         <button type="submit" class="btn btn-lg btn-primary btn_registration_form" value="R" form="status">Отклонить</button>
+=======
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" name="status" value="A" form="status">Подтвердить</button>
+        <button type="submit" class="btn btn-lg btn-primary btn_registration_form" name="status" value="R" form="status">Отклонить</button>
+>>>>>>> 4293fe27e89a6733241a5917feef17db80831b8a
     </div>
     {% include "ofd_app/footer.html" %}
 </body>
