@@ -38,6 +38,7 @@
 		<form action="/basket/" method="POST" id="basket_form">{% csrf_token %}
 				<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="3" form="basket_form" name="basket_comment"></textarea>
 			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">Оформить</button>
+			<button type="submit" class="btn btn-lg btn-primary btn_clear_basket" name="clear_basket" value="clear_basket">Очистить</button>
 		</form>
 		{% else %}
 		<div class="none_basket_div">
