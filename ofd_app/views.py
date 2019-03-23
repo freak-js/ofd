@@ -57,7 +57,8 @@ def get_basket(request):
     products = []
     total = 0
     if request.method == 'POST':
-        if 'basket' in request.session and len(request.session['basket']) > 0:
+        action = request.POST.get('p_act', '')
+        if action == 'create' and 'basket' in request.session and len(request.session['basket']) > 0:
             basket_comment = request.POST.get('basket_comment', '').strip()
             order = Order(user = request.user, comment = basket_comment)
             order.save()
@@ -66,6 +67,8 @@ def get_basket(request):
                 ##TODO обработать ситуацию, когда продукта нет
                 order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
                 order_product.save()
+            request.session.pop('basket')
+        elif action == 'clear':
             request.session.pop('basket')
     else:
         if 'basket' in request.session and len(request.session['basket']) > 0:
@@ -157,7 +160,6 @@ def user_delete(request):
     return redirect('users')
 
 @login_required(login_url='/login/')
-@csrf_exempt
 def orders(request):
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
@@ -170,22 +172,25 @@ def orders(request):
         rels = OrderProduct.objects.all().filter(order=order)
         total = sum(i.amount * i.cost for i in rels)
         cnt += 1
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment})
+        products = []
+        for rel in rels:
+            products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
-@login_required(login_url='/login/')
-def order(request, **kwargs):
-    if 'id' in kwargs:
-        order = get_object_or_404(Order, id=kwargs['id'])
-        if order.user.id != request.user.id:
-            return redirect('products')
-        rels = OrderProduct.objects.all().filter(order=order)
-        order_data = []
-        total = 0
-        for rel in rels:
-            total += rel.amount * rel.cost
-            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
+#@login_required(login_url='/login/')
+#def order(request, **kwargs):
+#    if 'id' in kwargs:
+#        order = get_object_or_404(Order, id=kwargs['id'])
+#        if order.user.id != request.user.id:
+#            return redirect('products')
+#        rels = OrderProduct.objects.all().filter(order=order)
+#        order_data = []
+#        total = 0
+#        for rel in rels:
+#            total += rel.amount * rel.cost
+#            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
+#        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
 
 def user_reg(request):
     if request.method == 'POST':
