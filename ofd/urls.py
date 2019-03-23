@@ -35,5 +35,5 @@ urlpatterns = [
     path('reg/', views.user_reg, name='user_reg'),
     path('basket/', views.get_basket, name='basket'),
     path('orders/', views.orders, name='orders'),
-    path('order/<int:id>/', views.order, name='order'),
+    #path('order/<int:id>/', views.order, name='order'),
 ]

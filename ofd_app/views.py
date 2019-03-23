@@ -157,7 +157,6 @@ def user_delete(request):
     return redirect('users')
 
 @login_required(login_url='/login/')
-@csrf_exempt
 def orders(request):
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
@@ -170,22 +169,25 @@ def orders(request):
         rels = OrderProduct.objects.all().filter(order=order)
         total = sum(i.amount * i.cost for i in rels)
         cnt += 1
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment})
+        products = []
+        for rel in rels:
+            products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
-@login_required(login_url='/login/')
-def order(request, **kwargs):
-    if 'id' in kwargs:
-        order = get_object_or_404(Order, id=kwargs['id'])
-        if order.user.id != request.user.id:
-            return redirect('products')
-        rels = OrderProduct.objects.all().filter(order=order)
-        order_data = []
-        total = 0
-        for rel in rels:
-            total += rel.amount * rel.cost
-            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
+#@login_required(login_url='/login/')
+#def order(request, **kwargs):
+#    if 'id' in kwargs:
+#        order = get_object_or_404(Order, id=kwargs['id'])
+#        if order.user.id != request.user.id:
+#            return redirect('products')
+#        rels = OrderProduct.objects.all().filter(order=order)
+#        order_data = []
+#        total = 0
+#        for rel in rels:
+#            total += rel.amount * rel.cost
+#            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
+#        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
 
 def user_reg(request):
     if request.method == 'POST':
