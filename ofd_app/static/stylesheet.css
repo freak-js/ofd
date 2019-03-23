@@ -152,7 +152,33 @@ body{
 }
 .card-body{
 	padding: 0;
-	border-radius: 10px;
+    border-radius: 10px;
+    background-color: #dee2e6;
+    border-color: #dee2e6;
+}
+.container_min_width{
+	min-width: 930px !important;
+}
+.row_collapse_top{
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #f5f5f5;
+    margin-bottom: 2px;
+    border-radius: 10px 10px 0 0;
+    font-weight: 900;
+}
+.row_collapse{
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #f5f5f5;
+    margin-bottom: 2px;
+}
+.row_collapse_bottom{
+	height: 21px;
+	margin-left: 0;
+    margin-right: 0;
+    background-color: #f5f5f5;
+    border-radius: 0 0 10px 10px;
 }
 
 /* КНОПКИ */
@@ -234,6 +260,10 @@ body{
 
 /* ТАБЛИЦЫ */
 
+/* ШРИФТЫ */
+.font_900{
+	font-weight: 900;
+}
 
 /* ИНПУТЫ */
 .cost_input{
@@ -251,4 +281,22 @@ body{
 .form-control{
 	border-radius: 10px;
 	height: 35px;
+}
+/* TOOLTIP JAVA SCRIPT */
+.bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
+    border-left-color: #485967; /* цвет стрелочки (по умолчанию #000) */
+}
+.bs-tooltip-top .arrow::before, .bs-tooltip-auto[x-placement^="top"] .arrow::before {
+    border-top-color: #485967; /* цвет стрелочки (по умолчанию #000)*/
+}
+.bs-tooltip-right .arrow::before, .bs-tooltip-auto[x-placement^="right"] .arrow::before {
+    border-right-color: #485967; /* цвет стрелочки (по умолчанию #000)*/
+}
+.bs-tooltip-bottom .arrow::before, .bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
+    border-bottom-color: #485967; /* цвет стрелочки (по умолчанию #000) */
+}
+.tooltip-inner {
+    color: #fff; /* цвет шрифта */
+    background-color: #485967; /* цвет фона (по умолчанию #000) */
+    border-radius: 0.25rem; /* радиус скругдения углов */
 }
