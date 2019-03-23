@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import QueryDict
 from ofd_app.forms import ProductForm, UserForm, UserCreationFormCustom
-from ofd_app.models import User, Product, ProductUserRel, Order, OrderProduct
+from ofd_app.models import User, Product, ProductUserRel, Order, OrderProduct, OrderStatus
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, permission_required
 from django import forms
@@ -157,7 +157,12 @@ def user_delete(request):
     return redirect('users')
 
 @login_required(login_url='/login/')
+@csrf_exempt
 def orders(request):
+    if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
+        ids = request.POST.getlist('order_ids')
+        status = request.POST.get('status', '').strip()
+        Order.assign_status(ids, status)
     orders = Order.objects.all().filter(user=request.user)
     order_data = []
     cnt = 0
@@ -165,7 +170,7 @@ def orders(request):
         rels = OrderProduct.objects.all().filter(order=order)
         total = sum(i.amount * i.cost for i in rels)
         cnt += 1
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
 @login_required(login_url='/login/')
