@@ -17,7 +17,7 @@
 			<form class="form-signin" id="input_form" method="post" action="">
 				{% csrf_token %}
 				<div class="registration_form_in">
-					<h4>Карточка пользователя</h4>
+					<h5>Карточка пользователя</h5>
 					{% csrf_token %}
 					{{ user_form|crispy }}
 					{{ profile_form|crispy }}

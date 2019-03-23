@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
-    <title>Пользователи</title>
+    <title>Сотрудники</title>
 </head>
 <body class="text-center">
     {% include "ofd_app/menu.html" %}
@@ -27,7 +27,6 @@
                     <th scope="col">ИНН</th>
                     <th scope="col">Организация</th>
                     <th scope="col">Город</th>
-                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -43,9 +42,9 @@
                     <td>{{ user.username }}</td>
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>
-                    <td>{{ user.profile.inn }}</td>
-                    <td>{{ user.profile.org }}</td>
-                    <td>{{ user.profile.city }}</td>
+                    <td>{{ user.inn }}</td>
+                    <td>{{ user.org }}</td>
+                    <td>{{ user.city }}</td>
                     <td>
                         <input type="checkbox" class="form-check-input" name="user_to_delete" value="{{user.id}}" form="top_form">
                     </td>

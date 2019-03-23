@@ -7,6 +7,7 @@ body{
 	background-color: #e4e8ea;
 	color: #485967;
 	min-height: 100%;
+	font-size: 14px;
 }
 /* ПЕРЕНАЗНАЧЕНИЕ DJANGO CSS */
 .form-group{
@@ -35,7 +36,7 @@ body{
 /* ССЫЛКИ */
 .nav_link {
 	display: block;
-	margin-top: 12px;
+	margin-top: 14px;
 	color: #e4e8ea;
 }
 .nav_link:hover{
@@ -73,8 +74,8 @@ body{
 .fontawesome_add_basket{
 	color: #ff7541;
     position: relative;
-    bottom: 18px;
-    left: 10px;
+    bottom: 17px;
+    left: 9px;
 }
 .fontawesome_link{
 	color: #485967;
@@ -129,6 +130,7 @@ body{
 	height: 45px;
 	background-color: #dee2e6;
 	flex-grow: 0;	
+	margin-top: 10px;
 }
 .footer_span{
 	font-size: 11px;
@@ -137,20 +139,30 @@ body{
 	flex-grow: 1;
 }
 .none_basket_div{
-	margin-top: 70px;
+	margin-top: 100px;
+    color: #aab3ba;
+}
+.global_order_nav_div{
+	background-color: #dee2e6;
+	margin-top: 5px;
+	border-radius: 10px;
+}
+.card_div{
+	width: 100%;
+}
+.card-body{
+	padding: 0;
+	border-radius: 10px;
 }
 
 /* КНОПКИ */
-.btn_sub_top{
-	width: 100px;
-	margin-bottom: 10px;
-}
 .btn_registration_form{
 	width: 300px;
 	background-color: #485967;
 	border-color: #485967;
 	margin-top: 10px;
 	margin-bottom: 5px;
+	border-radius: 20px;
 }
 .btn_registration_form:hover{
 	background-color: #426786;
@@ -166,7 +178,17 @@ body{
 .top_select_box_button:focus{
 	box-shadow: none;
 }
-
+.card_btn{
+    width: 50px;
+    background-color: #dee2e6;
+    color: #485967;
+}
+.card_btn:hover{
+    color: #ffffff;
+}
+.card_btn:focus{
+	box-shadow: none;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;
@@ -189,13 +211,18 @@ body{
 
 /* ИНПУТЫ */
 .cost_input{
-	width: 70px;
-	display: inline;
-	height: 24px;
+	width: 70px !important;
+	display: inline !important;
+	height: 24px !important;
+	font-size: 13px !important;
 }
 .comment_input{
 	width: 340px;
     margin-left: auto;
     margin-right: auto;
 	font-size: 14px;
+}
+.form-control{
+	border-radius: 10px;
+	height: 35px;
 }

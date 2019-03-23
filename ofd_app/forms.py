@@ -14,7 +14,7 @@ class UserForm(forms.ModelForm):
     email = forms.EmailField(required = True)
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'inn', 'phone_number', 'org', 'city', 'is_legal')
+        fields = ('username', 'email', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
         instance = kwargs.get('instance', None)
@@ -39,7 +39,7 @@ class UserForm(forms.ModelForm):
 class UserCreationFormCustom(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password1', 'password2', 'inn', 'phone_number', 'org', 'city', 'is_legal')
+        fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for fieldname in ['username', 'password1', 'password2']:
