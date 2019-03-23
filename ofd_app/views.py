@@ -156,10 +156,9 @@ def user_delete(request):
             pass
     return redirect('users')
 
-#@login_required(login_url='/login/')
+@login_required(login_url='/login/')
 @csrf_exempt
 def orders(request):
-    request.user = User.objects.get(first_name='adm1')
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
