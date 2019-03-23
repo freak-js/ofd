@@ -57,7 +57,8 @@ def get_basket(request):
     products = []
     total = 0
     if request.method == 'POST':
-        if 'basket' in request.session and len(request.session['basket']) > 0:
+        action = request.POST.get('p_act', '')
+        if action == 'create' and 'basket' in request.session and len(request.session['basket']) > 0:
             basket_comment = request.POST.get('basket_comment', '').strip()
             order = Order(user = request.user, comment = basket_comment)
             order.save()
@@ -66,6 +67,8 @@ def get_basket(request):
                 ##TODO обработать ситуацию, когда продукта нет
                 order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
                 order_product.save()
+            request.session.pop('basket')
+        elif action == 'clear':
             request.session.pop('basket')
     else:
         if 'basket' in request.session and len(request.session['basket']) > 0:
@@ -172,7 +175,7 @@ def orders(request):
         products = []
         for rel in rels:
             products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
     return render(request, 'ofd_app/orders.html', {'orders': order_data})
 
 #@login_required(login_url='/login/')
