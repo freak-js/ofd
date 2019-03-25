@@ -12,10 +12,10 @@
 </head>
 <body class="text-center">
     {% include "ofd_app/menu.html" %}
-    <div class="container">
+    <div class="container container_min_width">
         <form action="/orders/" method="POST" id="status" name="status">
         {% csrf_token %}
-        <div class="row global_order_nav_div">
+        <div class="row global_order_nav_div font_900">
             <div class="col-sm-1">
                 <span>Заказ №</span>
             </div>
@@ -60,29 +60,43 @@
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i>
                 </i></button>
                 {% else %}
-                <span>Отсутствует</span>
+                <span>Нет</span>
                 {% endif %}
             </div>
             <div class="col-sm-1">
                 <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
             </div>
             <div class="col-sm-1">
-                <i class="fa fa-spinner fa-spin" title="Администратор обрабатывает ваш заказ"></i>
+                <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
             </div>
             <div class="col-sm-1">
                 <button class="btn card_btn" type="button" data-toggle="collapse" data-target="#collapseExample{{order.id}}" aria-expanded="false" aria-controls="collapseExample{{order.id}}"><i class="fa fa-chevron-down"></i></button>
             </div>
             <div class="collapse card_div" id="collapseExample{{order.id}}">
                 <div class="card card-body">
-                    {% for product in order.products %}
-                    <div class="row">
+                    <div class="row row_collapse_top">
+                        <div class="col-sm-4">
+                            <span>Название продукта</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <span>Количество</span>
+                        </div>
                         <div class="col-sm-2">
+                            <span>Цена</span>
+                        </div>
+                        <div class="col-sm-2">
+                            <span>Сумма</span>
+                        </div>
+                    </div>
+                    {% for product in order.products %}
+                    <div class="row row_collapse">
+                        <div class="col-sm-4">
                             <span>{{ product.product_name }}</span>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             <span>{{ product.amount }}</span>
                         </div>
-                        <div class="col-sm-1">
+                        <div class="col-sm-2">
                             <span>{{ product.cost }}</span>
                         </div>
                         <div class="col-sm-2">
@@ -90,6 +104,8 @@
                         </div>
                     </div>
                     {% endfor %}
+                    <div class="row row_collapse_bottom">
+                    </div>
                 </div>
             </div>
         </div>
