@@ -207,7 +207,8 @@ body{
 .card_btn{
     width: 50px;
     background-color: #dee2e6;
-    color: #485967;
+	color: #485967;
+	padding: 0;
 }
 .card_btn:hover{
     color: #ffffff;
@@ -234,6 +235,7 @@ body{
 .comment_show_button{
 	width: 60px;
 	color: #426786;
+	padding: 0;
 }
 .comment_show_button:hover{
     color: #ffffff;
@@ -241,6 +243,31 @@ body{
 .comment_show_button:focus{
 	box-shadow: none;
 }
+.btn_to_complete_order{
+	width: 150px;
+	background-color: #49884b;
+	border-color: #49884b;
+	margin-top: 5px;
+	margin-right: 50px;
+	border-radius: 20px;
+}
+.btn_to_complete_order:hover{
+	background-color: #6c9d6e;
+	border-color: #6c9d6e;
+}
+.btn_to_reject_order{
+	width: 150px;
+	background-color: #bd3e35;
+	border-color: #bd3e35;
+	margin-top: 5px;
+	margin-left: 50px;
+	border-radius: 20px;
+}
+.btn_to_reject_order:hover{
+	background-color: #bc635d;
+	border-color: #bc635d;
+}
+
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;
