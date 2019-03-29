@@ -249,10 +249,15 @@ body{
 	margin-top: 5px;
 	margin-right: 50px;
 	border-radius: 20px;
+	color: #fff;
 }
 .btn_to_complete_order:hover{
 	background-color: #6c9d6e;
 	border-color: #6c9d6e;
+	color: #fff;
+}
+.btn_to_complete_order:focus{
+	box-shadow: none;
 }
 .btn_to_reject_order{
 	width: 150px;
@@ -261,12 +266,16 @@ body{
 	margin-top: 5px;
 	margin-left: 50px;
 	border-radius: 20px;
+	color: #fff;
 }
 .btn_to_reject_order:hover{
 	background-color: #bc635d;
 	border-color: #bc635d;
+	color: #fff;
 }
-
+.btn_to_reject_order:focus{
+	box-shadow: none;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;

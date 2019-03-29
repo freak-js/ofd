@@ -8,10 +8,14 @@
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <!-- Jquery для datepicker -->
+    <link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/sunny/jquery-ui.css">
+    <script src="https://github.com/jquery/jquery-ui/blob/master/ui/i18n/datepicker-ru.js"></script>
     <title>Заказы</title>
 </head>
 <body class="text-center">
     {% include "ofd_app/menu.html" %}
+    {% include "ofd_app/filter.html" %}
     <div class="container container_min_width">
         <form action="/orders/" method="POST" id="status" name="status">
         {% csrf_token %}
@@ -105,8 +109,10 @@
                     </div>
                     {% endfor %}
                     <div class="row row_collapse_bottom">
-                        <div class="col-sm-4">
-                            <span>Итог:&nbsp&nbsp{{ order.total }}</span>
+                        <div class="col-sm-10">
+                        </div>
+                        <div class="col-sm-2">
+                            <span>Итог:&nbsp{{ order.total }}</span>
                         </div>
                     </div>
                 </div>
@@ -116,8 +122,8 @@
         </form>
     </div>
     <div>
-        <button type="submit" class="btn btn-lg btn-primary btn_to_complete_order" name="status" value="A" form="status">Подтвердить</button>
-        <button type="submit" class="btn btn-lg btn-primary btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
+        <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>
+        <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
     </div>
     {% include "ofd_app/footer.html" %}
 </body>
