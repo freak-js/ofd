@@ -164,13 +164,13 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    #apply_order_filters(request, 'order_filters')
+    apply_order_filters(request, 'order_filters')
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
         Order.assign_status(ids, status)
-    orders = Order.get_orders(request.user)
-    #orders = Order.get_orders(request.user, datetime.fromisoformat(request.session['order_filters']['date_from']), datetime.fromisoformat(request.session['order_filters']['date_to']))
+    #orders = Order.get_orders(request.user)
+    orders = Order.get_orders(request.user, datetime.fromisoformat(request.session['order_filters']['date_from']), datetime.fromisoformat(request.session['order_filters']['date_to']))
     order_data = []
     cnt = 0
     for order in orders:
@@ -181,7 +181,7 @@ def orders(request):
         for rel in rels:
             products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
         order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
-    return render(request, 'ofd_app/orders.html', {'orders': order_data})
+    return render(request, 'ofd_app/orders.html', {'orders': order_data })
 
 def save_filters(session, key, date_from = None, date_to = None):
     if key not in session:
@@ -200,9 +200,12 @@ def apply_order_filters(request, key):
     if request.method == 'POST':
         date_from = request.POST.get('date_from', '').strip()
         date_to = request.POST.get('date_to', '').strip()
-        if date_from and date_to:
+        try:
+            datetime.fromisoformat(date_from)
+            datetime.fromisoformat(date_to)
             save_filters(request.session, key, date_from, date_to)
-        else:
+            print('filters saved to session')
+        except ValueError:
             save_filters(request.session, key)
 #@login_required(login_url='/login/')
 #def order(request, **kwargs):

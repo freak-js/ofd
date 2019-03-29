@@ -90,14 +90,14 @@ class Order(models.Model):
     @staticmethod
     def get_orders(user, date_from=None, date_to=None, status_code=None):
       if user.is_admin() or user.is_superuser:
-          orders = Order.objects.all()
-          #orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
+          #orders = Order.objects.all()
+          orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
       elif user.is_manager():
-          orders = Order.objects.all().filter(order__user__parent=user)
-          #orders = Order.objects.all().filter(order__user__parent=user).filter(adddate__range=[date_from, date_to])
+          #orders = Order.objects.all().filter(order__user__parent=user)
+          orders = Order.objects.all().filter(order__user__parent=user).filter(adddate__range=[date_from, date_to])
       else:
-          orders = Order.objects.all().filter(user=user)
-          #orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
+          #orders = Order.objects.all().filter(user=user)
+          orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
       if status_code is not None:
           try:
               status = OrderStatus.objects.get(code=status);
