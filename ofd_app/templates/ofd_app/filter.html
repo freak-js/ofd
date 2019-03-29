@@ -16,7 +16,7 @@ jQuery(function($){
 		dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
 		dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
 		weekHeader: 'Нед',
-		dateFormat: 'dd.mm.yy',
+		dateFormat: 'yy-mm-dd',
 		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
@@ -37,8 +37,10 @@ jQuery(function($){
 </script>
 
 <div class="ui-widget DatepickerBox"></div>
-    <form>
-        <label for="datep">От:&nbsp</label><input id="datep">
-        <label for="datep">До:&nbsp</label><input id="datep2">
+    <form action="/orders/" method="POST" name="date_filter">
+        {% csrf_token %}
+        <label for="datep">От:&nbsp</label><input id="datep" name="date_from">
+        <label for="datep">До:&nbsp</label><input id="datep2" name="date_to">
+        <button type="submit" class="btn btn-primary" name="date_filter_button" value="add_filter">Применить</button>
     </form>
 </div>
