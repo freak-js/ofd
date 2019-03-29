@@ -200,7 +200,11 @@ def save_filters(session, key, date_from = None, date_to = None):
 def apply_order_filters(request, key):
     if key not in request.session:
         save_filters(request.session, key)
+<<<<<<< HEAD
     if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
+=======
+    if request.method == 'POST':
+>>>>>>> 0a28a78da6363937fd0cbcd9aef29debaa963e02
         date_from = request.POST.get('date_from', '').strip()
         date_to = request.POST.get('date_to', '').strip()
         try:
