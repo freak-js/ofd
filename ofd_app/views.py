@@ -164,7 +164,6 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    print(request.session['order_filters'])
     apply_order_filters(request, 'order_filters')
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
@@ -200,20 +199,16 @@ def save_filters(session, key, date_from = None, date_to = None):
 
 def apply_order_filters(request, key):
     if key not in request.session:
-        print(1)
         save_filters(request.session, key)
-    if request.method == 'POST':
-        print(2)
+    if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
         date_from = request.POST.get('date_from', '').strip()
         date_to = request.POST.get('date_to', '').strip()
         try:
             datetime.strptime(date_from, date_filter_format())
             datetime.strptime(date_to, date_filter_format())
             save_filters(request.session, key, date_from, date_to)
-            print('filters saved to session')
         except ValueError:
             save_filters(request.session, key)
-        print(request.session['order_filters'])
 #@login_required(login_url='/login/')
 #def order(request, **kwargs):
 #    if 'id' in kwargs:
