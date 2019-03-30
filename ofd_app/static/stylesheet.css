@@ -179,6 +179,16 @@ body{
     background-color: #f5f5f5;
     border-radius: 0 0 10px 10px;
 }
+.DatepickerBox{
+	max-width: 1140px;
+	min-width: 930px;
+	width: 100%;
+	height: 27px;
+	margin-left: auto;
+	margin-right: auto;
+	display: flex;
+	padding: 0 50px;
+}
 
 /* КНОПКИ */
 .btn_registration_form{
@@ -276,6 +286,21 @@ body{
 .btn_to_reject_order:focus{
 	box-shadow: none;
 }
+.DatepickerBox__FilterBtn{
+    width: 90px;
+    height: 25px;
+    color: #fff;
+    background-color: #485967;
+    border-color: #485967;
+    border-radius: 20px;
+    padding: 0;
+    font-size: 14px;
+}
+.DatepickerBox__FilterBtn:hover{
+	background-color: #426786;
+	border-color: #426786;
+	color: #fff;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 300px;
@@ -317,6 +342,20 @@ body{
 	border-radius: 10px;
 	height: 35px;
 }
+.DatepickerBox__DateFrom{
+    width: 90px;
+    text-align: center;
+	border-radius: 10px;
+	color: #485967;
+	border: 2px solid #afbcc7;
+}
+.DatepickerBox__DateTo{
+	width: 90px;
+    text-align: center;
+	border-radius: 10px;
+	color: #485967;
+	border: 2px solid #afbcc7;
+}
 /* TOOLTIP JAVA SCRIPT */
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
     border-left-color: #485967; /* цвет стрелочки (по умолчанию #000) */
@@ -334,4 +373,31 @@ body{
     color: #fff; /* цвет шрифта */
     background-color: #485967; /* цвет фона (по умолчанию #000) */
     border-radius: 0.25rem; /* радиус скругдения углов */
+}
+
+/* DATEPICKER JQUERY UI */
+.ui-widget-content {
+	border: 1px solid #8e846b !important;
+	background-image: none !important;
+    background-color: #485967 !important;
+	color: #fff !important;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-state-default {
+    border: 1px solid #8e8c87 !important;
+	background-image: none !important;
+	background-color: #bd3e35 !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+}
+.ui-state-active {
+    border: 1px solid #655e4e;
+    background: #ffffff url(images/ui-bg_inset-soft_30_ffffff_1x100.png) 50% 50% repeat-x;
+    font-weight: bold;
+    color: #0074c7;
+}
+.ui-widget-header {
+    border: 1px solid #494437;
+    background: #817865 url(images/ui-bg_gloss-wave_45_817865_500x100.png) 50% 50% repeat-x;
+    color: #ffffff;
+    font-weight: bold;
 }

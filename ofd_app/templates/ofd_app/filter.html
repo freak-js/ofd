@@ -1,6 +1,3 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="//ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.min.js"></script>
-
 <script type="text/javascript">
 jQuery(function($){
 	$.datepicker.regional['ru'] = {
@@ -35,12 +32,11 @@ jQuery(function($){
         $('#datep2').datepicker();
     });
 </script>
-
-<div class="ui-widget DatepickerBox"></div>
-    <form action="/orders/" method="POST" name="date_filter">
-        {% csrf_token %}
-        <label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}">
-        <label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}">
-        <button type="submit" class="btn btn-primary" name="date_filter_button" value="add_filter">Применить</button>
-    </form>
+<div class="DatepickerBox">
+	<form action="/orders/" method="POST" name="date_filter">
+		{% csrf_token %}
+		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}" class="DatepickerBox__DateFrom">
+		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}" class="DatepickerBox__DateTo">
+		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
+	</form>
 </div>

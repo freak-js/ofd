@@ -75,9 +75,9 @@
                 {% if order.status == "I" %}
                 <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
                 {% elif order.status == "A" %}
-                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ завершен"></i>
+                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ завершен" style="color: #49884b"></i>
                 {% elif order.status == "R" %}
-                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Заказ отклонен"></i>
+                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Заказ отклонен" style="color: #bd3e35"></i>
                 {% endif %}
             </div>
             <div class="col-sm-1">
