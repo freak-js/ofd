@@ -15,6 +15,7 @@ from django.contrib.auth import login
 from datetime import datetime
 from datetime import date
 from datetime import timedelta
+from django.core.paginator import Paginator
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -170,8 +171,7 @@ def orders(request):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
         Order.assign_status(ids, status)
-    #orders = Order.get_orders(request.user)
-    orders = Order.get_orders(request.user, datetime.strptime(request.session['order_filters']['date_from'], date_filter_format()), datetime.strptime(request.session['order_filters']['date_to'], date_filter_format()))
+    orders = Order.get_orders(request.user, datetime.strptime(request.session['order_filters']['date_from'], date_filter_format()), datetime.strptime(request.session['order_filters']['date_to'], date_filter_format()), None)
     order_data = []
     cnt = 0
     for order in orders:
@@ -182,7 +182,23 @@ def orders(request):
         for rel in rels:
             products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
         order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
-    return render(request, 'ofd_app/orders.html', {'orders': order_data })
+    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data)})
+
+def construct_pagination(request, data):
+    page_size = 2
+    page = request.GET.get('page', 1)
+    p = Paginator(data, page_size)
+    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': p.num_pages}
+    try:
+      page_object = p.get_page(page)
+    except Paginator.InvalidPage:
+      page = 1
+      page_object = p.get_page(1)
+    pagination['page'] = page
+    pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
+    pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
+    pagination['data'] = page_object.object_list
+    return pagination
 
 def date_filter_format():
     return "%Y-%m-%d";
@@ -210,19 +226,6 @@ def apply_order_filters(request, key):
             save_filters(request.session, key, date_from, date_to)
         except ValueError:
             save_filters(request.session, key)
-#@login_required(login_url='/login/')
-#def order(request, **kwargs):
-#    if 'id' in kwargs:
-#        order = get_object_or_404(Order, id=kwargs['id'])
-#        if order.user.id != request.user.id:
-#            return redirect('products')
-#        rels = OrderProduct.objects.all().filter(order=order)
-#        order_data = []
-#        total = 0
-#        for rel in rels:
-#            total += rel.amount * rel.cost
-#            order_data.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-#        return render(request, 'ofd_app/order.html', {'order': order_data, 'total': total})
 
 def user_reg(request):
     if request.method == 'POST':
@@ -279,7 +282,9 @@ def user_save(user_form, request_user=None):
             user_resolve_group(user, request_user)
         if user.parent is None and request_user is not None and request_user.groups.filter(name='Manager').exists():
             user.parent = request_user
-            user.inn = request_user.inn
-            user.org = request_user.org
+            user.save()
+        if user.groups.filter(name='User').exists() and (user.inn is not None or user.org is not None):
+            user.inn = None
+            user.org = None
             user.save()
     return user
