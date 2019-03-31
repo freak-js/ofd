@@ -66,8 +66,10 @@
                 {% endif %}
             </div>
             <div class="col-sm-1">
+                {% if perms.ofd_app.change_product %}
                 {% if order.status == "I" %}
                 <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
+                {% endif %}
                 {% endif %}
             </div>
             <div class="col-sm-1">
@@ -127,10 +129,29 @@
         {% endfor %}
         </form>
     </div>
+    <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              <li class="page-item">
+                <a class="page-link" href="#">
+                  <span>&laquo;</span>
+                </a>
+              </li>
+              {% for page in %}
+              <li class="page-item"><a class="page-link" href="page_{{ forloop.counter }}">{{ forloop.counter }}</a></li>
+              {% endfor %}
+              <li class="page-item">
+                <a class="page-link" href="#">
+                  <span>&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+    {% if perms.ofd_app.change_product %}
     <div>
         <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>
         <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
     </div>
+    {% endif %}
     {% include "ofd_app/footer.html" %}
 </body>
 </html>
