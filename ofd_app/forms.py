@@ -17,9 +17,9 @@ class UserForm(forms.ModelForm):
         fields = ('username', 'email', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
-        instance = kwargs.get('instance', None)
-        if instance.is_user():
-            kwargs.update(initial={'inn': instance.parent.inn, 'org': instance.parent.org})
+        #instance = kwargs.get('instance', None)
+        #if instance.is_user():
+        #    kwargs.update(initial={'inn': instance.parent.inn, 'org': instance.parent.org})
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['readonly'] = True
         if self.requested_user is not None and not self.requested_user.is_superuser:
@@ -37,6 +37,7 @@ class UserForm(forms.ModelForm):
         return self.instance.username
 
 class UserCreationFormCustom(UserCreationForm):
+    email = forms.EmailField(required = True)
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')

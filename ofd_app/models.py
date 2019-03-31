@@ -94,7 +94,7 @@ class Order(models.Model):
           orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
       elif user.is_manager():
           #orders = Order.objects.all().filter(order__user__parent=user)
-          orders = Order.objects.all().filter(order__user__parent=user).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().filter(user__parent=user).filter(adddate__range=[date_from, date_to])
       else:
           #orders = Order.objects.all().filter(user=user)
           orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
