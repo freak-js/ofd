@@ -11,7 +11,6 @@ class ProductForm(forms.ModelForm):
         fields = ('product_name', 'product_cost')
 
 class UserForm(forms.ModelForm):
-    email = forms.EmailField(required = True)
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
@@ -37,7 +36,6 @@ class UserForm(forms.ModelForm):
         return self.instance.username
 
 class UserCreationFormCustom(UserCreationForm):
-    email = forms.EmailField(required = True)
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')

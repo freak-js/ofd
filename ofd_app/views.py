@@ -117,8 +117,9 @@ def user(request, **kwargs):
         if not request.user.has_perm('ofd_app.change_user'):
             return redirect('products')
         user_form = UserCreationFormCustom(request.POST)
-        user_save(user_form, request.user)
-        return redirect('users')
+        user = user_save(user_form, request.user)
+        if user is not None:
+            return redirect('users')
     else:
         if not request.user.has_perm('ofd_app.view_user'):
             return redirect('products')
