@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.db.models import Q
 
 # Create your models here.
 class Product(models.Model):
@@ -95,7 +96,7 @@ class Order(models.Model):
           orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
       elif user.is_manager():
           #orders = Order.objects.all().filter(order__user__parent=user)
-          orders = Order.objects.all().filter(user__parent=user).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
       else:
           #orders = Order.objects.all().filter(user=user)
           orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])

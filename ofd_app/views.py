@@ -142,9 +142,9 @@ def user_product(request, **kwargs):
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
     if request.user.groups.filter(name='Manager').exists():
-        users = User.objects.all().filter(is_active = True).filter(parent=request.user)
+        users = User.objects.all().filter(is_active = True).filter(is_superuser=False).filter(parent=request.user)
     else:
-        users = User.objects.all().filter(is_active = True)
+        users = User.objects.all().filter(is_active = True).filter(is_superuser=False)
     return render(request, 'ofd_app/users.html', {'users': users, 'can_delete': request.user.has_perm('ofd_app.delete_user')})
 
 @login_required(login_url='/login/')
@@ -280,6 +280,6 @@ def user_save(user_form, request_user=None):
         if user.parent is None and request_user is not None and request_user.groups.filter(name='Manager').exists():
             user.parent = request_user
             user.inn = request_user.inn
-            user.corg = request_user.corg
+            user.org = request_user.org
             user.save()
     return user
