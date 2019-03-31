@@ -43,7 +43,7 @@
                 <span>Кнопка</span>
             </div>
         </div>
-        {% for order in orders %}
+        {% for order in orders.data %}
         <div class="row global_order_nav_div">
             <div class="col-sm-1">
                 <span>{{ order.order_num }}</span>
