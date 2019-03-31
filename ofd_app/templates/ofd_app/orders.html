@@ -136,8 +136,12 @@
                   <span>&laquo;</span>
                 </a>
               </li>
-              {% for page in %}
-              <li class="page-item"><a class="page-link" href="page_{{ forloop.counter }}">{{ forloop.counter }}</a></li>
+              {% for page in orders.count %}
+              {% if orders.page == forloop.counter %}
+              <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+              {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+              {% endif %}
               {% endfor %}
               <li class="page-item">
                 <a class="page-link" href="#">

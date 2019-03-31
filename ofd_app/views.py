@@ -188,13 +188,13 @@ def construct_pagination(request, data):
     page_size = 2
     page = request.GET.get('page', 1)
     p = Paginator(data, page_size)
-    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': p.num_pages}
+    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}
     try:
       page_object = p.get_page(page)
     except Paginator.InvalidPage:
       page = 1
       page_object = p.get_page(1)
-    pagination['page'] = page
+    pagination['page'] = int(page)
     pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
     pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
     pagination['data'] = page_object.object_list
