@@ -358,46 +358,68 @@ body{
 }
 /* TOOLTIP JAVA SCRIPT */
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
-    border-left-color: #485967; /* цвет стрелочки (по умолчанию #000) */
+    border-left-color: #485967; /* цвет стрелочки */
 }
 .bs-tooltip-top .arrow::before, .bs-tooltip-auto[x-placement^="top"] .arrow::before {
-    border-top-color: #485967; /* цвет стрелочки (по умолчанию #000)*/
+    border-top-color: #485967; /* цвет стрелочки */
 }
 .bs-tooltip-right .arrow::before, .bs-tooltip-auto[x-placement^="right"] .arrow::before {
-    border-right-color: #485967; /* цвет стрелочки (по умолчанию #000)*/
+    border-right-color: #485967; /* цвет стрелочки */
 }
 .bs-tooltip-bottom .arrow::before, .bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
-    border-bottom-color: #485967; /* цвет стрелочки (по умолчанию #000) */
+    border-bottom-color: #485967; /* цвет стрелочки */
 }
 .tooltip-inner {
     color: #fff; /* цвет шрифта */
-    background-color: #485967; /* цвет фона (по умолчанию #000) */
+    background-color: #485967; /* цвет фона */
     border-radius: 0.25rem; /* радиус скругдения углов */
 }
 
 /* DATEPICKER JQUERY UI */
 .ui-widget-content {
-	border: 1px solid #8e846b !important;
+	border: 1px solid #485967 !important;
 	background-image: none !important;
     background-color: #485967 !important;
 	color: #fff !important;
 }
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-state-default {
-    border: 1px solid #8e8c87 !important;
+.ui-state-default {
+    border: 1px solid #b5b5b5 !important;
 	background-image: none !important;
-	background-color: #bd3e35 !important;
+	background-color: #485967 !important;
     font-weight: bold !important;
     color: #ffffff !important;
 }
+.ui-state-default:hover {
+	border: 1px solid #fff !important;
+	background-color: #426786 !important;
+}
 .ui-state-active {
-    border: 1px solid #655e4e;
-    background: #ffffff url(images/ui-bg_inset-soft_30_ffffff_1x100.png) 50% 50% repeat-x;
-    font-weight: bold;
-    color: #0074c7;
+	border: 1px solid #b5b5b5 !important;
+    background-image: none !important;
+    background-color: #ffffff !important;
+    font-weight: bold !important;
+    color: #485967 !important;
 }
 .ui-widget-header {
-    border: 1px solid #494437;
-    background: #817865 url(images/ui-bg_gloss-wave_45_817865_500x100.png) 50% 50% repeat-x;
-    color: #ffffff;
-    font-weight: bold;
+    border: 1px solid #fff !important;
+    background: #485967 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+.ui-state-hover {
+    border: 1px solid #fff !important;
+    background: #485967 !important;
+    font-weight: bold !important;
+    color: #fff !important;
+}
+.ui-datepicker-prev-hover{
+	margin-left: 1px;
+	margin-top: 1px;
+}
+.ui-datepicker-next-hover {
+	margin-right: 1px;
+	margin-top: 1px; 
+}
+.ui-icon{
+	background-image: url(/static/datepicker-icons.png) !important;
 }
