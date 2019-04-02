@@ -41,9 +41,9 @@ jQuery(function($){
 		<label class="" for="org_filter">Организация:</label>
 		<select class="" id="org_filter" name="org_filter">
 		  <option selected value="*">Все</option>
-
-		  <option value=""></option>
-	
+		  {% for org in filters.org %}	
+		  <option value="{{ org }}">{{ org }}</option>
+		  {% endfor %}	
 		</select>
 		{% endif %}
 		<label class="" for="org_status">Статус:</label>
