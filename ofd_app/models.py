@@ -37,7 +37,7 @@ class User(AbstractUser):
     @staticmethod
     def get_organizations():
         orgs = User.objects.exclude(org__isnull=True).values('org').distinct().order_by('org')
-        return list(map(lambda x: x['org'], orgs))
+        return list(map(lambda x: { 'id': x['org'], 'value': x['org']}, orgs))
 
 class ProductUserRel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Пользователь")
@@ -51,6 +51,7 @@ class ProductUserRel(models.Model):
 
 class OrderStatus(models.Model):
     code = models.CharField("Код статуса", max_length = 1, primary_key = True)
+    name = models.CharField("Название статуса", max_length = 10)
 
     def is_in_progress(self):
         return self.code == 'I'
@@ -61,8 +62,8 @@ class OrderStatus(models.Model):
 
     @staticmethod
     def get_all_statuses():
-        statuses = OrderStatus.objects.all().values('code').order_by('code')
-        return list(map(lambda x: x['code'], statuses))
+        statuses = OrderStatus.objects.all().values('code', 'name').order_by('code')
+        return list(map(lambda x: { 'id': x['code'], 'value': x['name']}, statuses))
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
@@ -90,20 +91,14 @@ class Order(models.Model):
     def get_orders(user, date_from=None, date_to=None, status_code=None, org=None):
       if user.is_admin() or user.is_superuser:
           orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
-          if org is not None:
-              orders.filter(user__org=org)
-          if status_code is not None:
-              orders.filter(status__code=status_code)
+          if org is not None and org != '*':
+              orders = orders.filter(user__org=org)
       elif user.is_manager():
           orders = Order.objects.all().filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
       else:
           orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
-      if status_code is not None:
-          try:
-              status = OrderStatus.objects.get(code=status);
-              orders.filter(status=status)
-          except OrderStatus.DoesNotExist:
-              pass
+      if status_code is not None and status_code != '*':
+          orders = orders.filter(status=status_code)
       return orders
 
 class OrderProduct(models.Model):
