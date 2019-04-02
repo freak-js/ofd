@@ -21,6 +21,9 @@
             <div class="col-sm-1">
                 <span>Заказ №</span>
             </div>
+            <div class="col-sm-1">
+                <span>Клиент</span>
+            </div>
             <div class="col-sm-3">
                 <span>Дата</span>
             </div>
@@ -28,15 +31,12 @@
                 <span>Количество</span>
             </div>
             <div class="col-sm-2">
-                <span>Итог</span>
-            </div>
-            <div class="col-sm-2">
                 <span>Комментарий</span>
             </div>
             <div class="col-sm-1">
                 <span>Чекбокс</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 <span>Статус</span>
             </div>
             <div class="col-sm-1">
@@ -48,14 +48,15 @@
             <div class="col-sm-1">
                 <span>{{ order.order_num }}</span>
             </div>
+            <div class="col-sm-1">
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i>
+                </i></button>
+            </div>
             <div class="col-sm-3">
                 <span>{{ order.adddate }}</span>
             </div>
             <div class="col-sm-1">
                 <span>{{ order.cnt_products }}</span>
-            </div>
-            <div class="col-sm-2">
-                <span>{{ order.total }}</span>
             </div>
             <div class="col-sm-2">
                 {% if order.comment %}
@@ -72,7 +73,7 @@
                 {% endif %}
                 {% endif %}
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 {% if order.status == "I" %}
                 <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
                 {% elif order.status == "A" %}
@@ -129,7 +130,7 @@
         {% endfor %}
         </form>
     </div>
-    {% if orders.prev or prders.next %}
+    {% if orders.prev or orders.next %}
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
             {% if orders.prev %}
