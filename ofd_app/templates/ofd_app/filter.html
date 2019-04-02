@@ -38,20 +38,20 @@ jQuery(function($){
 		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}" class="DatepickerBox__DateFrom">
 		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}" class="DatepickerBox__DateTo">
 		{% if perms.ofd_app.change_product %}
-		<label class="" for="org_filter">Организация:</label>
-		<select class="" id="org_filter" name="org_filter">
+		<label for="org_filter">Организация:</label>
+		<select class="DatepickerBox__OrgFilter" id="org_filter" name="org_filter">
+		
 		  <option selected value="*">Все</option>
 		  {% for org in filters.org %}	
 		  <option value="{{ org }}">{{ org }}</option>
 		  {% endfor %}	
 		</select>
 		{% endif %}
-		<label class="" for="org_status">Статус:</label>
-		<select class="" id="org_status" name="org_status">
-			<option selected value="*">Все</option>
-			<option value="I">В работе</option>
-			<option value="A">Завершен</option>
-			<option value="R">Отклонен</option>	
+		<label for="status_filter">Статус:</label>
+		<select class="DatepickerBox__StatusFilter" id="status_filter" name="status_filter">
+			{% for filter in filters.status %}
+			<option value="{{ filter }}">{{ filter }}</option>
+			{% endfor %}
 		  </select>
 		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
 	</form>

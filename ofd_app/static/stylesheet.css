@@ -318,7 +318,7 @@ body{
 }
 .DatepickerBox__FilterBtn{
     width: 90px;
-    height: 25px;
+    height: 27px;
     color: #fff;
     background-color: #485967;
     border-color: #485967;
@@ -385,6 +385,22 @@ body{
 	border-radius: 10px;
 	color: #485967;
 	border: 2px solid #afbcc7;
+}
+.DatepickerBox__OrgFilter{
+	width: 150px;
+    height: 27px;
+    border-radius: 10px;
+    background-color: #fff;
+    border: 2px solid #afbcc7;
+    color: #485967;
+}
+.DatepickerBox__StatusFilter{
+	width: 150px;
+    height: 27px;
+    border-radius: 10px;
+    background-color: #fff;
+    border: 2px solid #afbcc7;
+    color: #485967;
 }
 /* TOOLTIP JAVA SCRIPT */
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
