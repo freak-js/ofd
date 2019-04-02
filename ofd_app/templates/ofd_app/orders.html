@@ -129,27 +129,45 @@
         {% endfor %}
         </form>
     </div>
+    {% if orders.prev or prders.next %}
     <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-              <li class="page-item">
-                <a class="page-link" href="#">
-                  <span>&laquo;</span>
-                </a>
-              </li>
-              {% for page in orders.count %}
-              {% if orders.page == forloop.counter %}
-              <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
-              {% else %}
-              <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
-              {% endif %}
-              {% endfor %}
-              <li class="page-item">
-                <a class="page-link" href="#">
-                  <span>&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+        <ul class="pagination justify-content-center">
+            {% if orders.prev %}
+            <li class="page-item">
+            <a class="page-link" href="?page={{ orders.prev }}">
+                <span>&laquo;</span>
+            </a>
+            </li>
+            {% else %}
+            <li class="page-item">
+            <a class="page-link disabled" href="#">
+                <span>&laquo;</span>
+            </a>
+            </li>
+            {% endif %}
+            {% for page in orders.count %}
+            {% if orders.page == forloop.counter %}
+            <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if orders.next %}
+            <li class="page-item">
+            <a class="page-link" href="?page={{ orders.next }}">
+                <span>&raquo;</span>
+            </a>
+            </li>
+            {% else %}
+            <li class="page-item">
+            <a class="page-link disabled" href="#">
+                <span>&raquo;</span>
+            </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
     {% if perms.ofd_app.change_product %}
     <div>
         <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>

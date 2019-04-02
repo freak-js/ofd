@@ -59,6 +59,33 @@ body{
 	text-decoration: none;
 	color: #426786;
 }
+.page-link{
+	padding: 1px 7px !important;
+	color: #485967;
+	background-color: #dee2e6;
+}
+.page-link:hover{
+	background-color: #fff;
+	color: #485967;
+}
+.page-link:focus {
+    box-shadow: none;
+}
+.page-link-active{
+	z-index: 1;
+	background-color: #485967 !important;
+	color: #fff;
+}
+.page-link-active:hover{
+	color: #fff;
+}
+.disabled{
+    color: #b0b0b0;
+    pointer-events: none;
+    cursor: auto;
+    background-color: #e4e8ea;
+    border-color: #e4e8ea;
+}
 /* FONTAWESOME */
 .fontawesome_link_basket{
     display: block;
@@ -130,7 +157,7 @@ body{
 	height: 45px;
 	background-color: #dee2e6;
 	flex-grow: 0;	
-	margin-top: 10px;
+	margin-top: 5px;
 }
 .footer_span{
 	font-size: 11px;
@@ -188,6 +215,9 @@ body{
 	margin-right: auto;
 	display: flex;
 	padding: 0 50px;
+}
+.pagination{
+	margin-bottom: 0;
 }
 
 /* КНОПКИ */
