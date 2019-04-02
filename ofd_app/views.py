@@ -16,6 +16,7 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -102,7 +103,6 @@ def product_delete(request):
     return redirect('products')
 
 @login_required(login_url='/login/')
-#@csrf_exempt
 def user(request, **kwargs):
     user = None
     if 'id' in kwargs:
@@ -171,7 +171,11 @@ def orders(request):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
         Order.assign_status(ids, status)
-    orders = Order.get_orders(request.user, datetime.strptime(request.session['order_filters']['date_from'], date_filter_format()), datetime.strptime(request.session['order_filters']['date_to'], date_filter_format()), None)
+    date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
+    date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
+    org = request.session['order_filters']['org']
+    status = request.session['order_filters']['status']
+    orders = Order.get_orders(request.user, date_from, date_to, status, org)
     order_data = []
     cnt = 0
     for order in orders:
@@ -182,7 +186,15 @@ def orders(request):
         for rel in rels:
             products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
         order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
-    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data)})
+    filters = {}
+    if request.user.is_superuser or request.user.is_admin():
+        filters['org'] = User.get_organizations()
+    filters['status'] = OrderStatus.get_all_statuses()
+    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters})
+
+@csrf_exempt
+def test(request):
+    return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
 
 def construct_pagination(request, data):
     page_size = 2
@@ -203,7 +215,7 @@ def construct_pagination(request, data):
 def date_filter_format():
     return "%Y-%m-%d";
 
-def save_filters(session, key, date_from = None, date_to = None):
+def save_filters(session, key, date_from = None, date_to = None, status = None, org = None):
     if key not in session:
         session[key] = {}
     if date_from is None or date_to is None:
@@ -212,6 +224,8 @@ def save_filters(session, key, date_from = None, date_to = None):
     else:
         session[key]['date_from'] = date_from
         session[key]['date_to'] = date_to
+    session[key]['org'] = org
+    session[key]['status'] = status
     session.save()
 
 def apply_order_filters(request, key):
@@ -220,10 +234,12 @@ def apply_order_filters(request, key):
     if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
         date_from = request.POST.get('date_from', '').strip()
         date_to = request.POST.get('date_to', '').strip()
+        org = request.POST.get('org_filter', '').strip()
+        status = request.POST.get('status_filter', '').strip()
         try:
             datetime.strptime(date_from, date_filter_format())
             datetime.strptime(date_to, date_filter_format())
-            save_filters(request.session, key, date_from, date_to)
+            save_filters(request.session, key, date_from, date_to, status, org)
         except ValueError:
             save_filters(request.session, key)
 

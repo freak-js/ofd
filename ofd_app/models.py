@@ -34,6 +34,11 @@ class User(AbstractUser):
         user = self if user is None else user
         return user.groups.filter(name='Admin').exists()
 
+    @staticmethod
+    def get_organizations():
+        orgs = User.objects.exclude(org__isnull=True).values('org').distinct().order_by('org')
+        return list(map(lambda x: x['org'], orgs))
+
 class ProductUserRel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Пользователь")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Продукт")
@@ -53,6 +58,11 @@ class OrderStatus(models.Model):
         return self.code == 'A'
     def is_rejected(self):
         return self.code == 'R'
+
+    @staticmethod
+    def get_all_statuses():
+        statuses = OrderStatus.objects.all().values('code').order_by('code')
+        return list(map(lambda x: x['code'], statuses))
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
@@ -77,9 +87,13 @@ class Order(models.Model):
           pass
 
     @staticmethod
-    def get_orders(user, date_from=None, date_to=None, status_code=None):
+    def get_orders(user, date_from=None, date_to=None, status_code=None, org=None):
       if user.is_admin() or user.is_superuser:
           orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
+          if org is not None:
+              orders.filter(user__org=org)
+          if status_code is not None:
+              orders.filter(status__code=status_code)
       elif user.is_manager():
           orders = Order.objects.all().filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
       else:
