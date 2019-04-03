@@ -191,7 +191,7 @@ def orders(request):
         products = []
         for rel in rels:
             products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code})
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code, 'user': order.user})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
