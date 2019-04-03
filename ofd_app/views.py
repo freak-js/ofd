@@ -142,11 +142,17 @@ def user_product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
+    apply_user_filters(request, 'user_filters')
+    filters = {}
     if request.user.groups.filter(name='Manager').exists():
         users = User.objects.all().filter(is_active = True).filter(is_superuser=False).filter(parent=request.user)
     else:
+        org = request.session['user_filters']['org']
         users = User.objects.all().filter(is_active = True).filter(is_superuser=False)
-    return render(request, 'ofd_app/users.html', {'users': users, 'can_delete': request.user.has_perm('ofd_app.delete_user')})
+        if org is not None and len(org) > 0 and org != '*':
+            users = users.filter(org=org)
+        filters['org'] = User.get_organizations()
+    return render(request, 'ofd_app/users.html', {'users': users, 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -227,6 +233,19 @@ def save_filters(session, key, date_from = None, date_to = None, status = None, 
     session[key]['org'] = org if org is not None and len(org) > 0 else '*'
     session[key]['status'] = status if status is not None and len(status) > 0 else '*'
     session.save()
+
+def save_user_filters(session, key, org = None):
+    if key not in session:
+        session[key] = {}
+    session[key]['org'] = org if org is not None and len(org) > 0 else '*'
+    session.save()
+
+def apply_user_filters(request, key):
+    if key not in request.session:
+        save_user_filters(request.session, key)
+    if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
+        org = request.POST.get('org_filter', '').strip()
+        save_user_filters(request.session, key, org)
 
 def apply_order_filters(request, key):
     if key not in request.session:
