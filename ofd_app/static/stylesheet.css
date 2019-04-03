@@ -283,11 +283,11 @@ body{
 	box-shadow: none;
 }
 .btn_to_complete_order{
-	width: 150px;
+	width: 110px;
 	background-color: #49884b;
 	border-color: #49884b;
 	margin-top: 5px;
-	margin-right: 50px;
+	margin-right: 100px;
 	border-radius: 20px;
 	color: #fff;
 }
@@ -300,11 +300,11 @@ body{
 	box-shadow: none;
 }
 .btn_to_reject_order{
-	width: 150px;
+	width: 110px;
 	background-color: #bd3e35;
 	border-color: #bd3e35;
 	margin-top: 5px;
-	margin-left: 50px;
+	margin-left: 100px;
 	border-radius: 20px;
 	color: #fff;
 }
@@ -377,29 +377,31 @@ body{
     text-align: center;
 	border-radius: 10px;
 	color: #485967;
-	border: 2px solid #afbcc7;
+	border: 1px solid #afbcc7;
+	background-color: #f0f0f0;
 }
 .DatepickerBox__DateTo{
 	width: 90px;
     text-align: center;
 	border-radius: 10px;
 	color: #485967;
-	border: 2px solid #afbcc7;
+	border: 1px solid #afbcc7;
+	background-color: #f0f0f0;
 }
 .DatepickerBox__OrgFilter{
 	width: 150px;
     height: 27px;
     border-radius: 10px;
-    background-color: #fff;
-    border: 2px solid #afbcc7;
+    background-color: #f0f0f0;
+    border: 1px solid #afbcc7;
     color: #485967;
 }
 .DatepickerBox__StatusFilter{
 	width: 150px;
     height: 27px;
     border-radius: 10px;
-    background-color: #fff;
-    border: 2px solid #afbcc7;
+    background-color: #f0f0f0;
+    border: 1px solid #afbcc7;
     color: #485967;
 }
 /* TOOLTIP JAVA SCRIPT */
@@ -447,13 +449,13 @@ body{
     color: #485967 !important;
 }
 .ui-widget-header {
-    border: 1px solid #fff !important;
+    border: 1px solid #b5b5b5!important;
     background: #485967 !important;
     color: #ffffff !important;
     font-weight: bold !important;
 }
 .ui-state-hover {
-    border: 1px solid #fff !important;
+    border: 1px solid #b5b5b5 !important;
     background: #485967 !important;
     font-weight: bold !important;
     color: #fff !important;

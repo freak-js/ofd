@@ -40,17 +40,33 @@ jQuery(function($){
 		{% if perms.ofd_app.change_product %}
 		<label for="org_filter">Организация:</label>
 		<select class="DatepickerBox__OrgFilter" id="org_filter" name="org_filter">
-		
+		  {% if request.session.order_filters.org == "*" %}	
 		  <option selected value="*">Все</option>
-		  {% for org in filters.org %}	
-		  <option value="{{ org }}">{{ org }}</option>
+		  {% else %}
+		  <option value="*">Все</option>
+		  {% endif %}
+		  {% for org in filters.org %}
+		  {% if request.session.order_filters.org == org.id %}
+		  <option selected value="{{ org.id }}">{{ org.value }}</option>
+		  {% else %}
+		  <option value="{{ org.id }}">{{ org.value }}</option>
+		  {% endif %}
 		  {% endfor %}	
 		</select>
 		{% endif %}
 		<label for="status_filter">Статус:</label>
 		<select class="DatepickerBox__StatusFilter" id="status_filter" name="status_filter">
-			{% for filter in filters.status %}
-			<option value="{{ filter }}">{{ filter }}</option>
+			{% if request.session.order_filters.status == "*" %}
+			<option selected value="*">Все</option>
+			{% else %}
+			<option value="*">Все</option>
+			{% endif %}
+			{% for status in filters.status %}
+			{% if request.session.order_filters.status == status.id %}
+			<option selected value="{{ status.id }}">{{ status.value }}</option>
+			{% else %}
+			<option value="{{ status.id }}">{{ status.value }}</option>
+			{% endif %}
 			{% endfor %}
 		  </select>
 		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>

@@ -224,8 +224,8 @@ def save_filters(session, key, date_from = None, date_to = None, status = None, 
     else:
         session[key]['date_from'] = date_from
         session[key]['date_to'] = date_to
-    session[key]['org'] = org if org is not None and len(org) > 0 else None
-    session[key]['status'] = status if status is not None and len(status) > 0 else None
+    session[key]['org'] = org if org is not None and len(org) > 0 else '*'
+    session[key]['status'] = status if status is not None and len(status) > 0 else '*'
     session.save()
 
 def apply_order_filters(request, key):
