@@ -12,7 +12,8 @@
 </head>
 <body class="text-center">
     {% include "ofd_app/menu.html" %}
-    <div class="container">
+    {% include "ofd_app/filter_org.html" %}
+    <div class="container container_min_width flex-grow-1">
         <form action="/user/delete" method="POST" id="top_form">
             {% csrf_token %}
         </form>

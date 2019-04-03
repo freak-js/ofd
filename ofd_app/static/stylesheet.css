@@ -162,7 +162,7 @@ body{
 .footer_span{
 	font-size: 11px;
 }
-.container{
+.flex-grow-1{
 	flex-grow: 1;
 }
 .none_basket_div{
@@ -284,16 +284,16 @@ body{
 }
 .btn_to_complete_order{
 	width: 110px;
-	background-color: #49884b;
-	border-color: #49884b;
+	background-color: #485967;
+	border-color: #485967;
 	margin-top: 5px;
 	margin-right: 100px;
 	border-radius: 20px;
 	color: #fff;
 }
 .btn_to_complete_order:hover{
-	background-color: #6c9d6e;
-	border-color: #6c9d6e;
+	background-color: #49884b;
+	border-color: #49884b;
 	color: #fff;
 }
 .btn_to_complete_order:focus{
@@ -301,16 +301,16 @@ body{
 }
 .btn_to_reject_order{
 	width: 110px;
-	background-color: #bd3e35;
-	border-color: #bd3e35;
+	background-color: #485967;
+	border-color: #485967;
 	margin-top: 5px;
 	margin-left: 100px;
 	border-radius: 20px;
 	color: #fff;
 }
 .btn_to_reject_order:hover{
-	background-color: #bc635d;
-	border-color: #bc635d;
+	background-color: #bd3e35;
+	border-color: #bd3e35;
 	color: #fff;
 }
 .btn_to_reject_order:focus{

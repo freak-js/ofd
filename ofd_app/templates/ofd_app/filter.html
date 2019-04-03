@@ -32,7 +32,7 @@ jQuery(function($){
         $('#datep2').datepicker();
     });
 </script>
-<div class="DatepickerBox">
+<div class="container container_min_width">
 	<form action="/orders/" method="POST" name="date_filter">
 		{% csrf_token %}
 		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}" class="DatepickerBox__DateFrom">

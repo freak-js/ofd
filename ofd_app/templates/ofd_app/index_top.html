@@ -12,7 +12,7 @@
 </head>
 <body class="text-center">
 	{% include "ofd_app/menu.html" %}
-    <div class="container">
+    <div class="container container_min_width flex-grow-1">
 			<form action="/products/delete" method="POST" name="" id="top_form">
 			{% csrf_token %}
 			</form>
