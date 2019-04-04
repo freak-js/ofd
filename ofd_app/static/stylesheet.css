@@ -17,8 +17,13 @@ body{
 	padding-bottom: 0 !important;
 	padding-top: 2px !important;
 }
-.form-check {
-    margin-top: 5px !important;
+.form-check-input {
+    position: absolute !important;
+    margin-top: 7px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    position: relative !important;
 }
 .form-text{
 	display: none !important;
@@ -258,7 +263,8 @@ body{
 .btn_clear_basket{
     width: 120px;
     background-color: #485967;
-    border-color: #485967;
+	border-color: #485967;
+	color: #fff;
     margin-top: 10px;
     margin-bottom: 5px;
     border-radius: 20px;
@@ -270,6 +276,7 @@ body{
 .btn_clear_basket:hover{
 	background-color: #426786;
 	border-color: #426786;
+	color: #fff;
 }
 .comment_show_button{
 	width: 60px;
@@ -318,7 +325,8 @@ body{
 }
 .DatepickerBox__FilterBtn{
     width: 90px;
-    height: 27px;
+	height: 27px;
+	margin-left: 20px;
     color: #fff;
     background-color: #485967;
     border-color: #485967;
@@ -330,6 +338,9 @@ body{
 	background-color: #426786;
 	border-color: #426786;
 	color: #fff;
+}
+.DatepickerBox__FilterBtn:focus{
+	box-shadow: none;
 }
 /* ФОРМЫ */
 .registration_form{

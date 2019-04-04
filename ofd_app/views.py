@@ -203,7 +203,7 @@ def test(request):
     return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
 
 def construct_pagination(request, data):
-    page_size = 2
+    page_size = 10
     page = request.GET.get('page', 1)
     p = Paginator(data, page_size)
     pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}

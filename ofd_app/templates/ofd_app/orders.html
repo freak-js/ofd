@@ -18,47 +18,47 @@
         <form action="/orders/" method="POST" id="status" name="status">
         {% csrf_token %}
         <div class="row global_order_nav_div font_900">
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span>Заказ&nbsp№</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span>Клиент</span>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-3 p-1">
                 <span>Дата</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span>Количество</span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 p-1">
                 <span>Комментарий</span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 p-1">
                 <span>Статус</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span></span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span></span>
             </div>
         </div>
         {% for order in orders.data %}
         <div class="row global_order_nav_div">
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span>{{ order.order_num }}</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user.role }}"><i class="fa fa-user"></i>
                 </i></button>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-3 p-1">
                 <span>{{ order.adddate }}</span>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <span>{{ order.cnt_products }}</span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 p-1">
                 {% if order.comment %}
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i>
                 </i></button>
@@ -66,7 +66,7 @@
                 <span>Нет</span>
                 {% endif %}
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 p-1">
                 {% if order.status == "I" %}
                 <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
                 {% elif order.status == "A" %}
@@ -75,14 +75,14 @@
                 <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Заказ отклонен" style="color: #bd3e35"></i>
                 {% endif %}
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 {% if perms.ofd_app.change_product %}
                 {% if order.status == "I" %}
                 <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
                 {% endif %}
                 {% endif %}
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1 p-1">
                 <button class="btn card_btn" type="button" data-toggle="collapse" data-target="#collapseExample{{order.id}}" aria-expanded="false" aria-controls="collapseExample{{order.id}}"><i class="fa fa-chevron-down"></i></button>
             </div>
             <div class="collapse card_div" id="collapseExample{{order.id}}">
