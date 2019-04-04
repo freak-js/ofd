@@ -471,3 +471,14 @@ body{
 .ui-icon{
 	background-image: url(/static/datepicker-icons.png) !important;
 }
+
+/* POPOVER BOOTSTRAP */
+.arrow::after{
+	border-bottom-color: #f0f0f0 !important;
+	border-top-color:  #f0f0f0 !important;
+}
+.popover-body {
+    padding: 0.5rem 0.75rem !important;
+    color: #485967 !important;
+	background-color: #f0f0f0 !important;
+}

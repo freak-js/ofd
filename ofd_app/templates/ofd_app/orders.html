@@ -49,7 +49,7 @@
                 <span>{{ order.order_num }}</span>
             </div>
             <div class="col-sm-1">
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-user"></i>
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user.role }}"><i class="fa fa-user"></i>
                 </i></button>
             </div>
             <div class="col-sm-3">

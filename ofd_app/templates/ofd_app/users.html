@@ -12,7 +12,9 @@
 </head>
 <body class="text-center">
     {% include "ofd_app/menu.html" %}
+    {% if perms.ofd_app.change_product %}
     {% include "ofd_app/filter_org.html" %}
+    {% endif %}
     <div class="container container_min_width flex-grow-1">
         <form action="/user/delete" method="POST" id="top_form">
             {% csrf_token %}
