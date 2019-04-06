@@ -17,6 +17,8 @@ from datetime import date
 from datetime import timedelta
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from ofd_app.filters import date_filter_format
+from ofd_app.filters import apply_user_filters, apply_order_filters
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -181,7 +183,8 @@ def orders(request):
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
     status = request.session['order_filters']['status']
-    orders = Order.get_orders(request.user, date_from, date_to, status, org)
+    user = request.session['order_filters']['user']
+    orders = Order.get_orders(request.user, date_from, date_to, status, org, user)
     order_data = []
     cnt = 0
     for order in orders:
@@ -195,8 +198,10 @@ def orders(request):
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
+    elif request.user.is_manager():
+        filters['users'] = request.user.get_childs()
     filters['status'] = OrderStatus.get_all_statuses()
-    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters})
+    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role()})
 
 @csrf_exempt
 def test(request):
@@ -217,50 +222,6 @@ def construct_pagination(request, data):
     pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
     pagination['data'] = page_object.object_list
     return pagination
-
-def date_filter_format():
-    return "%Y-%m-%d";
-
-def save_filters(session, key, date_from = None, date_to = None, status = None, org = None):
-    if key not in session:
-        session[key] = {}
-    if date_from is None or date_to is None:
-        session[key]['date_from'] = date.today().strftime(date_filter_format())
-        session[key]['date_to'] = (date.today() + timedelta(1)).strftime(date_filter_format())
-    else:
-        session[key]['date_from'] = date_from
-        session[key]['date_to'] = date_to
-    session[key]['org'] = org if org is not None and len(org) > 0 else '*'
-    session[key]['status'] = status if status is not None and len(status) > 0 else '*'
-    session.save()
-
-def save_user_filters(session, key, org = None):
-    if key not in session:
-        session[key] = {}
-    session[key]['org'] = org if org is not None and len(org) > 0 else '*'
-    session.save()
-
-def apply_user_filters(request, key):
-    if key not in request.session:
-        save_user_filters(request.session, key)
-    if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
-        org = request.POST.get('org_filter', '').strip()
-        save_user_filters(request.session, key, org)
-
-def apply_order_filters(request, key):
-    if key not in request.session:
-        save_filters(request.session, key)
-    if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
-        date_from = request.POST.get('date_from', '').strip()
-        date_to = request.POST.get('date_to', '').strip()
-        org = request.POST.get('org_filter', '').strip()
-        status = request.POST.get('status_filter', '').strip()
-        try:
-            datetime.strptime(date_from, date_filter_format())
-            datetime.strptime(date_to, date_filter_format())
-            save_filters(request.session, key, date_from, date_to, status, org)
-        except ValueError:
-            save_filters(request.session, key)
 
 def user_reg(request):
     if request.method == 'POST':

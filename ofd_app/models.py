@@ -27,12 +27,28 @@ class User(AbstractUser):
     def is_manager(self, user=None):
         user = self if user is None else user
         return user.groups.filter(name='Manager').exists()
+
     def is_user(self, user=None):
         user = self if user is None else user
         return user.groups.filter(name='User').exists()
+
     def is_admin(self, user=None):
         user = self if user is None else user
         return user.groups.filter(name='Admin').exists()
+
+    def get_childs(self):
+        users = User.objects.filter(parent=self).values('id', 'username').order_by('username')
+        return list(map(lambda x: { 'id': str(x['id']), 'value': x['username']}, users))
+
+    def get_role(self):
+        if self.is_admin():
+            return 'Admin'
+        elif self.is_manager():
+            return 'Manager'
+        elif self.is_user():
+            return 'User'
+        elif self.is_superuser:
+            return 'God'
 
     @staticmethod
     def get_organizations():
@@ -88,13 +104,16 @@ class Order(models.Model):
           pass
 
     @staticmethod
-    def get_orders(user, date_from=None, date_to=None, status_code=None, org=None):
+    def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None):
       if user.is_admin() or user.is_superuser:
           orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
           if org is not None and org != '*':
               orders = orders.filter(user__org=org)
       elif user.is_manager():
           orders = Order.objects.all().filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
+          if user_id is not None and user_id != '*':
+            if int(user_id) > 0:
+                orders = orders.filter(user__id=int(user_id))
       else:
           orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
       if status_code is not None and status_code != '*':
