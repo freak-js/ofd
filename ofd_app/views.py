@@ -127,7 +127,7 @@ def user(request, **kwargs):
         if not request.user.has_perm('ofd_app.view_user'):
             return redirect('products')
         user_form = UserCreationFormCustom()
-    return render(request, 'ofd_app/user.html', {'user_form': user_form})
+    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.change_productuserrel', login_url='/products/')
@@ -154,7 +154,12 @@ def users(request):
         if org is not None and len(org) > 0 and org != '*':
             users = users.filter(org=org)
         filters['org'] = User.get_organizations()
-    return render(request, 'ofd_app/users.html', {'users': users, 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters})
+    user_data = []
+    for user in users:
+        data = user.__dict__
+        data['role'] = user.get_role()
+        user_data.append(data)
+    return render(request, 'ofd_app/users.html', {'users': user_data, 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 @require_POST

@@ -8,14 +8,14 @@ def date_filter_format():
 
 def apply_user_filters(request, key):
     if key not in request.session:
-        save_user_filters(request.session, key)
+        save_user_filters(request, key)
     if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
         org = request.POST.get('org_filter', '').strip()
-        save_user_filters(request.session, key, org)
+        save_user_filters(request, key, org)
 
 def apply_order_filters(request, key):
     if key not in request.session:
-        save_order_filters(request.session, key)
+        save_order_filters(request, key)
     if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
         date_from = request.POST.get('date_from', '').strip()
         date_to = request.POST.get('date_to', '').strip()
@@ -25,16 +25,21 @@ def apply_order_filters(request, key):
         try:
             datetime.strptime(date_from, date_filter_format())
             datetime.strptime(date_to, date_filter_format())
-            save_order_filters(request.session, key, date_from, date_to, status, org, user)
+            save_order_filters(request, key, date_from, date_to, status, org, user)
         except ValueError:
-            save_order_filters(request.session, key)
+            save_order_filters(request, key)
 
-def save_order_filters(session, key, date_from = None, date_to = None, status = None, org = None, user= None):
+def save_order_filters(request, key, date_from = None, date_to = None, status = None, org = None, user= None):
+    session = request.session
     if key not in session:
         session[key] = {}
     if date_from is None or date_to is None:
-        session[key]['date_from'] = date.today().strftime(date_filter_format())
-        session[key]['date_to'] = (date.today() + timedelta(1)).strftime(date_filter_format())
+        if (request.user.is_manager() or request.user.is_user()):
+            session[key]['date_from'] = (date.today() - timedelta(90)).strftime(date_filter_format())
+            session[key]['date_to'] = (date.today() + timedelta(1)).strftime(date_filter_format())
+        else:
+            session[key]['date_from'] = (date.today() - timedelta(6)).strftime(date_filter_format())
+            session[key]['date_to'] = (date.today() + timedelta(1)).strftime(date_filter_format())
     else:
         session[key]['date_from'] = date_from
         session[key]['date_to'] = date_to
@@ -43,7 +48,8 @@ def save_order_filters(session, key, date_from = None, date_to = None, status = 
     session[key]['user'] = user if user is not None and to_int(user, 0) > 0 else '*'
     session.save()
 
-def save_user_filters(session, key, org = None):
+def save_user_filters(request, key, org = None):
+    session = request.session
     if key not in session:
         session[key] = {}
     session[key]['org'] = org if org is not None and len(org) > 0 else '*'
