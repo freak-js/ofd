@@ -158,6 +158,7 @@ def users(request):
     for user in users:
         data = user.__dict__
         data['role'] = user.get_role()
+        data['childs'] = user.get_childs()
         user_data.append(data)
     return render(request, 'ofd_app/users.html', {'users': user_data, 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
 

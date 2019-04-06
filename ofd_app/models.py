@@ -37,8 +37,8 @@ class User(AbstractUser):
         return user.groups.filter(name='Admin').exists()
 
     def get_childs(self):
-        users = User.objects.filter(parent=self).values('id', 'username').order_by('username')
-        return list(map(lambda x: { 'id': str(x['id']), 'value': x['username']}, users))
+        users = User.objects.filter(parent=self).order_by('username')
+        return users.values()
 
     def get_role(self):
         if self.is_admin():
