@@ -15,14 +15,17 @@
     <div class="content flex-grow-1">
         <div class="aside">
             <div class="aside__text">
-                <div class="asside__text-mod">
-                <h4>Красивый заголовок</h4>
+                <div class="aside__text-mod">
+                <h2>Красивый заголовок</h2>
                 <span>Очень крутое описание платформы, ее фишек, фич, удобства и прекрасного дизайна разработтаного настоящим профессионалом своего дела.</span>
                 </div>
             </div>
             <div class="content__animation">
                 <img src="/static/content-logo-275.png" alt="анимация кассового чека mir-ofd.ru">
                 <img src="/static/content-kassa-275.png" alt="выезжающий чек mir-ofd.ru" class="content-kassa">
+                <div class="random">
+                    <span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span>
+                </div>
             </div>
         </div>
         <div class="registration_form">
@@ -107,6 +110,57 @@
     <script src="//ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src='/static/random.js'></script>
+    <script>
+    $(document).ready(function(){
+
+        setTimeout(function() {
+
+            var $randomnbr = $('.nbr');
+            var $timer= 10;
+            var $it;
+            var $data = 0;
+            var index;
+            var change;
+            var letters = ["M", "I", "R", "-", "O", "F", "D", ".", "R", "U"];
+            
+            $randomnbr.each(function(){
+                
+            change = Math.round(Math.random()*100);
+            $(this).attr('data-change', change);
+            
+            });
+            
+            function random(){
+            return Math.round(Math.random()*9);
+            };
+            
+            function select(){
+            return Math.round(Math.random()*$randomnbr.length+1);
+            };
+            
+            function value(){
+            $('.nbr:nth-child('+select()+')').html(''+random()+'');
+            $('.nbr:nth-child('+select()+')').attr('data-number', $data);
+            $data++;
+            
+            $randomnbr.each(function(){
+                if(parseInt($(this).attr('data-number')) > parseInt($(this).attr('data-change'))){
+                    index = $('.ltr').index(this);
+                    $(this).html(letters[index]);
+                    $(this).removeClass('nbr');
+                }
+            });
+            
+            };
+            
+            $it = setInterval(value, $timer);
+        },4000 );
+      });
+    </script>
 </body>
 </html>
 <!-- telegram @Barsik or @Manujli -->
+
+
+

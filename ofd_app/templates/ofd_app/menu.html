@@ -51,17 +51,17 @@
             <i class="fa fa-cog fontawesome_gear"></i>
         </button>
         <div class="dropdown-menu">
-          {% if perms.ofd_app.change_product %}
+          {% if user_role == "God" %}
+          <a class="dropdown-item" href="/user/">Добавить администратора</a>
+          {% elif user_role == "Admin" %}
           <a class="dropdown-item" href="/user/">Добавить менеджера</a>
-          {% else %}
-          {% if perms.ofd_app.view_user %}
+          {% elif user_role == "Manager" %}
           <a class="dropdown-item" href="/user/">Добавить сотрудника</a>
-          {% endif %}
           {% endif %}
           {% if perms.ofd_app.change_product %}
           <a class="dropdown-item" href="/product/">Добавить продукт</a>
           {% endif %}
-          {% if perms.ofd_app.view_user %}
+          {% if user_role == "God" or "Admin" or "Manager" %}
           {% if can_delete %}
           <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
           {% else %}

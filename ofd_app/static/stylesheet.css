@@ -35,6 +35,13 @@ body{
 	bottom: 195px;
 	left: 185px;
 	animation: kassa 60s ease-out 2s;
+	animation-iteration-count: infinite;
+}
+.random{
+	position: relative;
+	bottom: 164px;
+	font-weight: bold;
+	letter-spacing: 3px;
 }
 
 /* ПЕРЕНАЗНАЧЕНИЕ DJANGO CSS */
@@ -161,7 +168,7 @@ body{
 .aside__text{
 	padding: 30px;
 }
-.asside__text-mod{
+.aside__text-mod{
 	font-size: 18px;
 	font-family: 'Yanone Kaffeesatz', sans-serif;
 	text-align: left;
