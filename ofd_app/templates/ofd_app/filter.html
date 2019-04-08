@@ -70,7 +70,7 @@ jQuery(function($){
 			{% endfor %}
 			</select>
 			{% if user_role == 'Manager'%}
-			<label for="status_filter">Пользователь:</label>
+			<label for="status_filter">Сотрудник:</label>
 			<select class="DatepickerBox__Filter" id="user_filter" name="user_filter">
 				{% if request.session.order_filters.user == "*" %}
 				<option selected value="*">Все</option>
