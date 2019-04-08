@@ -36,4 +36,5 @@ urlpatterns = [
     path('basket/', views.get_basket, name='basket'),
     path('orders/', views.orders, name='orders'),
     path('test/', views.test, name='test'),
+    path('stat_org/', views.stat_org, name='stat_org'),
 ]

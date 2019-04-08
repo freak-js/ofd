@@ -210,6 +210,40 @@ def orders(request):
     return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role()})
 
 @csrf_exempt
+def stat_org(request):
+    ##apply_stat_filters()
+    sql = '''
+    select 1 as id
+         , u.org
+         , u.inn
+         , sum(q.total) as total
+         , count(q.order_id) as cnt_all
+         , sum(case when q.status = 'A' then 1 else 0 end) as cnt_approve
+         , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
+         , sum(case when q.status = 'R' then 1 else 0 end) as cnt_reject
+        from ofd_app_user u
+            left outer join
+            (
+            select o.user_id
+                    , o.id as order_id
+                    , max(o.status_id) as status
+                    , sum(op.amount * op.cost) as total
+                from ofd_app_order o
+                    left outer join ofd_app_orderproduct op
+                                on o.id = op.order_id
+                group by o.user_id
+                    , o.id
+            ) q on u.id = q.user_id
+        group by org, inn
+    '''
+    result = User.objects.raw(sql)
+    data = []
+    for row in result:
+        item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
+        data.append(item)
+    return JsonResponse({'res': data})
+
+@csrf_exempt
 def test(request):
     return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
 
