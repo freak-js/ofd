@@ -214,7 +214,7 @@ def orders(request):
 
 @login_required(login_url='/login/')
 def stat_org(request):
-    apply_filters(request, 'stat_org', ['date'])
+    apply_filters(request, 'stat_org', {'date'})
     date_from = datetime.strptime(request.session['stat_org']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['stat_org']['date_to'], date_filter_format())
     sql = '''
