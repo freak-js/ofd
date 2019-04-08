@@ -37,6 +37,11 @@
         <a href="/orders" class="nav_link"><strong>Мои заказы</strong></a>
         {% endif %}
     </div>
+    {% if user_role == "Admin" or user_role == "God" %}
+    <div class="top_menu_link_div">
+      <a href="/stat_org" class="nav_link"><strong>Статистика</strong></a>
+    </div>
+    {% endif %}
 
     <div class="top_menu_width_div"></div>
 
@@ -61,7 +66,7 @@
           {% if perms.ofd_app.change_product %}
           <a class="dropdown-item" href="/product/">Добавить продукт</a>
           {% endif %}
-          {% if user_role == "God" or "Admin" or "Manager" %}
+          {% if user_role == "God" or user_role == "Admin" or user_role == "Manager" %}
           {% if can_delete %}
           <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
           {% else %}

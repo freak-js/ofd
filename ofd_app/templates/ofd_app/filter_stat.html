@@ -1,0 +1,42 @@
+<script type="text/javascript">
+jQuery(function($){
+	$.datepicker.regional['ru'] = {
+		closeText: 'Закрыть',
+		prevText: '&#x3c;Пред',
+		nextText: 'След&#x3e;',
+		currentText: 'Сегодня',
+		monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь',
+		'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+		monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн',
+		'Июл','Авг','Сен','Окт','Ноя','Дек'],
+		dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+		dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+		dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+		weekHeader: 'Нед',
+		dateFormat: 'yy-mm-dd',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: false,
+		yearSuffix: ''};
+	$.datepicker.setDefaults($.datepicker.regional['ru']);
+});
+</script> 
+
+<script type="text/javascript">
+    $(function() {
+        $('#datep').datepicker();
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+        $('#datep2').datepicker();
+    });
+</script>
+<div class="container container_min_width">
+	<form action="/stat_org/" method="POST" name="date_filter">
+		{% csrf_token %}
+		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}" class="DatepickerBox__DateFrom">
+		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}" class="DatepickerBox__DateTo">
+		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
+	</form>
+</div>
