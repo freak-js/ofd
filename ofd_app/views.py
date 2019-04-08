@@ -18,7 +18,8 @@ from datetime import timedelta
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from ofd_app.filters import date_filter_format
-from ofd_app.filters import apply_user_filters, apply_order_filters
+#from ofd_app.filters import apply_user_filters, apply_order_filters
+from ofd_app.filters import apply_filters
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -84,7 +85,7 @@ def get_basket(request):
                 product['sum'] = item['cost'] * item['quantity']
                 products.append(product)
                 total += product['sum']
-    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total})
+    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total, 'user_role': request.user.get_role()})
 
 
 @login_required(login_url='/login/')
@@ -144,7 +145,8 @@ def user_product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
-    apply_user_filters(request, 'user_filters')
+    #apply_user_filters(request, 'user_filters')
+    apply_filters(request, 'user_filters', {'org'})
     filters = {}
     if request.user.groups.filter(name='Manager').exists():
         users = User.objects.all().filter(is_active = True).filter(is_superuser=False).filter(parent=request.user)
@@ -180,7 +182,8 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    apply_order_filters(request, 'order_filters')
+    #apply_order_filters(request, 'order_filters')
+    apply_filters(request, 'order_filters', ['date', 'status', 'org', 'user'])
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
@@ -211,7 +214,9 @@ def orders(request):
 
 @login_required(login_url='/login/')
 def stat_org(request):
-    ##apply_stat_filters()
+    apply_filters(request, 'stat_org', ['date'])
+    date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
+    date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     sql = '''
     select 1 as id
          , u.org
@@ -231,17 +236,19 @@ def stat_org(request):
                 from ofd_app_order o
                     left outer join ofd_app_orderproduct op
                                 on o.id = op.order_id
+             where adddate >= %s
+               and adddate < %s
                 group by o.user_id
                     , o.id
             ) q on u.id = q.user_id
         group by org, inn
     '''
-    result = User.objects.raw(sql)
+    result = User.objects.raw(sql, [date_from, date_to])
     data = []
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
-    return render(request, 'ofd_app/stat_org.html', {'stat': data})
+    return render(request, 'ofd_app/stat_org.html', {'stat': data, 'user_role': request.user.get_role()})
 
 @csrf_exempt
 def test(request):
