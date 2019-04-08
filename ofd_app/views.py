@@ -57,7 +57,7 @@ def products(request):
             if quantity > 0:
                 request.session['basket'].append({'id': product.product_id, 'name': product.product_name, 'cost': product.by_user__cost if product.by_user__cost is not None else product.product_cost, 'quantity': quantity})
         return redirect('basket')
-    return render(request, 'ofd_app/index_top.html', {'products': products, 'can_delete': request.user.has_perm('ofd_app.delete_product')})
+    return render(request, 'ofd_app/index_top.html', {'products': products, 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 def get_basket(request):
@@ -282,11 +282,10 @@ def user_save(user_form, request_user=None):
         ##Resolve group
         if user.groups.all().count() == 0 and not user.is_superuser:
             user_resolve_group(user, request_user)
-        if user.parent is None and request_user is not None and request_user.groups.filter(name='Manager').exists():
+        if user.parent is None and request_user is not None and request_user.is_manager():
             user.parent = request_user
-            user.save()
-        if user.groups.filter(name='User').exists() and (user.inn is not None or user.org is not None):
-            user.inn = None
-            user.org = None
-            user.save()
+        if user.is_user() and (user.inn is None or user.org is None):
+            user.inn = user.parent.inn
+            user.org = user.parent.org
+        user.save()
     return user

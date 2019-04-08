@@ -17,7 +17,7 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
         instance = kwargs.get('instance', None)
-        if instance.is_user():
+        if instance.is_user() and instance.parent is not None:
             kwargs.update(initial={'inn': instance.parent.inn, 'org': instance.parent.org})
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['readonly'] = True
