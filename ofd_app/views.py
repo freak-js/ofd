@@ -183,7 +183,7 @@ def user_delete(request):
 @login_required(login_url='/login/')
 def orders(request):
     #apply_order_filters(request, 'order_filters')
-    apply_filters(request, 'order_filters', ['date', 'status', 'org', 'user'])
+    apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()

@@ -35,8 +35,8 @@ jQuery(function($){
 <div class="container container_min_width">
 	<form action="/stat_org/" method="POST" name="date_filter">
 		{% csrf_token %}
-		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.order_filters.date_from }}" class="DatepickerBox__DateFrom">
-		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}" class="DatepickerBox__DateTo">
+		<label for="datep">От:&nbsp</label><input id="datep" name="date_from" autocomplete="off" value="{{ request.session.stat_org.date_from }}" class="DatepickerBox__DateFrom">
+		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.stat_org.date_to }}" class="DatepickerBox__DateTo">
 		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
 	</form>
 </div>
