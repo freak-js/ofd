@@ -209,7 +209,7 @@ def orders(request):
     filters['status'] = OrderStatus.get_all_statuses()
     return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role()})
 
-@csrf_exempt
+@login_required(login_url='/login/')
 def stat_org(request):
     ##apply_stat_filters()
     sql = '''
@@ -241,7 +241,7 @@ def stat_org(request):
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
-    return JsonResponse({'res': data})
+    return render(request, 'ofd_app/stat_org.html', {'stat': data})
 
 @csrf_exempt
 def test(request):
