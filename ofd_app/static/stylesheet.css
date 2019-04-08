@@ -469,7 +469,7 @@ body{
 	border: 1px solid #afbcc7;
 	background-color: #f0f0f0;
 }
-.DatepickerBox__OrgFilter{
+.DatepickerBox__Filter{
 	width: 150px;
     height: 27px;
     border-radius: 10px;
@@ -477,14 +477,7 @@ body{
     border: 1px solid #afbcc7;
     color: #485967;
 }
-.DatepickerBox__StatusFilter{
-	width: 150px;
-    height: 27px;
-    border-radius: 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #afbcc7;
-    color: #485967;
-}
+
 /* TOOLTIP JAVA SCRIPT */
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
     border-left-color: #485967; /* цвет стрелочки */

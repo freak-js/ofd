@@ -2,7 +2,7 @@
 	<form action="/users/" method="POST" name="date_filter">
 		{% csrf_token %}
 		<label for="org_filter">Организация:</label>
-		<select class="DatepickerBox__OrgFilter" id="org_filter" name="org_filter">
+		<select class="DatepickerBox__Filter" id="org_filter" name="org_filter">
 		  {% if request.session.user_filters.org == "*" %}
 		  <option selected value="*">Все</option>
 		  {% else %}

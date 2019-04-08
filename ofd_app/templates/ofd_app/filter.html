@@ -39,7 +39,7 @@ jQuery(function($){
 		<label for="datep">До:&nbsp</label><input id="datep2" name="date_to" autocomplete="off" value="{{ request.session.order_filters.date_to }}" class="DatepickerBox__DateTo">
 		{% if perms.ofd_app.change_product %}
 		<label for="org_filter">Организация:</label>
-		<select class="DatepickerBox__OrgFilter" id="org_filter" name="org_filter">
+		<select class="DatepickerBox__Filter" id="org_filter" name="org_filter">
 		  {% if request.session.order_filters.org == "*" %}	
 		  <option selected value="*">Все</option>
 		  {% else %}
@@ -55,7 +55,7 @@ jQuery(function($){
 		</select>
 		{% endif %}
 		<label for="status_filter">Статус:</label>
-		<select class="DatepickerBox__StatusFilter" id="status_filter" name="status_filter">
+		<select class="DatepickerBox__Filter" id="status_filter" name="status_filter">
 			{% if request.session.order_filters.status == "*" %}
 			<option selected value="*">Все</option>
 			{% else %}
@@ -71,7 +71,7 @@ jQuery(function($){
 			</select>
 			{% if user_role == 'Manager'%}
 			<label for="status_filter">Пользователь:</label>
-			<select class="DatepickerBox__UserFilter" id="user_filter" name="user_filter">
+			<select class="DatepickerBox__Filter" id="user_filter" name="user_filter">
 				{% if request.session.order_filters.user == "*" %}
 				<option selected value="*">Все</option>
 				{% else %}
