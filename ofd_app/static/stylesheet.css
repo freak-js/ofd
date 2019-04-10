@@ -28,8 +28,7 @@ body{
 		bottom: 240px;
 	}
 }
-
-.content-kassa{
+.img-kassa{
 	display: block;
 	position: relative;
 	bottom: 195px;
@@ -53,8 +52,21 @@ body{
 	padding-top: 2px !important;
 }
 .form-check-input {
-    position: absolute !important;
     margin-top: 7px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    position: relative !important;
+}
+.form-check-input__UserBox{
+    margin-top: 4px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    position: relative !important;
+}
+.form-check-input__ManagerBox{
+	margin-top: 5px !important;
     margin-left: auto !important;
     margin-right: auto !important;
     display: block !important;
@@ -161,6 +173,9 @@ body{
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+.content__animation{
+	width: 500px;
 }
 .aside{
 	width: 500px;
@@ -275,6 +290,13 @@ body{
 }
 .pagination{
 	margin-bottom: 0;
+}
+.UserBox{
+	width: 600px;
+	height: 20px !important;
+	margin-top: 3px;
+	border-radius: 10px;
+	background-color: #dee2e6;
 }
 
 /* КНОПКИ */

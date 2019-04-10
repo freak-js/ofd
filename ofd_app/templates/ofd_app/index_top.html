@@ -4,7 +4,7 @@
 	{% load static %}
 	{% load crispy_forms_tags %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
@@ -17,43 +17,43 @@
 		{% csrf_token %}
 		</form>
 		<div class="row global_order_nav_div font_900">
-			<div class="col-sm-2 p-1">
+			<div class="col-2 p-1">
 				<span></span>
 			</div>
-			<div class="col-sm-4 p-1">
+			<div class="col-4 p-1">
 				<span>Наименование продукта</span>
 			</div>
-			<div class="col-sm-2 p-1">
+			<div class="col-2 p-1">
 				<span>Стоимость</span>
 			</div>
-			<div class="col-sm-2 p-1">
+			<div class="col-2 p-1">
 				<span>Количество</span>
 			</div>
-			<div class="col-sm-2 p-1">
+			<div class="col-2 p-1">
 				<span></span>
 			</div>
 		</div>
 		{% for product in products %}
         <div class="row global_order_nav_div">
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
 				{% if perms.ofd_app.change_product %}
 				<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
 				{% endif %}
             </div>
-            <div class="col-sm-4 p-1">
+            <div class="col-4 p-1">
                 <span>{{ product.product_name }}</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
 				{% if product.by_user__cost is not None %}
 				<span>{{ product.by_user__cost }}</span>
 				{% else %}
 				<span>{{ product.product_cost }}</span>
 				{% endif %}
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
 				<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
 				{% if perms.ofd_app.change_product %}
 				<input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
 				{% endif %}

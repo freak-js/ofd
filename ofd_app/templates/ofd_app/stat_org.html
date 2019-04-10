@@ -4,7 +4,7 @@
     {% load static %}
     {% load crispy_forms_tags %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
@@ -18,49 +18,49 @@
         <form action="/orders/" method="POST" id="status" name="status">
         {% csrf_token %}
         <div class="row global_order_nav_div font_900">
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>Организация</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>ИНН</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>Сумма</span>
             </div>
-            <div class="col-sm-1 p-1">
+            <div class="col-1 p-1">
                 <span>Заказов</span>
             </div>
-            <div class="col-sm-1 p-1">
+            <div class="col-1 p-1">
                 <span>В работе</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>Подтверждено</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>Отклонено</span>
             </div>
         </div>
         {% for stat in stat %}
         <div class="row global_order_nav_div">
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>{{ stat.org }}</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>{{ stat.inn }}</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>{{ stat.total }}</span>
             </div>
-            <div class="col-sm-1 p-1">
+            <div class="col-1 p-1">
                 <span>{{ stat.cnt_all }}</span>
             </div>
-            <div class="col-sm-1 p-1">
+            <div class="col-1 p-1">
                 <span>{{ stat.cnt_in_progress }}</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>{{ stat.cnt_approve }}</span>
             </div>
-            <div class="col-sm-2 p-1">
+            <div class="col-2 p-1">
                 <span>{{ stat.cnt_reject }}</span>
             </div>
         </div>

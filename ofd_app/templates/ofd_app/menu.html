@@ -14,65 +14,106 @@
     <div class="top_menu_link_div">
     	<a href="/products/" class="nav_link"><strong>Продукция</strong></a>
     </div>
+
     {% if perms.ofd_app.change_product %}
+
     {% if perms.ofd_app.view_user %}
+
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link"><strong>Пользователи</strong></a>
     </div>
+
     {% endif %}
+
     {% else %}
+
     {% if perms.ofd_app.view_user %}
+
     <div class="top_menu_link_div">
     	<a href="/users/" class="nav_link"><strong>Сотрудники</strong></a>
     </div>
+
     {% endif %}
+
     {% endif %}
+
     <div class="top_menu_link_div">
     	<a href="/user/{{request.user.id}}" class="nav_link"><strong>Моя карточка</strong></a>
     </div>
     <div class="top_menu_link_div">
+
         {% if perms.ofd_app.view_user %}
+
         <a href="/orders" class="nav_link"><strong>Заказы</strong></a>
+
         {% else %}
+
         <a href="/orders" class="nav_link"><strong>Мои заказы</strong></a>
+
         {% endif %}
+
     </div>
+
     {% if user_role == "Admin" or user_role == "God" %}
+
     <div class="top_menu_link_div">
       <a href="/stat_org" class="nav_link"><strong>Статистика</strong></a>
     </div>
+
     {% endif %}
 
     <div class="top_menu_width_div"></div>
 
     <div class="top_menu_link_div">
             <a href="/basket" class="fontawesome_link_basket"><i class="fa fa-shopping-cart"></i></a>
+
             {%if request.session.basket %}
+
             <i class="fa fa-plus-circle fontawesome_add_basket"></i>
+
             {% endif %}
+
     </div>
     <div class="btn-group dropleft top_select_box">
         <button type="button" class="btn dropdown-toggle top_select_box_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-cog fontawesome_gear"></i>
         </button>
         <div class="dropdown-menu">
+
           {% if user_role == "God" %}
+
           <a class="dropdown-item" href="/user/">Добавить администратора</a>
+
           {% elif user_role == "Admin" %}
+
           <a class="dropdown-item" href="/user/">Добавить менеджера</a>
+
           {% elif user_role == "Manager" %}
+
           <a class="dropdown-item" href="/user/">Добавить сотрудника</a>
+
           {% endif %}
+
           {% if perms.ofd_app.change_product %}
+
           <a class="dropdown-item" href="/product/">Добавить продукт</a>
+
           {% endif %}
+
           {% if user_role == "God" or user_role == "Admin" or user_role == "Manager" %}
+
           {% if can_delete %}
+
           <button type="submit" class="btn dropdown-item" form="top_form">Удалить отмеченное</button>
+
           {% else %}
+
           <button type="submit" class="btn dropdown-item disabled" form="top_form">Удалить отмеченное</button>
+
           {% endif %}
+
           {% endif %}
+
           <a class="dropdown-item" href="#">Сменить пароль</a>
         </div>
       </div>
@@ -88,5 +129,3 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
-
-<!--  -->
