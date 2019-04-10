@@ -87,9 +87,11 @@
                 </div>
         </div>
 
-        {% for child in user.childs %}
+        <div class="UserBox__Tree">
 
-        <div class="row UserBox">
+            {% for child in user.childs %}
+        
+            <div class="UserBox">
                 <div class="col-2 p-0">
                     <a href="/user/{{child.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
                 </div>
@@ -99,15 +101,17 @@
                 <div class="col-3 p-0">
                     <span>{{ child.phone_number }}</span>
                 </div>
-                <div class="col-3 p-0">
+                <div class="col-2 p-0">
                     <span>{{ child.city }}</span>
                 </div>
                 <div class="col-1 p-0">
-                        <input type="checkbox" class="form-check-input__UserBox" name="user_to_delete" value="{{child.id}}" form="top_form">
-                    </div>
+                    <input type="checkbox" class="form-check-input__UserBox" name="user_to_delete" value="{{child.id}}" form="top_form">
+                </div>
             </div>
             
             {% endfor %}
+
+        </div>
 
             {% endfor %}
 

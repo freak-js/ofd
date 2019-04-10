@@ -241,7 +241,7 @@ body{
     color: #aab3ba;
 }
 .global_order_nav_div{
-	background-color: #dee2e6;
+	background-color: #d8dee3;
 	margin-top: 5px;
 	border-radius: 10px;
 }
@@ -292,11 +292,18 @@ body{
 	margin-bottom: 0;
 }
 .UserBox{
+	display: flex;
 	width: 600px;
 	height: 20px !important;
-	margin-top: 3px;
-	border-radius: 10px;
-	background-color: #dee2e6;
+	margin-top: 5px;
+	background-color: #E4E8EA;
+	color: #888e94;
+}
+.UserBox__Tree{
+	border-left: 2px solid #48596759;
+    text-align: left;
+	padding: 0 0 0 10px;
+	margin-left: 25px;
 }
 
 /* КНОПКИ */
@@ -342,7 +349,7 @@ body{
 }
 .card_btn{
     width: 50px;
-    background-color: #dee2e6;
+    background-color: #d8dee3;
 	color: #485967;
 	padding: 0;
 }
