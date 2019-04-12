@@ -17,7 +17,7 @@
     <div class="container container_min_width flex-grow-1">
         <form action="/orders/" method="POST" id="status" name="status">
         {% csrf_token %}
-        <div class="row global_order_nav_div font_900">
+        <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
                 <span>Заказ&nbsp№</span>
             </div>
@@ -50,7 +50,7 @@
             </div>
             <div class="col-1 p-1">
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}"><i class="fa fa-user"></i>
-                </i></button>
+                </button>
             </div>
             <div class="col-3 p-1">
                 <span>{{ order.adddate }}</span>

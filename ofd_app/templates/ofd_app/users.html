@@ -23,7 +23,7 @@
         <form action="/user/delete" method="POST" id="top_form">
             {% csrf_token %}
         </form>
-        <div class="row global_order_nav_div font_900">
+        <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
                 <span></span>
             </div>
@@ -52,7 +52,7 @@
 
         {% for user in users %}
 
-        <div class="row global_order_nav_div">
+        <div class="row ManagerBox">
             <div class="col-1 p-1">
                 <a href="/user/{{user.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
                 &nbsp
@@ -83,35 +83,39 @@
                 <span>{{ user.city }}</span>
             </div>
             <div class="col-1 p-1">
-                    <input type="checkbox" class="form-check-input__ManagerBox" name="user_to_delete" value="{{user.id}}" form="top_form">
-                </div>
+                <input type="checkbox" class="form-check-input__ManagerBox" name="user_to_delete" value="{{user.id}}" form="top_form">
+            </div>
         </div>
 
-        <div class="UserBox__Tree">
-
             {% for child in user.childs %}
-        
-            <div class="UserBox">
+
+            <div class="row UserBox">
+                <div class="col-1 p-0">
+                    <a href="/user/{{child.id}}" class="fontawesome_link"><i class="fas fa-edit UserBox__Margin-Fa"></i></a>
+                </div>
+                <div class="col-1 p-0">
+                    <span>{{ child.first_name }}</span>
+                </div>
                 <div class="col-2 p-0">
-                    <a href="/user/{{child.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
+                    <span>{{ child.last_name }}</span>
                 </div>
-                <div class="col-3 p-0">
-                    <span>{{ child.last_name }}&nbsp{{ child.first_name }}</span>
-                </div>
-                <div class="col-3 p-0">
+
+                <div class="col-2 p-1"></div>
+
+                <div class="col-2 p-1"></div>
+
+                <div class="col-2 p-0">
                     <span>{{ child.phone_number }}</span>
                 </div>
-                <div class="col-2 p-0">
+                <div class="col-1 p-0">
                     <span>{{ child.city }}</span>
                 </div>
                 <div class="col-1 p-0">
                     <input type="checkbox" class="form-check-input__UserBox" name="user_to_delete" value="{{child.id}}" form="top_form">
                 </div>
             </div>
-            
-            {% endfor %}
 
-        </div>
+            {% endfor %}
 
             {% endfor %}
 

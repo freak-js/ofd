@@ -1,8 +1,11 @@
 <!doctype html>
 <html lang="ru">
 <head>
+
 	{% load static %}
+
 	{% load crispy_forms_tags %}
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
@@ -11,12 +14,16 @@
     <title>Доступные коды</title>
 </head>
 <body class="text-center">
+
 	{% include "ofd_app/menu.html" %}
+
     <div class="container container_min_width flex-grow-1">
 		<form action="/products/delete" method="POST" name="" id="top_form">
+
 		{% csrf_token %}
+
 		</form>
-		<div class="row global_order_nav_div font_900">
+		<div class="row global_order_nav_div font-bold">
 			<div class="col-2 p-1">
 				<span></span>
 			</div>
@@ -33,38 +40,101 @@
 				<span></span>
 			</div>
 		</div>
+
 		{% for product in products %}
+
         <div class="row global_order_nav_div">
             <div class="col-2 p-1">
+
 				{% if perms.ofd_app.change_product %}
+
 				<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
+
 				{% endif %}
+
             </div>
             <div class="col-4 p-1">
                 <span>{{ product.product_name }}</span>
             </div>
             <div class="col-2 p-1">
+
 				{% if product.by_user__cost is not None %}
+
 				<span>{{ product.by_user__cost }}</span>
+
 				{% else %}
+
 				<span>{{ product.product_cost }}</span>
+
 				{% endif %}
+
             </div>
             <div class="col-2 p-1">
-				<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
+					<!-- Button trigger modal -->
+					<button type="button" class="btn OrderBuy" data-toggle="modal" data-target="#exampleModalCenter">Купить</button>
+						
+						<!-- Modal -->
+						<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="ModalHeader">
+									<h4 class="modal-title" id="exampleModalLongTitle">
+
+										{{ product.product_name }}
+
+										{% if product.by_user__cost is not None %}
+
+										{{ product.by_user__cost }}
+
+										{% else %}
+
+										{{ product.product_cost }}р.
+
+										{% endif %}
+
+									</h4>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div>
+										
+									</div>
+									<div>
+
+									</div>
+								</div>
+								<div class="ModalFooter">
+									<button type="button" class="btn ModalExit" data-dismiss="modal">Отменить</button>
+									<button type="button" class="btn ModalBuy">Оформить</button>
+								</div>
+							</div>
+							</div>
+						</div>
+					<!--
+					<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
+					-->
             </div>
             <div class="col-2 p-1">
+
 				{% if perms.ofd_app.change_product %}
+
 				<input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+
 				{% endif %}
+
             </div>
 		</div>
+
 		{% endfor %}
+
 	</div>
+	<!--
 	<form action="/products/" method="POST" id="basket_form">
 		{% csrf_token %}
 		<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
 	</form>
+	-->
 	{% include "ofd_app/footer.html" %}
+
 </body>
 </html>
