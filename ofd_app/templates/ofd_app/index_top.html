@@ -34,7 +34,7 @@
 				<span>Стоимость</span>
 			</div>
 			<div class="col-2 p-1">
-				<span>Количество</span>
+
 			</div>
 			<div class="col-2 p-1">
 				<span></span>
@@ -60,21 +60,21 @@
 
 				{% if product.by_user__cost is not None %}
 
-				<span>{{ product.by_user__cost }}</span>
+				<span>{{ product.by_user__cost }}р.</span>
 
 				{% else %}
 
-				<span>{{ product.product_cost }}</span>
+				<span>{{ product.product_cost }}р.</span>
 
 				{% endif %}
 
             </div>
             <div class="col-2 p-1">
 					<!-- Button trigger modal -->
-					<button type="button" class="btn OrderBuy" data-toggle="modal" data-target="#exampleModalCenter">Купить</button>
+					<button type="button" class="btn OrderBuy" data-toggle="modal" data-target="#exampleModalCenter{{product.product_id}}">Купить</button>
 						
 						<!-- Modal -->
-						<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal fade" id="exampleModalCenter{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="ModalHeader">
@@ -97,15 +97,15 @@
 								</div>
 								<div class="modal-body">
 									<div>
-										
+										<label>Количество: <input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}"> </label>
 									</div>
 									<div>
-
+										<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="5" form="basket_form" name="basket_comment"></textarea>
 									</div>
 								</div>
 								<div class="ModalFooter">
 									<button type="button" class="btn ModalExit" data-dismiss="modal">Отменить</button>
-									<button type="button" class="btn ModalBuy">Оформить</button>
+									<button type="submit" class="btn ModalBuy" name="" form="basket_form">Оформить</button>
 								</div>
 							</div>
 							</div>
@@ -128,12 +128,13 @@
 		{% endfor %}
 
 	</div>
-	<!--
+
 	<form action="/products/" method="POST" id="basket_form">
+
 		{% csrf_token %}
-		<button type="submit" class="btn btn-lg btn-primary btn_registration_form">В корзину</button>
+
 	</form>
-	-->
+
 	{% include "ofd_app/footer.html" %}
 
 </body>
