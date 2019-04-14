@@ -127,3 +127,5 @@ STATIC_URL = '/static/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_USER_MODEL = 'ofd_app.User'
+
+LOGIN_REDIRECT_URL = '/products/'

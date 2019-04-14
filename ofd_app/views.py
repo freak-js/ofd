@@ -43,7 +43,7 @@ def product(request, **kwargs):
         if not request.user.has_perm('ofd_app.add_product'):
             return redirect('products')
         form = ProductForm()
-    return render(request, 'ofd_app/index_product_add.html', {'form': form})
+    return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
@@ -152,7 +152,9 @@ def users(request):
         users = User.objects.all().filter(is_active = True).filter(is_superuser=False).filter(parent=request.user)
     else:
         org = request.session['user_filters']['org']
-        users = User.objects.all().filter(is_active = True).filter(is_superuser=False)
+        users = User.objects.all().filter(is_active = True).filter(is_superuser=False).filter(groups__name__in=['Manager', 'Admin'])
+        if request.user.is_admin():
+            users = users.filter(groups__name__in=['Manager'])
         if org is not None and len(org) > 0 and org != '*':
             users = users.filter(org=org)
         filters['org'] = User.get_organizations()
@@ -166,7 +168,7 @@ def users(request):
 
 @login_required(login_url='/login/')
 @require_POST
-@permission_required('auth.delete_user', login_url='/products/')
+@permission_required('ofd_app.delete_user', login_url='/products/')
 def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
@@ -325,7 +327,7 @@ def user_save(user_form, request_user=None):
             user_resolve_group(user, request_user)
         if user.parent is None and request_user is not None and request_user.is_manager():
             user.parent = request_user
-        if user.is_user() and (user.inn is None or user.org is None):
+        if user.is_user() and (user.inn is None or user.org is None or len(user.inn) == 0 or len(user.org) == 0):
             user.inn = user.parent.inn
             user.org = user.parent.org
         user.save()
