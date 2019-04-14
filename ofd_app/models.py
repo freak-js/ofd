@@ -17,8 +17,8 @@ class Product(models.Model):
 class User(AbstractUser):
     email = models.EmailField("Email")
     city = models.CharField("Город проживания", max_length=100, null=True, blank=True)
-    inn = models.CharField("ИНН", max_length = 12, null=True, blank=True)
-    org = models.CharField("Организация", max_length=100, null=True)
+    inn = models.CharField("ИНН", max_length = 12)
+    org = models.CharField("Организация", max_length=100)
     is_legal = models.BooleanField("Юридичиское лицо?", default=False)
     parent = models.ForeignKey("self", models.SET_NULL, null=True, related_name='children')
     products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
@@ -83,7 +83,7 @@ class ProductUserRel(models.Model):
 
 class OrderStatus(models.Model):
     code = models.CharField("Код статуса", max_length = 1, primary_key = True)
-    name = models.CharField("Название статуса", max_length = 10)
+    name = models.CharField("Название статуса", max_length = 10, null=True)
 
     def is_in_progress(self):
         return self.code == 'I'

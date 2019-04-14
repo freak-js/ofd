@@ -82,9 +82,12 @@
 
 										{{ product.product_name }}
 
+									&nbsp
+									<h4 class="modal-title" id="product_cost_id_{{product.product_id}}">
+
 										{% if product.by_user__cost is not None %}
 
-										{{ product.by_user__cost }}
+										{{ product.by_user__cost }}р.
 
 										{% else %}
 
@@ -93,11 +96,12 @@
 										{% endif %}
 
 									</h4>
+									</h4>
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 								</div>
 								<div class="modal-body">
 									<div>
-										<label>Количество: <input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}"> </label>
+										<label>Количество: <input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}" min="1"> </label>
 									</div>
 									<div>
 										<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="5" form="basket_form" name="basket_comment"></textarea>
@@ -124,7 +128,26 @@
 
             </div>
 		</div>
+		<!--
+		<script>
 
+			setInterval(function () {
+			  var input_number = parseInt(document.getElementById('product_to_basket_id_{{product.product_id}}').value, 10);
+			  var cost_number = parseInt({{ product.product_cost }}, 10);
+			  var total;
+			  if (Number.isNaN(input_number)) {
+				total = cost_number;
+				} else {
+					total = input_number * cost_number;
+				}
+			  document.getElementById('product_cost_id_{{product.product_id}}').value = total;
+			  console.log(input_number);
+			  console.log(cost_number);
+			  console.log(total);
+			}, 1000);
+				
+		</script>
+		-->
 		{% endfor %}
 
 	</div>
