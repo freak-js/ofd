@@ -24,6 +24,22 @@ class User(AbstractUser):
     products = models.ManyToManyField(Product, through="ProductUserRel", verbose_name="Продукты доступные пользователю")
     phone_number = models.CharField("Номер телефона", max_length = 18)
 
+    def save(self, *args, **kwargs):
+        if self.id is not None and self.is_manager():
+            need_update_childs = False
+            db_object = User.objects.get(id=self.id)
+            if db_object.inn != self.inn:
+                need_update_childs = True
+            if db_object.org != self.org:
+                need_update_childs = True
+            if need_update_childs:
+                childs = self.get_childs(False)
+                for user in childs:
+                    user.inn = self.inn
+                    user.org = self.org
+                    user.save()
+        super().save(*args, **kwargs)
+
     def is_manager(self, user=None):
         user = self if user is None else user
         return user.groups.filter(name='Manager').exists()
@@ -36,9 +52,9 @@ class User(AbstractUser):
         user = self if user is None else user
         return user.groups.filter(name='Admin').exists()
 
-    def get_childs(self):
+    def get_childs(self, as_dict=True):
         users = User.objects.filter(parent=self).order_by('username')
-        return users.values()
+        return users.values() if as_dict else users
 
     def get_role(self):
         if self.is_admin():

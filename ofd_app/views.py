@@ -120,14 +120,14 @@ def user(request, **kwargs):
     elif request.method == 'POST':
         if not request.user.has_perm('ofd_app.change_user'):
             return redirect('products')
-        user_form = UserCreationFormCustom(request.POST)
+        user_form = UserCreationFormCustom(request.POST, requested_user = request.user)
         user = user_save(user_form, request.user)
         if user is not None:
             return redirect('users')
     else:
         if not request.user.has_perm('ofd_app.view_user'):
             return redirect('products')
-        user_form = UserCreationFormCustom()
+        user_form = UserCreationFormCustom(requested_user = request.user)
     return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
