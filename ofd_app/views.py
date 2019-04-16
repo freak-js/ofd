@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import QueryDict
 from ofd_app.forms import ProductForm, UserForm, UserCreationFormCustom
-from ofd_app.models import User, Product, ProductUserRel, Order, OrderProduct, OrderStatus
+from ofd_app.models import User, Product, ProductUserRel, Order, OrderStatus
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, permission_required
 from django import forms
@@ -20,6 +20,7 @@ from django.http import JsonResponse
 from ofd_app.filters import date_filter_format
 #from ofd_app.filters import apply_user_filters, apply_order_filters
 from ofd_app.filters import apply_filters
+from ofd_app.utils import to_int
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -50,42 +51,45 @@ def product(request, **kwargs):
 def products(request):
     products = get_products(None if request.user.is_superuser else request.user);
     if request.method == 'POST':
-        request.session['basket'] = []
-        for product in products:
-            input_id = 'product_to_basket_id_' + str(product.product_id)
-            value = request.POST.get(input_id, '').strip()
-            quantity = int(value) if value else 0
-            if quantity > 0:
-                request.session['basket'].append({'id': product.product_id, 'name': product.product_name, 'cost': product.by_user__cost if product.by_user__cost is not None else product.product_cost, 'quantity': quantity})
-        return redirect('basket')
+        product_id = request.POST.get('product_id', '').strip()
+        order_comment = request.POST.get('order_comment', '').strip()
+        quantity = to_int(request.POST.get('quantity', '').strip(), 1)
+        try:
+            product = Product.objects.get(product_id=product_id)
+            order = Order(user = request.user, product=product, comment = order_comment, amount = quantity, cost = product.product_cost)
+            order.save()
+            return redirect('orders')
+        except Product.DoesNotExist:
+            ##TODO передать сообщение об ошибке
+            return redirect('products')
     return render(request, 'ofd_app/index_top.html', {'products': products, 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
 
-@login_required(login_url='/login/')
-def get_basket(request):
-    products = []
-    total = 0
-    if request.method == 'POST':
-        action = request.POST.get('p_act', '')
-        if action == 'create' and 'basket' in request.session and len(request.session['basket']) > 0:
-            basket_comment = request.POST.get('basket_comment', '').strip()
-            order = Order(user = request.user, comment = basket_comment)
-            order.save()
-            for item in request.session['basket']:
-                product = Product.objects.get(product_id=item['id'])
+#@login_required(login_url='/login/')
+#def get_basket(request):
+#    products = []
+#    total = 0
+#    if request.method == 'POST':
+#        action = request.POST.get('p_act', '')
+#        if action == 'create' and 'basket' in request.session and len(request.session['basket']) > 0:
+#            basket_comment = request.POST.get('basket_comment', '').strip()
+#            order = Order(user = request.user, comment = basket_comment)
+#            order.save()
+#            for item in request.session['basket']:
+#                product = Product.objects.get(product_id=item['id'])
                 ##TODO обработать ситуацию, когда продукта нет
-                order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
-                order_product.save()
-            request.session.pop('basket')
-        elif action == 'clear':
-            request.session.pop('basket')
-    else:
-        if 'basket' in request.session and len(request.session['basket']) > 0:
-            for item in request.session['basket']:
-                product = item
-                product['sum'] = item['cost'] * item['quantity']
-                products.append(product)
-                total += product['sum']
-    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total, 'user_role': request.user.get_role()})
+#                order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
+#                order_product.save()
+#            request.session.pop('basket')
+#        elif action == 'clear':
+#            request.session.pop('basket')
+#    else:
+#        if 'basket' in request.session and len(request.session['basket']) > 0:
+#            for item in request.session['basket']:
+#                product = item
+#                product['sum'] = item['cost'] * item['quantity']
+#                products.append(product)
+#                total += product['sum']
+#    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total, 'user_role': request.user.get_role()})
 
 
 @login_required(login_url='/login/')
@@ -199,13 +203,9 @@ def orders(request):
     order_data = []
     cnt = 0
     for order in orders:
-        rels = OrderProduct.objects.all().filter(order=order)
-        total = sum(i.amount * i.cost for i in rels)
         cnt += 1
-        products = []
-        for rel in rels:
-            products.append({'product_name': rel.product.product_name, 'amount': rel.amount, 'cost': rel.cost, 'full_cost': rel.amount * rel.cost})
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': len(rels), 'total': total, 'comment': order.comment, 'products': products, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
+        product = [{'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}]
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': 1, 'total': order.amount * order.cost, 'comment': order.comment, 'products': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -223,7 +223,7 @@ def stat_org(request):
     select 1 as id
          , u.org
          , u.inn
-         , sum(q.total) as total
+         , coalesce(sum(q.total), 0) as total
          , count(q.order_id) as cnt_all
          , sum(case when q.status = 'A' then 1 else 0 end) as cnt_approve
          , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
@@ -234,10 +234,8 @@ def stat_org(request):
             select o.user_id
                     , o.id as order_id
                     , max(o.status_id) as status
-                    , sum(op.amount * op.cost) as total
+                    , sum(o.amount * o.cost) as total
                 from ofd_app_order o
-                    left outer join ofd_app_orderproduct op
-                                on o.id = op.order_id
              where adddate >= %s
                and adddate < %s
                 group by o.user_id

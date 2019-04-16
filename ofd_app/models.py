@@ -98,11 +98,15 @@ class OrderStatus(models.Model):
         return list(map(lambda x: { 'id': x['code'], 'value': x['name']}, statuses))
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Номер заказа")
-    products = models.ManyToManyField(Product, through="OrderProduct", verbose_name="Продукты заказанные пользователем")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Пользователь сделавший заказ")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name="Заказанный продукт")
+    status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT, default='I', verbose_name="Статус")
     adddate = models.DateTimeField("Дата добавления заказа", auto_now_add=True)
     comment = models.TextField("Комментарий к заказу", null=True)
-    status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT, default='I', verbose_name="Статус")
+    codes = models.TextField("Коды активации", null=True)
+    admin_comment = models.TextField("Ответ от администратора", null=True)
+    amount = models.IntegerField("Количество")
+    cost = models.IntegerField("Итоговая стоимость для одного продукта")
 
     @staticmethod
     def assign_status(ids, status):
@@ -135,9 +139,3 @@ class Order(models.Model):
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
       return orders
-
-class OrderProduct(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name="Отношение к номеру заказа")
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name="Отношение к продукту")
-    amount = models.IntegerField("Количество")
-    cost = models.IntegerField("Итоговая стоимость для одного продукта")
