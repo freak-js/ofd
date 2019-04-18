@@ -109,17 +109,20 @@ class Order(models.Model):
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
 
     @staticmethod
-    def assign_status(ids, status):
+    def assign_status(id, status, comment, codes):
       try:
           new_status = OrderStatus.objects.get(code=status);
-          for id in ids:
-              try:
-                  order = Order.objects.get(id=id)
-                  if order.status.is_in_progress() and not new_status.is_in_progress():
-                      order.status = new_status
-                      order.save()
-              except Order.DoesNotExist:
-                  pass
+          try:
+            order = Order.objects.get(id=id)
+            if order.status.is_in_progress() and not new_status.is_in_progress():
+                order.status = new_status
+                if comment is not None and len(comment) > 0:
+                    order.admin_comment = comment
+                if codes is not None and len(codes) > 0:
+                    order.codes = codes
+                order.save()
+          except Order.DoesNotExist:
+            pass
       except OrderStatus.DoesNotExist:
           pass
 

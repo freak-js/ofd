@@ -191,9 +191,12 @@ def orders(request):
     #apply_order_filters(request, 'order_filters')
     apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
-        ids = request.POST.getlist('order_ids')
+        id = to_int(request.POST.get('order_id', 0), 0)
         status = request.POST.get('status', '').strip()
-        Order.assign_status(ids, status)
+        admin_comment = request.POST.get('admin_comment', '').strip()
+        codes = request.POST.get('order_codes', '').strip()
+        if id > 0 and len(status) > 0:
+            Order.assign_status(id, status, admin_comment, codes)
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
@@ -201,11 +204,9 @@ def orders(request):
     user = request.session['order_filters']['user']
     orders = Order.get_orders(request.user, date_from, date_to, status, org, user)
     order_data = []
-    cnt = 0
     for order in orders:
-        cnt += 1
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'total': order.amount * order.cost, 'comment': order.comment, 'products': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
+        order_data.append({'id': order.id, 'adddate': order.adddate, 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -243,6 +244,8 @@ def stat_org(request):
                     , max(o.status_id) as status
                     , sum(o.amount * o.cost) as total
                 from ofd_app_order o
+             where adddate >= %s
+               and adddate < %s
                 group by o.user_id
                     , o.id
             ) q on u.id = q.user_id
