@@ -1,8 +1,11 @@
 <!doctype html>
 <html lang="ru">
 <head>
+
     {% load static %}
+
     {% load crispy_forms_tags %}
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
@@ -12,79 +15,240 @@
     <title>Заказы</title>
 </head>
 <body class="text-center">
+
     {% include "ofd_app/menu.html" %}
+
     {% include "ofd_app/filter.html" %}
+
     <div class="container container_min_width flex-grow-1">
         <form action="/orders/" method="POST" id="status" name="status">
+
         {% csrf_token %}
+
         <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
-                <span>Заказ&nbsp№</span>
+                <span>№</span>
+            </div>
+            <div class="col-2 p-1">
+                <span>Дата</span>
             </div>
             <div class="col-1 p-1">
                 <span>Клиент</span>
             </div>
-            <div class="col-3 p-1">
-                <span>Дата</span>
+            <div class="col-2 p-1">
+                <span>Продукт</span>
             </div>
             <div class="col-1 p-1">
-                <span>Количество</span>
+                <span>Кол-во</span>
             </div>
-            <div class="col-2 p-1">
-                <span>Комментарий</span>
+            <div class="col-1 p-1">
+                <span>Цена</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-1 p-1">
+                <span>Сумма</span>
+            </div>
+            <div class="col-1 p-1">
                 <span>Статус</span>
             </div>
             <div class="col-1 p-1">
-                <span></span>
+                <span>Ком-рий</span>
             </div>
             <div class="col-1 p-1">
-                <span></span>
+                
             </div>
         </div>
+
         {% for order in orders.data %}
+
         <div class="row global_order_nav_div">
             <div class="col-1 p-1">
                 <span>{{ order.order_num }}</span>
             </div>
+            <div class="col-2 p-1">
+                <span>{{ order.adddate }}</span>
+            </div>
             <div class="col-1 p-1">
+
+                {% if user_role == "Admin" or user_role == "God" %}
+
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}"><i class="fa fa-user"></i>
                 </button>
+
+                {% endif %}
+
+                {% if user_role == "Manager" %}
+
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }} <br> Роль: Ваш сотрудник"><i class="fa fa-user"></i>
+                </button>
+
+                {% endif %}
+
+                {% if user_role == "User" %}
+
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
+                </button>
+
+                {% endif %}
+
             </div>
-            <div class="col-3 p-1">
-                <span>{{ order.adddate }}</span>
+            <div class="col-2 p-1">
+                <span>{{ order.products.product_name }}</span>
             </div>
             <div class="col-1 p-1">
                 <span>{{ order.cnt_products }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-1 p-1">
+                <span>{{ order.cost }}</span>
+            </div>
+            <div class="col-1 p-1">
+                <span>{{ order.full_cost }}</span>
+            </div>
+            <div class="col-1 p-1">
+
+                {% if order.status == "I" %}
+
+                <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
+
+                {% elif order.status == "A" %}
+
+                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ завершен" style="color: #49884b"></i>
+
+                {% elif order.status == "R" %}
+
+                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Заказ отклонен" style="color: #bd3e35"></i>
+
+                {% endif %}
+
+            </div>
+            <div class="col-1 p-1">
+
                 {% if order.comment %}
+
                 <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i>
                 </i></button>
+
                 {% else %}
+
                 <span>Нет</span>
+
                 {% endif %}
+
             </div>
-            <div class="col-2 p-1">
-                {% if order.status == "I" %}
-                <i class="fa fa-circle-notch fa-spin" data-toggle="tooltip" data-placement="right" title="Администратор обрабатывает ваш заказ"></i>
-                {% elif order.status == "A" %}
-                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ завершен" style="color: #49884b"></i>
-                {% elif order.status == "R" %}
-                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Заказ отклонен" style="color: #bd3e35"></i>
-                {% endif %}
-            </div>
-            <div class="col-1 p-1">
+            <!--
                 {% if perms.ofd_app.change_product %}
+
                 {% if order.status == "I" %}
+
                 <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
+
                 {% endif %}
+
                 {% endif %}
-            </div>
+            -->
             <div class="col-1 p-1">
+                <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
+
+                {% if order.status == "I" %}
+
+                {% if perms.ofd_app.change_product %}
+
+                <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-I{{order.id}}"><i class="fas fa-cannabis"></i></button>
+            
+                {% endif %}
+
+                {% endif %}
+
+                <!-- Кнопка ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
+                {% if order.status == "A" or order.status == "R"%}
+
+                <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-AR{{order.id}}"><i class="fas fa-info-circle"></i></button>
+
+                {% endif %}
+
+                <!-- Модальное окно ДЛЯ ЗАКАЗА В РАБОТЕ -->
+                <div class="modal fade" id="exampleModalCenter-I{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="ModalHeaderClose">
+                                <div class="w-100">
+                                    <h5 class="mt-2">Заказ № {{ order.id }}</h5> 
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                            </div>
+                            <form action="/orders/" method="POST">
+
+                                {% csrf_token %}
+
+                                <div class="modal-body">
+                                    <div>
+                                        <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes"></textarea>
+                                    </div>
+                                    <div>
+                                        <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
+                                        <input type="number" name="order_ids" value="{{order.id}}" style="display: none">
+                                    </div>
+                                </div>
+                                <div class="ModalFooter">
+                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
+                                    <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% if order.status == "A" or order.status == "R"%}
+
+                <!-- Модальное окно ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
+                <div class="modal fade" id="exampleModalCenter-AR{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered ModalWidth" role="document">
+                        <div class="modal-content">
+                            <div class="ModalHeaderClose">
+                                <div class="w-100">
+                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ rder.full_cost }}</h5> 
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                            </div>
+                            <form action="/orders/" method="POST">
+
+                                {% csrf_token %}
+
+                                <div class="ModalBody">
+                                    <div class="w-50 ModalBodyContent border-right border-secondary">
+                                        <h6>Коды ОФД:</h6>
+                                        <div class="text-dark">
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                    <div class="w-50 ModalBodyContent">
+                                        <h6>Комментарий администратора:</h6>
+                                        <div class="text-dark">
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ModalFooterCodes">
+                                    <span>Скачать коды ОФД в формате:</span>
+                                    <a href="">&nbsp&nbsp.xlsx</a>
+
+                                    <a href="">&nbsp&nbsp&nbsp&nbsp.txt</a>
+                                </div>
+
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                {% endif %}
+
+                <!--
                 <button class="btn card_btn" type="button" data-toggle="collapse" data-target="#collapseExample{{order.id}}" aria-expanded="false" aria-controls="collapseExample{{order.id}}"><i class="fa fa-chevron-down"></i></button>
+                -->
             </div>
+            <!--
             <div class="collapse card_div" id="collapseExample{{order.id}}">
                 <div class="card card-body">
                     <div class="row row_collapse_top">
@@ -101,7 +265,9 @@
                             <span>Сумма</span>
                         </div>
                     </div>
+
                     {% for product in order.products %}
+
                     <div class="row row_collapse">
                         <div class="col-4">
                             <span>{{ product.product_name }}</span>
@@ -116,7 +282,9 @@
                             <span>{{ product.full_cost }}</span>
                         </div>
                     </div>
+
                     {% endfor %}
+
                     <div class="row row_collapse_bottom">
                         <div class="col-8">
                         </div>
@@ -129,55 +297,75 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
+
         {% endfor %}
+
         </form>
     </div>
+
     {% if orders.prev or orders.next %}
+
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
+
             {% if orders.prev %}
+
             <li class="page-item">
             <a class="page-link" href="?page={{ orders.prev }}">
                 <span>&laquo;</span>
             </a>
             </li>
+
             {% else %}
+
             <li class="page-item">
             <a class="page-link disabled" href="#">
                 <span>&laquo;</span>
             </a>
             </li>
+
             {% endif %}
+
             {% for page in orders.count %}
+
             {% if orders.page == forloop.counter %}
+
             <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+
             {% else %}
+
             <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+
             {% endif %}
+
             {% endfor %}
+
             {% if orders.next %}
+
             <li class="page-item">
             <a class="page-link" href="?page={{ orders.next }}">
                 <span>&raquo;</span>
             </a>
             </li>
+
             {% else %}
+
             <li class="page-item">
             <a class="page-link disabled" href="#">
                 <span>&raquo;</span>
             </a>
             </li>
+            
             {% endif %}
+
         </ul>
     </nav>
+
     {% endif %}
-    {% if perms.ofd_app.change_product %}
-    <div>
-        <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>
-        <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
-    </div>
-    {% endif %}
+
     {% include "ofd_app/footer.html" %}
+
 </body>
 </html>
