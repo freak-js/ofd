@@ -62,7 +62,7 @@
 
         <div class="row global_order_nav_div">
             <div class="col-1 p-1">
-                <span>{{ order.order_num }}</span>
+                <span>{{ order.id }}</span>
             </div>
             <div class="col-2 p-1">
                 <span>{{ order.adddate }}</span>
@@ -92,16 +92,16 @@
 
             </div>
             <div class="col-2 p-1">
-                <span>{{ order.products.product_name }}</span>
+                <span>{{ order.product.product_name }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.products.amount }}</span>
+                <span>{{ order.product.amount }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.products.cost }}</span>
+                <span>{{ order.product.cost }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.products.full_cost }}</span>
+                <span>{{ order.product.full_cost }}</span>
             </div>
             <div class="col-1 p-1">
 
@@ -171,7 +171,7 @@
                         <div class="modal-content">
                             <div class="ModalHeaderClose">
                                 <div class="w-100">
-                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.products.full_cost }}р.</h5> 
+                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.product.full_cost }}р.</h5> 
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
@@ -185,7 +185,7 @@
                                     </div>
                                     <div>
                                         <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
-                                        <input type="number" name="order_ids" value="{{order.id}}" style="display: none">
+                                        <input type="number" name="order_id" value="{{order.id}}" style="display: none">
                                     </div>
                                 </div>
                                 <div class="ModalFooter">
@@ -207,7 +207,7 @@
                         <div class="modal-content">
                             <div class="ModalHeaderClose">
                                 <div class="w-100">
-                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.products.full_cost }}р.</h5> 
+                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.product.full_cost }}р.</h5> 
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>

@@ -193,7 +193,6 @@ def orders(request):
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         ids = request.POST.getlist('order_ids')
         status = request.POST.get('status', '').strip()
-        Order.assign_status(ids, status)
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
