@@ -229,6 +229,13 @@ def stat_org(request):
          , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
          , sum(case when q.status = 'R' then 1 else 0 end) as cnt_reject
         from ofd_app_user u
+            left outer join (
+                select ug.user_id
+                 from ofd_app_user_groups ug
+                      inner join auth_group ag
+                              on ug.group_id = ag.id
+                where ag.name = 'Admin'
+            ) ad on u.id = ad.user_id
             left outer join
             (
             select o.user_id
@@ -236,12 +243,12 @@ def stat_org(request):
                     , max(o.status_id) as status
                     , sum(o.amount * o.cost) as total
                 from ofd_app_order o
-             where adddate >= %s
-               and adddate < %s
                 group by o.user_id
                     , o.id
             ) q on u.id = q.user_id
-        group by org, inn
+     where u.is_superuser = false
+       and ad.user_id is null
+    group by org, inn
     '''
     result = User.objects.raw(sql, [date_from, date_to])
     data = []
