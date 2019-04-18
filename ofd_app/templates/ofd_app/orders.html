@@ -21,9 +21,6 @@
     {% include "ofd_app/filter.html" %}
 
     <div class="container container_min_width flex-grow-1">
-        <form action="/orders/" method="POST" id="status" name="status">
-
-        {% csrf_token %}
 
         <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
@@ -189,8 +186,8 @@
                                     </div>
                                 </div>
                                 <div class="ModalFooter">
-                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="status">Отклонить</button>
-                                    <button type="submit" class="btn btn_to_complete_order" name="status" value="A" form="status">Завершить</button>
+                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R">Отклонить</button>
+                                    <button type="submit" class="btn btn_to_complete_order" name="status" value="A">Завершить</button>
                                 </div>
 
                             </form>
@@ -302,7 +299,6 @@
 
         {% endfor %}
 
-        </form>
     </div>
 
     {% if orders.prev or orders.next %}
