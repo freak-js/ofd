@@ -4,6 +4,7 @@ from .models import User
 #from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
 from ofd_app import views
+from django.utils.translation import gettext_lazy as _
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -14,6 +15,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
+
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
         super().__init__(*args, **kwargs)
@@ -38,6 +40,8 @@ class UserCreationFormCustom(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
+        labels = {'username': _('Логин')}
+
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
         super().__init__(*args, **kwargs)
