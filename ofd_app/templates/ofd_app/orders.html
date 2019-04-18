@@ -95,13 +95,13 @@
                 <span>{{ order.products.product_name }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.cnt_products }}</span>
+                <span>{{ order.products.amount }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.cost }}</span>
+                <span>{{ order.products.cost }}</span>
             </div>
             <div class="col-1 p-1">
-                <span>{{ order.full_cost }}</span>
+                <span>{{ order.products.full_cost }}</span>
             </div>
             <div class="col-1 p-1">
 
@@ -171,7 +171,7 @@
                         <div class="modal-content">
                             <div class="ModalHeaderClose">
                                 <div class="w-100">
-                                    <h5 class="mt-2">Заказ № {{ order.id }}</h5> 
+                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.products.full_cost }}р.</h5> 
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
@@ -207,7 +207,7 @@
                         <div class="modal-content">
                             <div class="ModalHeaderClose">
                                 <div class="w-100">
-                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ rder.full_cost }}</h5> 
+                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.products.full_cost }}р.</h5> 
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
