@@ -204,8 +204,8 @@ def orders(request):
     cnt = 0
     for order in orders:
         cnt += 1
-        product = [{'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}]
-        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'cnt_products': 1, 'total': order.amount * order.cost, 'comment': order.comment, 'products': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
+        product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
+        order_data.append({'id': order.id, 'order_num': cnt, 'adddate': order.adddate, 'total': order.amount * order.cost, 'comment': order.comment, 'products': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role()})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
