@@ -73,9 +73,14 @@
 
                 {% endif %}
 
-                {% if user_role == "Manager" %}
+                {% if user_role == "Manager" and order.user_role == "Manager" %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }} <br> Роль: Ваш сотрудник"><i class="fa fa-user"></i>
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
+                </button>
+
+                {% elif user_role == "Manager" %}
+
+                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }}"><i class="fa fa-user"></i>
                 </button>
 
                 {% endif %}
@@ -131,17 +136,6 @@
                 {% endif %}
 
             </div>
-            <!--
-                {% if perms.ofd_app.change_product %}
-
-                {% if order.status == "I" %}
-
-                <input type="checkbox" class="form-check-input" name="order_ids" value="{{order.id}}">
-
-                {% endif %}
-
-                {% endif %}
-            -->
             <div class="col-1 p-1">
                 <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
 
@@ -213,25 +207,74 @@
                                 {% csrf_token %}
 
                                 <div class="ModalBody">
+
+                                    {% if order.codes and order.admin_comment %}
+
                                     <div class="w-50 ModalBodyContent" style="border-right: 2px solid">
                                         <h6>Коды ОФД:</h6>
                                         <div class="text-dark">
                                             <span>{{ order.codes }}</span>
                                         </div>
                                     </div>
+                                    
                                     <div class="w-50 ModalBodyContent">
                                         <h6>Комментарий администратора:</h6>
                                         <div class="text-dark">
                                             <span>{{ order.admin_comment }}</span>
                                         </div>
                                     </div>
+
+                                    {% endif %}
+
+                                    {% if order.codes and not order.admin_comment %}
+
+                                    <div class="w-100 ModalBodyContent">
+                                        <h6>Коды ОФД:</h6>
+                                        <div class="text-dark">
+                                            <span>{{ order.codes }}</span>
+                                        </div>
+                                    </div>
+
+                                    {% endif %}
+
+                                    {% if not order.codes and not order.admin_comment and order.status == "R" %}
+
+                                    <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
+                                            <h6>Администратор отклонил Ваш заказ без указания какого-либо комментария.</h6>
+                                    </div>
+
+                                    {% endif %}
+
+                                    {% if not order.codes and not order.admin_comment and order.status == "A" %}
+
+                                    <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
+                                            <h6>Если вы видите это сообщение, пожалуйста свяжитесь с командой mir-ofd.ru через форму обратной связи, произошел небольшой технический сбой.</h6>
+                                    </div>
+
+                                    {% endif %}
+
+                                    {% if not order.codes and order.admin_comment and order.status == "R" %}
+
+                                    <div class="w-100 ModalBodyContent">
+                                        <h6>Комментарий администратора:</h6>
+                                        <div class="text-secondary">
+                                            <span>{{ order.admin_comment }}</span>
+                                        </div>
+                                    </div>
+
+                                    {% endif %}
+
                                 </div>
+
+                                {% if order.codes %}
+
                                 <div class="ModalFooterCodes">
                                     <span>Скачать коды ОФД в формате:</span>
-                                    <a href="">&nbsp&nbsp.xlsx</a>
-
-                                    <a href="">&nbsp&nbsp&nbsp&nbsp.txt</a>
+                                    <a href="exportxlsx/{{order.id}}">&nbsp&nbsp.xlsx</a>
+                                    <a href="exporttxt/{{order.id}}">&nbsp&nbsp&nbsp&nbsp.txt</a>
                                 </div>
+
+                                {% endif %}
 
                             </form>
                             
@@ -241,60 +284,7 @@
 
                 {% endif %}
 
-                <!--
-                <button class="btn card_btn" type="button" data-toggle="collapse" data-target="#collapseExample{{order.id}}" aria-expanded="false" aria-controls="collapseExample{{order.id}}"><i class="fa fa-chevron-down"></i></button>
-                -->
             </div>
-            <!--
-            <div class="collapse card_div" id="collapseExample{{order.id}}">
-                <div class="card card-body">
-                    <div class="row row_collapse_top">
-                        <div class="col-4">
-                            <span>Название продукта</span>
-                        </div>
-                        <div class="col-4">
-                            <span>Количество</span>
-                        </div>
-                        <div class="col-2">
-                            <span>Цена</span>
-                        </div>
-                        <div class="col-2">
-                            <span>Сумма</span>
-                        </div>
-                    </div>
-
-                    {% for product in order.products %}
-
-                    <div class="row row_collapse">
-                        <div class="col-4">
-                            <span>{{ product.product_name }}</span>
-                        </div>
-                        <div class="col-4">
-                            <span>{{ product.amount }}</span>
-                        </div>
-                        <div class="col-2">
-                            <span>{{ product.cost }}</span>
-                        </div>
-                        <div class="col-2">
-                            <span>{{ product.full_cost }}</span>
-                        </div>
-                    </div>
-
-                    {% endfor %}
-
-                    <div class="row row_collapse_bottom">
-                        <div class="col-8">
-                        </div>
-                        <div class="col-2">
-                            <span><strong>Итог:</strong></span>
-                        </div>
-                        <div class="col-2">
-                            <span><strong>{{ order.total }}</strong></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            -->
         </div>
 
         {% endfor %}

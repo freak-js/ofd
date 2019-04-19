@@ -15,6 +15,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
+        labels = {'username': _('Логин'), 'city': _('Город')}
 
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)
@@ -40,7 +41,7 @@ class UserCreationFormCustom(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'inn', 'phone_number', 'org', 'city')
-        labels = {'username': _('Логин')}
+        labels = {'username': _('Логин'), 'city': _('Город')}
 
     def __init__(self, *args, **kwargs):
         self.requested_user = kwargs.pop('requested_user', None)

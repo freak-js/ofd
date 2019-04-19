@@ -1,8 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="ru">
 <head>
+
 	{% load static %}
+
 	{% load crispy_forms_tags %}
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
@@ -11,21 +14,35 @@
     <title>Карточка пользователя</title>
 </head>
 <body class="text-center">
+
 	{% include "ofd_app/menu.html" %}
+
     <div class="container container_min_width flex-grow-1">
 		<div class="d-flex justify-content-center">
 			<form class="form-signin" id="input_form" method="post" action="">
+
 				{% csrf_token %}
+
 				<div class="registration_form_in">
 					<h5>Карточка пользователя</h5>
+
 					{% csrf_token %}
+
 					{{ user_form|crispy }}
+
 					{{ profile_form|crispy }}
+
+					<script type="text/javascript">
+						document.getElementById("div_id_password2").innerHTML = '<label for="id_password2" class="col-form-label  requiredField">Пароль повторно<span class="asteriskField">*</span></label><div class=""><input type="password" name="password2" class="textinput textInput form-control" required="" id="id_password2"></div>';
+					</script>
+
 				</div>
 				<button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Сохранить</button>
 			</form>
 		</div>
 	</div>
+
 	{% include "ofd_app/footer.html" %}
+	
 </body>
 </html>
