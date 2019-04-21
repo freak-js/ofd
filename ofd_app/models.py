@@ -142,3 +142,17 @@ class Order(models.Model):
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
       return orders
+
+    @staticmethod
+    def get_order_codes(user, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+            if user.is_user() and order.user.id == user.id:
+                return order.codes
+            if user.is_manager() and (order.user.id == user.id or order.user.parent.id == user.id):
+                return order.codes
+            if user.is_admin() or user.is_superuser:
+                return order.codes
+            return ''
+        except Order.DoesNotExist:
+            return ''
