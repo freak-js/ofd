@@ -16,11 +16,13 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
 #from ofd_app.filters import apply_user_filters, apply_order_filters
 from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -259,6 +261,22 @@ def stat_org(request):
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
     return render(request, 'ofd_app/stat_org.html', {'stat': data, 'user_role': request.user.get_role()})
+
+@login_required(login_url='/login/')
+def exportxlsx(request, **kwargs):
+    if 'id' in kwargs:
+        wb = Workbook()
+        ws = wb.active
+        db_codes = Order.get_order_codes(request.user, kwargs['id'])
+        codes = db_codes.split()
+        ix = 1
+        for code in codes:
+            col = 'A' + str(ix)
+            ws[col] = code
+            ix = ix + 1
+        response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
+        return response
 
 @csrf_exempt
 def test(request):
