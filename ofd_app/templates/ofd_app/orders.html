@@ -172,17 +172,32 @@
 
                                 <div class="modal-body">
                                     <div>
-                                        <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes"></textarea>
+                                        <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes" id="textareaCodes_{{order.id}}"></textarea>
                                     </div>
                                     <div>
                                         <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
                                         <input type="number" name="order_id" value="{{order.id}}" style="display: none">
                                     </div>
                                 </div>
-                                <div class="ModalFooter">
+                                <div class="ModalFooter" id="ModalFooter_{{order.id}}">
                                     <button type="submit" class="btn btn_to_reject_order" name="status" value="R">Отклонить</button>
-                                    <button type="submit" class="btn btn_to_complete_order" name="status" value="A">Завершить</button>
+                                    <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}">Завершить</button>
                                 </div>
+
+                                <script type="text/javascript">
+                                
+                                window.onload = setInterval(function buttonDisabled() {
+                                    let textareaCodes = document.getElementById('textareaCodes_{{order.id}}').value;
+                                    console.log(document.getElementById("btnA_{{order.id}}").className)
+
+                                    if (textareaCodes !== "") {
+                                        document.getElementById("btnA_{{order.id}}").className = 'btn btn_to_complete_order';
+                                    } else {
+                                        document.getElementById("btnA_{{order.id}}").className = 'btn btn_to_complete_order disabled';
+                                    }
+                                }, 1000);
+                                
+                                </script>
 
                             </form>
 
