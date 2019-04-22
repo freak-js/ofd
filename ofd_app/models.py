@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import FilteredRelation, Q, F
 
 # Create your models here.
 class Product(models.Model):
@@ -66,9 +66,25 @@ class User(AbstractUser):
         elif self.is_superuser:
             return 'God'
 
+    def get_products(self):
+        if self.is_user():
+            filtered_user = self.parent
+        else:
+            filtered_user = self
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
+        return products
+
+    def get_product(self, product_id):
+        if self.is_user():
+            filtered_user = self.parent
+        else:
+            filtered_user = self
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).filter(product_id=product_id).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True)
+        return products[0] if len(products) > 0 else None
+
     @staticmethod
     def get_organizations():
-        orgs = User.objects.exclude(org__isnull=True).values('org').distinct().order_by('org')
+        orgs = User.objects.exclude(org__isnull=True).exclude(org='').values('org').distinct().order_by('org')
         return list(map(lambda x: { 'id': x['org'], 'value': x['org']}, orgs))
 
 class ProductUserRel(models.Model):
@@ -141,7 +157,7 @@ class Order(models.Model):
           orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
-      return orders
+      return orders.order_by('-adddate')
 
     @staticmethod
     def get_order_codes(user, order_id):

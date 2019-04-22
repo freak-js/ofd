@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import FilteredRelation, Q, F
 from django.contrib.auth import login
 from datetime import datetime
 from datetime import date
@@ -51,51 +50,22 @@ def product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
-    products = get_products(None if request.user.is_superuser else request.user);
     if request.method == 'POST':
-        product_id = request.POST.get('product_id', '').strip()
+        product_id = to_int(request.POST.get('product_id', '').strip(), 0)
         order_comment = request.POST.get('order_comment', '').strip()
         quantity = to_int(request.POST.get('quantity', '').strip(), 1)
-        try:
-            product = Product.objects.get(product_id=product_id)
-            order = Order(user = request.user, product=product, comment = order_comment, amount = quantity, cost = product.product_cost)
-            order.save()
-            return redirect('orders')
-        except Product.DoesNotExist:
-            ##TODO передать сообщение об ошибке
-            return redirect('products')
-    return render(request, 'ofd_app/index_top.html', {'products': products, 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
-
-#@login_required(login_url='/login/')
-#def get_basket(request):
-#    products = []
-#    total = 0
-#    if request.method == 'POST':
-#        action = request.POST.get('p_act', '')
-#        if action == 'create' and 'basket' in request.session and len(request.session['basket']) > 0:
-#            basket_comment = request.POST.get('basket_comment', '').strip()
-#            order = Order(user = request.user, comment = basket_comment)
-#            order.save()
-#            for item in request.session['basket']:
-#                product = Product.objects.get(product_id=item['id'])
-                ##TODO обработать ситуацию, когда продукта нет
-#                order_product = OrderProduct(order = order, product = product, amount = item['quantity'], cost = item['cost'])
-#                order_product.save()
-#            request.session.pop('basket')
-#        elif action == 'clear':
-#            request.session.pop('basket')
-#    else:
-#        if 'basket' in request.session and len(request.session['basket']) > 0:
-#            for item in request.session['basket']:
-#                product = item
-#                product['sum'] = item['cost'] * item['quantity']
-#                products.append(product)
-#                total += product['sum']
-#    return render(request, 'ofd_app/basket.html', {'products': products, 'total': total, 'user_role': request.user.get_role()})
-
+        if product_id > 0:
+            product = request.user.get_product(product_id)
+            if product is not None:
+                cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
+                order = Order(user = request.user, product=Product.objects.get(product_id=product_id), comment = order_comment, amount = quantity, cost = cost)
+                order.save()
+                return redirect('orders')
+        ##TODO передать сообщение об ошибке
+        return redirect('products')
+    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
-#@csrf_exempt
 @require_POST
 @permission_required('ofd_app.delete_product', login_url='/products/')
 def product_delete(request):
@@ -145,7 +115,7 @@ def user_product(request, **kwargs):
             return redirect('users');
         if request.method == 'POST':
             save_product_user_rel(request.POST, user, request.user.id)
-        products = get_products(user)
+        products = request.user.get_products()
     return render(request, 'ofd_app/user_product.html', {'products': products})
 
 @login_required(login_url='/login/')
@@ -278,6 +248,14 @@ def exportxlsx(request, **kwargs):
         response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
         return response
 
+def exporttxt(request, **kwargs):
+    if 'id' in kwargs:
+        db_codes = Order.get_order_codes(request.user, kwargs['id'])
+        codes = db_codes.split()
+        response = HttpResponse('\n'.join(codes), content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=codes.txt'
+        return response
+
 @csrf_exempt
 def test(request):
     return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
@@ -321,17 +299,6 @@ def save_product_user_rel(costs, user, user_mod_id):
             except ProductUserRel.DoesNotExist:
                 relation = ProductUserRel(user=user, product=product, cost=cost, user_mod=user_mod_id)
             relation.save()
-
-def get_products(user):
-    if user is not None:
-        if user.groups.filter(name='User').exists():
-            filtered_user = user.parent
-        else:
-            filtered_user = user
-        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
-    else:
-        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=user))).filter(Q(by_user__isnull = True)).filter(product_is_active=True).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_cost')
-    return products
 
 def user_assign_group(user, group_name):
     group = Group.objects.get(name=group_name).user_set.add(user)
