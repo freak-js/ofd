@@ -43,8 +43,8 @@
 
 				{% for product in products %}
 
-						<div class="row global_order_nav_div">
-								<div class="col-2 p-1">
+						<div class="row container__ProductDiv">
+								<div class="col-2 p-1 my-auto">
 
 						{% if perms.ofd_app.change_product %}
 
@@ -53,10 +53,10 @@
 						{% endif %}
 
 								</div>
-								<div class="col-4 p-1">
+								<div class="col-4 p-1 my-auto Font-18">
 										<span>{{ product.product_name }}</span>
 								</div>
-								<div class="col-2 p-1">
+								<div class="col-2 p-1 my-auto Font-18">
 
 						{% if product.by_user__cost is not None %}
 
@@ -69,9 +69,9 @@
 						{% endif %}
 
 								</div>
-								<div class="col-2 p-1">
+								<div class="col-2 p-1 my-auto">
 							<!-- Button trigger modal -->
-									<button type="button" class="btn OrderBuy" data-toggle="modal" data-target="#exampleModalCenter{{product.product_id}}">Купить</button>
+									<button type="button" class="btn OrderBuy" data-toggle="modal" data-target="#exampleModalCenter{{product.product_id}}">Заказать</button>
 								
 								<!-- Modal -->
 									<div class="modal fade" id="exampleModalCenter{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -127,11 +127,11 @@
 							<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
 							-->
 								</div>
-								<div class="col-2 p-1">
+								<div class="col-2 p-1 my-auto mx-auto">
 
 						{% if perms.ofd_app.change_product %}
 
-						<input type="checkbox" class="form-check-input" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+						<input type="checkbox" name="product_to_delete" value="{{product.product_id}}" form="top_form">
 
 						{% endif %}
 
