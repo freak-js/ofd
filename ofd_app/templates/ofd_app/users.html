@@ -122,15 +122,15 @@
     </div>
 
 
-    {% if orders.prev or orders.next %}
+    {% if users.prev or users.next %}
 
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
 
-            {% if orders.prev %}
+            {% if users.prev %}
 
             <li class="page-item">
-            <a class="page-link" href="?page={{ orders.prev }}">
+            <a class="page-link" href="?page={{ users.prev }}">
                 <span>&laquo;</span>
             </a>
             </li>
@@ -145,9 +145,9 @@
 
             {% endif %}
 
-            {% for page in orders.count %}
+            {% for page in users.count %}
 
-            {% if orders.page == forloop.counter %}
+            {% if users.page == forloop.counter %}
 
             <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
 
@@ -159,10 +159,10 @@
 
             {% endfor %}
 
-            {% if orders.next %}
+            {% if users.next %}
 
             <li class="page-item">
-            <a class="page-link" href="?page={{ orders.next }}">
+            <a class="page-link" href="?page={{ users.next }}">
                 <span>&raquo;</span>
             </a>
             </li>
