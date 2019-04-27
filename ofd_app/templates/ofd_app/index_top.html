@@ -100,7 +100,8 @@
 												&nbsp
 												&nbsp
 												&nbsp
-												
+												<h6 class="modal-title">Итог:&nbsp</h6>
+												<h6 class="modal-title" id="h6_total_by_{{product.product_id}}">1</h6>
 												<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 											</div>
 											
@@ -117,9 +118,13 @@
 													
 													window.onload = setInterval(function totalCost() {
 															let cost = parseInt(document.getElementById("product_cost_{{product.product_id}}").innerHTML);
-															let input = parseInt(document.getElementById("input_by_{{product.product_id}}").value));
-
-													}, 1000);
+															let input = parseInt(document.getElementById("input_by_{{product.product_id}}").value);
+															if (String(input) !== "NaN" ) {
+																	document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost * input + "р.";
+															} else {
+																	document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost + "р.";
+															}
+													}, 300);
 
 													</script>
 
