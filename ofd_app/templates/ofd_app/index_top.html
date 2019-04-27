@@ -56,17 +56,17 @@
 								<div class="col-4 p-1 my-auto Font-18">
 										<span>{{ product.product_name }}</span>
 								</div>
-								<div class="col-2 p-1 my-auto Font-18">
+								<div class="col-2 p-1 my-auto Font-18" id="product_cost_{{product.product_id}}">
 
-						{% if product.by_user__cost is not None %}
+										{% if product.by_user__cost is not None %}
 
-						<span>{{ product.by_user__cost }}р.</span>
+										{{ product.by_user__cost }}р.
 
-						{% else %}
+										{% else %}
 
-						<span>{{ product.product_cost }}р.</span>
+										{{ product.product_cost }}р.
 
-						{% endif %}
+										{% endif %}
 
 								</div>
 								<div class="col-2 p-1 my-auto">
@@ -78,13 +78,13 @@
 										<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div class="ModalHeader">
-												<h4 class="modal-title" id="exampleModalLongTitle">
+												<h6 class="modal-title" id="exampleModalLongTitle">
 
 													{{ product.product_name }}
 													
-												</h4>
+												</h6>
 												&nbsp
-												<h4 class="modal-title" id="product_cost_id_{{product.product_id}}">
+												<h6 class="modal-title">
 
 													{% if product.by_user__cost is not None %}
 
@@ -96,7 +96,11 @@
 
 													{% endif %}
 
-												</h4>
+												</h6>
+												&nbsp
+												&nbsp
+												&nbsp
+												
 												<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 											</div>
 											
@@ -106,8 +110,19 @@
 
 												<div class="modal-body">
 													<div>
-														<label>Количество: <input type="number" class="form-control cost_input" name="quantity" id="product_id_{{product.product_id}}" min="1" value="1"> </label>
+														<label>Количество: <input type="number" class="form-control cost_input" name="quantity" id="input_by_{{product.product_id}}" min="1" value="1"> </label>
 													</div>
+
+													<script type="text/javascript">
+													
+													window.onload = setInterval(function totalCost() {
+															let cost = parseInt(document.getElementById("product_cost_{{product.product_id}}").innerHTML);
+															let input = parseInt(document.getElementById("input_by_{{product.product_id}}").value));
+
+													}, 1000);
+
+													</script>
+
 													<div>
 														<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="5" name="order_comment"></textarea>
 														<input type="number" name="product_id" value="{{product.product_id}}" style="display: none">
@@ -123,10 +138,7 @@
 										</div>
 									</div>
 								</div>
-							<!--
-							<input type="number" class="form-control cost_input" name="product_to_basket_id_{{product.product_id}}" form="basket_form" id="product_to_basket_id_{{product.product_id}}">
-							-->
-								</div>
+							</div>
 								<div class="col-2 p-1 my-auto mx-auto">
 
 						{% if perms.ofd_app.change_product %}
@@ -138,26 +150,6 @@
 								</div>
 				</div>
 
-				<!--
-				<script>
-
-					setInterval(function () {
-						var input_number = parseInt(document.getElementById('product_to_basket_id_{{product.product_id}}').value, 10);
-						var cost_number = parseInt({{ product.product_cost }}, 10);
-						var total;
-						if (Number.isNaN(input_number)) {
-						total = cost_number;
-						} else {
-							total = input_number * cost_number;
-						}
-						document.getElementById('product_cost_id_{{product.product_id}}').value = total;
-						console.log(input_number);
-						console.log(cost_number);
-						console.log(total);
-					}, 1000);
-						
-				</script>
-				-->
 				{% endfor %}
 
 	</div>
