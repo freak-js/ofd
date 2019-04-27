@@ -111,11 +111,11 @@ def user(request, **kwargs):
 def user_product(request, **kwargs):
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
-        if not user.groups.filter(name='Manager').exists():
+        if not user.is_manager():
             return redirect('users');
         if request.method == 'POST':
             save_product_user_rel(request.POST, user, request.user.id)
-        products = request.user.get_products()
+        products = user.get_products()
     return render(request, 'ofd_app/user_product.html', {'products': products})
 
 @login_required(login_url='/login/')
@@ -179,7 +179,7 @@ def orders(request):
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate, 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user.get_role(), 'admin_comment': order.admin_comment, 'codes': order.codes})
+        order_data.append({'id': order.id, 'adddate': order.adddate, 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()

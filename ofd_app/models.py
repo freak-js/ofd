@@ -145,16 +145,16 @@ class Order(models.Model):
     @staticmethod
     def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None):
       if user.is_admin() or user.is_superuser:
-          orders = Order.objects.all().filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(adddate__range=[date_from, date_to])
           if org is not None and org != '*':
               orders = orders.filter(user__org=org)
       elif user.is_manager():
-          orders = Order.objects.all().filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
           if user_id is not None and user_id != '*':
             if int(user_id) > 0:
                 orders = orders.filter(user__id=int(user_id))
       else:
-          orders = Order.objects.all().filter(user=user).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(user=user).filter(adddate__range=[date_from, date_to])
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
       return orders.order_by('-adddate')
