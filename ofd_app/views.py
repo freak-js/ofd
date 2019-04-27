@@ -140,7 +140,7 @@ def users(request):
         data['role'] = user.get_role()
         data['childs'] = user.get_childs()
         user_data.append(data)
-    return render(request, 'ofd_app/users.html', {'users': user_data, 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -231,7 +231,7 @@ def stat_org(request):
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
-    return render(request, 'ofd_app/stat_org.html', {'stat': data, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role()})
 
 @login_required(login_url='/login/')
 def exportxlsx(request, **kwargs):
