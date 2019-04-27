@@ -275,6 +275,7 @@ def construct_pagination(request, data):
     pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
     pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
     pagination['data'] = page_object.object_list
+    pagination['cnt'] = p.num_pages
     return pagination
 
 def user_reg(request):
