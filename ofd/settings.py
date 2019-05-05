@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'ofd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ofd_user',
+        'NAME': 'ofd',
         'USER': 'ofd_user',
-        'PASSWORD': 'ofd_user',
-        'HOST': 'localhost',
+        'PASSWORD': '7hK2aS0',
+        'HOST': '',
         'PORT': '',
     }
 }
@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC+3'
 
 USE_I18N = True
 
@@ -121,6 +121,8 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
+
+STATIC_ROOT = '/opt/ofdenv/static/' 
 
 STATIC_URL = '/static/'
 
