@@ -25,7 +25,7 @@ SECRET_KEY = 'vy$ey_uxwp67%9qz-73d7^-@*6su90uaftmf8u!4d9q@tysic9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.mir-ofd.ru', '5.253.61.163']
+ALLOWED_HOSTS = ['.mir-ofd.ru', '5.253.61.163', 'localhost']
 
 
 # Application definition
@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'ofd',
         'USER': 'ofd_user',
         'PASSWORD': '7hK2aS0',
-        'HOST': '',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
@@ -122,9 +122,9 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_ROOT = '/opt/ofdenv/static/' 
-
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
