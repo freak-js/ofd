@@ -85,9 +85,11 @@ def product_delete(request):
 def user(request, **kwargs):
     user = None
     if 'id' in kwargs:
-        if not request.user.has_perm('ofd_app.change_user') and kwargs['id'] != request.user.id:
+        if not request.user.has_perm('ofd_app.change_user'):
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
+        if not request.user.has_access_to_user(user):
+            return redirect('products')
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance = user, requested_user = request.user)
             user_save(user_form, request.user)

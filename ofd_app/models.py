@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -32,11 +34,14 @@ class User(AbstractUser):
                 need_update_childs = True
             if db_object.org != self.org:
                 need_update_childs = True
+            if db_object.is_active != self.is_active:
+                need_update_childs = True
             if need_update_childs:
                 childs = self.get_childs(False)
                 for user in childs:
                     user.inn = self.inn
                     user.org = self.org
+                    user.is_active = self.is_active
                     user.save()
         super().save(*args, **kwargs)
 
@@ -79,13 +84,25 @@ class User(AbstractUser):
             filtered_user = self.parent
         else:
             filtered_user = self
-        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).filter(product_id=product_id).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True)
+        products = Product.objects.annotate(by_user=FilteredRelation('productuserrel', condition = Q(productuserrel__user=filtered_user))).filter(Q(by_user__isnull = True) | Q(by_user__user=filtered_user)).filter(product_is_active=True).filter(product_id=product_id).values_list('product_id', 'product_name', 'product_cost', 'by_user__cost', named=True).order_by('product_name')
         return products[0] if len(products) > 0 else None
 
     @staticmethod
     def get_organizations():
         orgs = User.objects.exclude(org__isnull=True).exclude(org='').values('org').distinct().order_by('org')
         return list(map(lambda x: { 'id': x['org'], 'value': x['org']}, orgs))
+
+    def has_access_to_user(self, user):
+        ##own profile
+        if user.id == self.id:
+            return True
+        elif self.is_superuser:
+            return True
+        elif self.is_admin() and (not user.is_superuser):
+            return True
+        elif user.parent is not None and self.id == user.parent.id:
+            return True
+        return False
 
 class ProductUserRel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Пользователь")
