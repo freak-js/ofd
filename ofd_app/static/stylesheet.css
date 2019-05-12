@@ -193,6 +193,17 @@ body{
 	margin-left: 10px;
 	height: 50px;
 }
+.top_menu_logo{
+	flex: none;
+	margin-left: 10px;
+	height: 50px;
+}
+.top_menu_active{
+	flex: none;
+	margin-left: 10px;
+	height: 50px;
+	border-bottom: 3px solid #e4e8ea;
+}
 .top_menu_link_div_exit{
 	flex: none;
 	margin-left: 10px;
