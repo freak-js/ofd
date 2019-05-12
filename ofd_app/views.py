@@ -22,6 +22,7 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
+from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -45,7 +46,7 @@ def product(request, **kwargs):
         if not request.user.has_perm('ofd_app.add_product'):
             return redirect('products')
         form = ProductForm()
-    return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
@@ -63,7 +64,7 @@ def products(request):
                 return redirect('orders')
         ##TODO передать сообщение об ошибке
         return redirect('products')
-    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -84,8 +85,10 @@ def product_delete(request):
 @login_required(login_url='/login/')
 def user(request, **kwargs):
     user = None
+    my_card = False
     if 'id' in kwargs:
-        if not request.user.has_perm('ofd_app.change_user'):
+        my_card = request.user.id == kwargs['id']
+        if not request.user.has_perm('ofd_app.change_user') and not my_card:
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
         if not request.user.has_access_to_user(user):
@@ -106,7 +109,7 @@ def user(request, **kwargs):
         if not request.user.has_perm('ofd_app.view_user'):
             return redirect('products')
         user_form = UserCreationFormCustom(requested_user = request.user)
-    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role(), 'path': MY_CARD if my_card else USERS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.change_productuserrel', login_url='/products/')
@@ -118,7 +121,7 @@ def user_product(request, **kwargs):
         if request.method == 'POST':
             save_product_user_rel(request.POST, user, request.user.id)
         products = user.get_products()
-    return render(request, 'ofd_app/user_product.html', {'products': products})
+    return render(request, 'ofd_app/user_product.html', {'products': products, 'path': USERS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
@@ -142,7 +145,7 @@ def users(request):
         data['role'] = user.get_role()
         data['childs'] = user.get_childs()
         user_data.append(data)
-    return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -188,7 +191,7 @@ def orders(request):
     elif request.user.is_manager():
         filters['users'] = request.user.get_childs()
     filters['status'] = OrderStatus.get_all_statuses()
-    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role(), 'path': ORDERS})
 
 @login_required(login_url='/login/')
 def stat_org(request):
@@ -233,7 +236,7 @@ def stat_org(request):
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
-    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role(), 'path': STAT})
 
 @login_required(login_url='/login/')
 def exportxlsx(request, **kwargs):
@@ -251,17 +254,14 @@ def exportxlsx(request, **kwargs):
         response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
         return response
 
+@login_required(login_url='/login/')
 def exporttxt(request, **kwargs):
     if 'id' in kwargs:
         db_codes = Order.get_order_codes(request.user, kwargs['id'])
         codes = db_codes.split()
-        response = HttpResponse('\n'.join(codes), content_type='text/plain')
+        response = HttpResponse('\r\n'.join(codes), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=codes.txt'
         return response
-
-@csrf_exempt
-def test(request):
-    return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
 
 def construct_pagination(request, data):
     page_size = 10
@@ -322,7 +322,7 @@ def user_save(user_form, request_user=None):
         ##Resolve group
         if user.groups.all().count() == 0 and not user.is_superuser:
             user_resolve_group(user, request_user)
-        if user.parent is None and request_user is not None and request_user.is_manager():
+        if user.parent is None and user.is_user() and request_user is not None and request_user.is_manager():
             user.parent = request_user
         if user.is_user() and (user.inn is None or user.org is None or len(user.inn) == 0 or len(user.org) == 0):
             user.inn = user.parent.inn

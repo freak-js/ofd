@@ -89,7 +89,7 @@ class User(AbstractUser):
 
     @staticmethod
     def get_organizations():
-        orgs = User.objects.exclude(org__isnull=True).exclude(org='').values('org').distinct().order_by('org')
+        orgs = User.objects.exclude(org__isnull=True).exclude(org='').exclude(is_active=False).values('org').distinct().order_by('org')
         return list(map(lambda x: { 'id': x['org'], 'value': x['org']}, orgs))
 
     def has_access_to_user(self, user):
