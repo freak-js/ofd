@@ -85,8 +85,9 @@ def product_delete(request):
 @login_required(login_url='/login/')
 def user(request, **kwargs):
     user = None
-    my_card = request.user.id != kwargs['id']
+    my_card = False
     if 'id' in kwargs:
+        my_card = request.user.id == kwargs['id']
         if not request.user.has_perm('ofd_app.change_user') and not my_card:
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
