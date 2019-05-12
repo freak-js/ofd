@@ -26,11 +26,11 @@
             <div class="col-1 p-1">
                 <span>№</span>
             </div>
-            <div class="col-2 p-1">
-                <span>Дата</span>
-            </div>
             <div class="col-1 p-1">
                 <span>Клиент</span>
+            </div>
+            <div class="col-2 p-1">
+                <span>Дата</span>
             </div>
             <div class="col-2 p-1">
                 <span>Продукт</span>
@@ -51,7 +51,7 @@
                 <span>Ком-рий</span>
             </div>
             <div class="col-1 p-1">
-                
+                <span>Инфо</span>
             </div>
         </div>
 
@@ -60,9 +60,6 @@
         <div class="row global_order_nav_div">
             <div class="col-1 p-1">
                 <span>{{ order.id }}</span>
-            </div>
-            <div class="col-2 p-1">
-                <span>{{ order.adddate }}</span>
             </div>
             <div class="col-1 p-1">
 
@@ -92,6 +89,9 @@
 
                 {% endif %}
 
+            </div>
+            <div class="col-2 p-1">
+                <span>{{ order.adddate }}</span>
             </div>
             <div class="col-2 p-1">
                 <span>{{ order.product.product_name }}</span>
