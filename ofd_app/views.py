@@ -254,11 +254,12 @@ def exportxlsx(request, **kwargs):
         response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
         return response
 
+@login_required(login_url='/login/')
 def exporttxt(request, **kwargs):
     if 'id' in kwargs:
         db_codes = Order.get_order_codes(request.user, kwargs['id'])
         codes = db_codes.split()
-        response = HttpResponse('\n'.join(codes), content_type='text/plain')
+        response = HttpResponse('\r\n'.join(codes), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=codes.txt'
         return response
 
