@@ -36,16 +36,15 @@ def product(request, **kwargs):
                 form.save()
         else:
             form = ProductForm(instance=product)
-    elif request.method == 'POST':
-        if not request.user.has_perm('ofd_app.add_product'):
-            return redirect('products')
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save()
     else:
         if not request.user.has_perm('ofd_app.add_product'):
             return redirect('products')
-        form = ProductForm()
+        if request.method == 'POST':
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                product = form.save()
+        else:
+            form = ProductForm()
     return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
 @login_required(login_url='/login/')
