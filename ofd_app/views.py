@@ -22,9 +22,9 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY 
-from django.core.mail import send_mail, mail_admins
-from ofd_app.settings import EMAIL_HOST_USER
+from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
+from django.core.mail import send_mail
+from ofd.settings import EMAIL_HOST_USER
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -60,8 +60,11 @@ def products(request):
             product = request.user.get_product(product_id)
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
-                order = Order(user = request.user, product=Product.objects.get(product_id=product_id), comment = order_comment, amount = quantity, cost = cost)
+                db_product = Product.objects.get(product_id=product_id)
+                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
                 order.save()
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate, product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
                 return redirect('orders')
         ##TODO передать сообщение об ошибке
         return redirect('products')
@@ -175,7 +178,14 @@ def orders(request):
         admin_comment = request.POST.get('admin_comment', '').strip()
         codes = request.POST.get('order_codes', '').strip()
         if id > 0 and len(status) > 0:
-            Order.assign_status(id, status, admin_comment, codes)
+            try:
+                order = Order.objects.get(id=id)
+                ##check to order access
+                op_result = order.assign_status(status, admin_comment, codes)
+                if op_result:
+                    send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate, total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
+            except Order.DoesNotExist:
+                pass
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
@@ -286,8 +296,8 @@ def user_reg(request):
         reg_form = UserCreationFormCustom(request.POST)
         user = user_save(reg_form)
         if user is not None:
-            mail_admins(TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, fail_silently=False,)
-            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, EMAIL_HOST_USER, [user.email], fail_silently=False,)
+            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY.format(first_name = user.first_name , last_name = user.last_name , email = user.email , phone_number = user.phone_number , org = user.org , city = user.city ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
+            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT.format(first_name = user.first_name), TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY.format(login = user.username), EMAIL_HOST_USER, [user.email], fail_silently=False,)
             login(request, user)
             return redirect('products')
     else:

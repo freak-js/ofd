@@ -132,8 +132,6 @@ LOGIN_REDIRECT_URL = '/products/'
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'Jarvis.mir-ofd@yandex.ru'
-EMAIL_HOST_PASSWORD = '2372543serg'
+EMAIL_HOST_USER = 'info@mir-ofd.ru'
+EMAIL_HOST_PASSWORD = 'qwer1234+'
 EMAIL_USE_SSL = True
-
-ADMINS = [('Jarvis', EMAIL_HOST_USER)]
