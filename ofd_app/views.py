@@ -22,7 +22,9 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT
+from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY 
+from django.core.mail import send_mail, mail_admins
+from ofd_app.settings import EMAIL_HOST_USER
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -284,6 +286,8 @@ def user_reg(request):
         reg_form = UserCreationFormCustom(request.POST)
         user = user_save(reg_form)
         if user is not None:
+            mail_admins(TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, fail_silently=False,)
+            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, EMAIL_HOST_USER, [user.email], fail_silently=False,)
             login(request, user)
             return redirect('products')
     else:

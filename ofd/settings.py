@@ -129,3 +129,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'ofd_app.User'
 
 LOGIN_REDIRECT_URL = '/products/'
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'Jarvis.mir-ofd@yandex.ru'
+EMAIL_HOST_PASSWORD = '2372543serg'
+EMAIL_USE_SSL = True
+
+ADMINS = [('Jarvis', EMAIL_HOST_USER)]
