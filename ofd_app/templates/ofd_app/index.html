@@ -1,8 +1,12 @@
 <!doctype html>
 <html lang="ru">
 <head>
+
     {% load static %}
+
     {% load crispy_forms_tags %}
+
+    <meta name="yandex-verification" content="df7d219eb0aed573">
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
@@ -30,8 +34,11 @@
         </div>
         <div class="registration_form">
             <form class="form-signin" id="input_form" method="POST" action="/login/">
+
                 {% csrf_token %}
-	            {{ form|crispy }}
+
+                {{ form|crispy }}
+                
 	            <input type="hidden" name="next" value="/products/">
 	            <button class="btn btn_authorization_form" type="submit">Войти</button>
 	        </form>
