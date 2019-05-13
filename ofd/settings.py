@@ -131,12 +131,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'ofd_app.User'
 
 LOGIN_REDIRECT_URL = '/products/'
-<<<<<<< HEAD
-=======
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'info@mir-ofd.ru'
 EMAIL_HOST_PASSWORD = 'qwer1234+'
 EMAIL_USE_SSL = True
->>>>>>> user_rfct
