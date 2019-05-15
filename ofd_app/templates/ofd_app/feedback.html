@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+
+    {% load static %}
+
+    {% load crispy_forms_tags %}
+
+    <meta name="yandex-verification" content="df7d219eb0aed573">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Контакты</title>
+</head>
+<body class="text-center">
+
+    {% include "ofd_app/menu.html" %}
+
+    <div class="content flex-grow-1">
+        <div class="aside">
+            <div class="text-left">
+                <h3>У Вас возникли вопросы?</h3>
+                <span>Решим!</span><br>
+                <span>Свяжитесь с менеджером команды mir-ofd.ru по:</span><br>
+                <span>Почта:</span><br>
+                <span>Телефон:</span><br>
+            </div>
+        </div>
+    </div>
+
+    {% include "ofd_app/footer.html" %}
+
+</body>
+</html>
+
+
+

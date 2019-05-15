@@ -136,6 +136,34 @@
 
     <div class="w-100"></div>
 
+    {% if path == "instruction" %}
+
+     <div class="top_menu_link_active">
+      <a href="/instruction" class="nav_link"><strong>Инструкция</strong></a>
+    </div>
+
+    {% else %}
+
+     <div class="top_menu_link_div">
+      <a href="/instruction" class="nav_link"><strong>Инструкция</strong></a>
+    </div>
+
+    {% endif %}
+
+    {% if path == "feedback" %}
+
+     <div class="top_menu_link_active mr-2">
+      <a href="/feedback" class="nav_link"><strong>Контакты</strong></a>
+    </div>
+
+    {% else %}
+
+     <div class="top_menu_link_div mr-2">
+      <a href="/feedback" class="nav_link"><strong>Контакты</strong></a>
+    </div>
+
+    {% endif %}
+
     <div class="btn-group dropleft top_select_box">
         <button type="button" class="btn dropdown-toggle top_select_box_button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-cog fontawesome_gear"></i>

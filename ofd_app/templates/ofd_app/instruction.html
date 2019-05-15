@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+
+    {% load static %}
+
+    {% load crispy_forms_tags %}
+
+    <meta name="yandex-verification" content="df7d219eb0aed573">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Инструкция</title>
+</head>
+<body class="text-center">
+
+    {% include "ofd_app/menu.html" %}
+
+    <div class="content flex-grow-1">
+        <div class="aside">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/zMdGQ-r9upk?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    {% include "ofd_app/footer.html" %}
+
+</body>
+</html>
+
+
+

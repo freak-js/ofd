@@ -38,4 +38,7 @@ urlpatterns = [
     path('stat_org/', views.stat_org, name='stat_org'),
     path('orders/exportxlsx/<int:id>/', views.exportxlsx, name='exportxlsx'),
     path('orders/exporttxt/<int:id>/', views.exporttxt, name='exporttxt'),
+    path('feedback/', views.feedback, name='feedback'),
+    path('instruction/', views.instruction, name='instruction'),
+
 ]

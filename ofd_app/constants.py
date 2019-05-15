@@ -4,6 +4,8 @@ USERS = 'users'
 ORDERS = 'orders'
 MY_CARD = 'my_card'
 STAT = 'stat'
+FEEDBACK = 'feedback'
+INSTRUCTION = 'instruction'
 
 #Template registered user
 
