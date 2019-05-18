@@ -17,7 +17,6 @@ from datetime import timedelta
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
-#from ofd_app.filters import apply_user_filters, apply_order_filters
 from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
@@ -157,13 +156,16 @@ def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
     for id in ids:
-        try:
-            user = User.objects.get(id=id)
-            user.is_active = False
-            user.save()
-            cnt_delete += 1
-        except User.DoesNotExist:
-            pass
+        iid = to_int(id, 0)
+        if iid > 0:
+            try:
+                user = User.objects.get(id=id)
+                if request.user.has_access_to_user(user):
+                    user.is_active = False
+                    user.save()
+                    cnt_delete += 1
+            except User.DoesNotExist:
+                pass
     return redirect('users')
 
 @login_required(login_url='/login/')
