@@ -32,6 +32,7 @@
                 </div>
             </div>
         </div>
+        {{ msg }}
         <div class="registration_form">
             <form class="form-signin" id="input_form" method="POST" action="/login/">
 
@@ -42,7 +43,7 @@
 	            <input type="hidden" name="next" value="/products/">
 	            <button class="btn btn_authorization_form" type="submit">Войти</button>
 	        </form>
-            <a href="#" class="registration_link">Забыли пароль?</a>
+            <a href="/forgot_password" class="registration_link">Забыли пароль?</a>
             &nbsp;&nbsp;
             <a href="/reg/" class="registration_link">Зарегистрироваться</a>
             <a class="oferta_link" data-toggle="modal" data-target="#exampleModalLong" href="#">договор оферты</a>
