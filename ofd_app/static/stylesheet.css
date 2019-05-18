@@ -553,6 +553,15 @@ body{
 .registration_form_in{
 	width: 300px;
 }
+.forgot_password{
+	width: 300px;
+	margin-bottom: 80px;
+}
+.change_password{
+	width: 300px;
+    height: 255px;
+    margin-bottom: 125px;
+}
 
 /* ТАБЛИЦЫ */
 
