@@ -557,6 +557,11 @@ body{
 	width: 300px;
 	margin-bottom: 80px;
 }
+.change_password{
+	width: 300px;
+    height: 255px;
+    margin-bottom: 125px;
+}
 
 /* ТАБЛИЦЫ */
 
