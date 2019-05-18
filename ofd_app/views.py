@@ -130,7 +130,6 @@ def user_product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
-    #apply_user_filters(request, 'user_filters')
     apply_filters(request, 'user_filters', {'org'})
     filters = {}
     if request.user.groups.filter(name='Manager').exists():
@@ -169,7 +168,6 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    #apply_order_filters(request, 'order_filters')
     date = datetime.now()
     apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
@@ -180,7 +178,6 @@ def orders(request):
         if id > 0 and len(status) > 0:
             try:
                 order = Order.objects.get(id=id)
-                ##check to order access
                 op_result = order.assign_status(status, admin_comment, codes)
                 if op_result:
                     send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
@@ -200,7 +197,10 @@ def orders(request):
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
     elif request.user.is_manager():
-        filters['users'] = request.user.get_childs()
+        filters['users'] = [{'id': request.user.id, 'first_name': request.user.first_name, 'last_name': request.user.last_name}]
+        for item in request.user.get_childs():
+            child = {'id': item['id'], 'first_name': item['first_name'], 'last_name': item['last_name']}
+            filters['users'].append(child)
     filters['status'] = OrderStatus.get_all_statuses()
     return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role(), 'path': ORDERS})
 
