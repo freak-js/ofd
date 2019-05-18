@@ -22,7 +22,7 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
+from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER
 
@@ -64,7 +64,7 @@ def products(request):
                 order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
                 order.save()
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
-                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate, product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
                 return redirect('orders')
         ##TODO передать сообщение об ошибке
         return redirect('products')
@@ -130,7 +130,6 @@ def user_product(request, **kwargs):
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
-    #apply_user_filters(request, 'user_filters')
     apply_filters(request, 'user_filters', {'org'})
     filters = {}
     if request.user.groups.filter(name='Manager').exists():
@@ -169,7 +168,6 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    #apply_order_filters(request, 'order_filters')
     date = datetime.now()
     apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
@@ -180,10 +178,9 @@ def orders(request):
         if id > 0 and len(status) > 0:
             try:
                 order = Order.objects.get(id=id)
-                ##check to order access
                 op_result = order.assign_status(status, admin_comment, codes)
                 if op_result:
-                    send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate, total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
+                    send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
             except Order.DoesNotExist:
                 pass
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
@@ -200,7 +197,10 @@ def orders(request):
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
     elif request.user.is_manager():
-        filters['users'] = request.user.get_childs()
+        filters['users'] = [{'id': request.user.id, 'first_name': request.user.first_name, 'last_name': request.user.last_name}]
+        for item in request.user.get_childs():
+            child = {'id': item['id'], 'first_name': item['first_name'], 'last_name': item['last_name']}
+            filters['users'].append(child)
     filters['status'] = OrderStatus.get_all_statuses()
     return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role(), 'path': ORDERS})
 
@@ -342,3 +342,11 @@ def user_save(user_form, request_user=None):
             user.org = user.parent.org
         user.save()
     return user
+
+@login_required(login_url='/login/')
+def feedback(request):
+    return render(request, 'ofd_app/feedback.html', {'user_role': request.user.get_role(), 'path': FEEDBACK})
+
+@login_required(login_url='/login/')
+def instruction(request):
+    return render(request, 'ofd_app/instruction.html', {'user_role': request.user.get_role(), 'path': INSTRUCTION})
