@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db.models import FilteredRelation, Q, F
+from ofd_app.utils import to_int
 
 # Create your models here.
 class Product(models.Model):
@@ -113,6 +114,20 @@ class ProductUserRel(models.Model):
     user_mod = models.IntegerField("Пользователь, который последний раз модифицировал запись",)
     class Meta:
         unique_together = ('user', 'product')
+    
+    @staticmethod
+    def save_product_user_rel(post_costs, user, user_mod_id):
+        products = Product.objects.all()
+        for product in products:
+            cost = to_int(post_costs.get('product_' + str(product.product_id), 0))
+            if cost > 0:
+                try:
+                    relation = ProductUserRel.objects.get(user=user, product=product)
+                    relation.cost = cost
+                    relation.user_mod = user_mod_id
+                except ProductUserRel.DoesNotExist:
+                    relation = ProductUserRel(user=user, product=product, cost=cost, user_mod=user_mod_id)
+                relation.save()
 
 class OrderStatus(models.Model):
     code = models.CharField("Код статуса", max_length = 1, primary_key = True)
