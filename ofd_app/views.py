@@ -22,6 +22,9 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
+from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
+from django.core.mail import send_mail
+from ofd.settings import EMAIL_HOST_USER
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -35,17 +38,16 @@ def product(request, **kwargs):
                 form.save()
         else:
             form = ProductForm(instance=product)
-    elif request.method == 'POST':
-        if not request.user.has_perm('ofd_app.add_product'):
-            return redirect('products')
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save()
     else:
         if not request.user.has_perm('ofd_app.add_product'):
             return redirect('products')
-        form = ProductForm()
-    return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role()})
+        if request.method == 'POST':
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                product = form.save()
+        else:
+            form = ProductForm()
+    return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
@@ -58,12 +60,15 @@ def products(request):
             product = request.user.get_product(product_id)
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
-                order = Order(user = request.user, product=Product.objects.get(product_id=product_id), comment = order_comment, amount = quantity, cost = cost)
+                db_product = Product.objects.get(product_id=product_id)
+                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
                 order.save()
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
                 return redirect('orders')
         ##TODO передать сообщение об ошибке
         return redirect('products')
-    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -84,8 +89,10 @@ def product_delete(request):
 @login_required(login_url='/login/')
 def user(request, **kwargs):
     user = None
+    my_card = False
     if 'id' in kwargs:
-        if not request.user.has_perm('ofd_app.change_user'):
+        my_card = request.user.id == kwargs['id']
+        if not request.user.has_perm('ofd_app.change_user') and not my_card:
             return redirect('products')
         user = get_object_or_404(User, id=kwargs['id'])
         if not request.user.has_access_to_user(user):
@@ -106,7 +113,7 @@ def user(request, **kwargs):
         if not request.user.has_perm('ofd_app.view_user'):
             return redirect('products')
         user_form = UserCreationFormCustom(requested_user = request.user)
-    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role(), 'path': MY_CARD if my_card else USERS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.change_productuserrel', login_url='/products/')
@@ -118,12 +125,11 @@ def user_product(request, **kwargs):
         if request.method == 'POST':
             save_product_user_rel(request.POST, user, request.user.id)
         products = user.get_products()
-    return render(request, 'ofd_app/user_product.html', {'products': products})
+    return render(request, 'ofd_app/user_product.html', {'products': products, 'path': USERS})
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
 def users(request):
-    #apply_user_filters(request, 'user_filters')
     apply_filters(request, 'user_filters', {'org'})
     filters = {}
     if request.user.groups.filter(name='Manager').exists():
@@ -142,7 +148,7 @@ def users(request):
         data['role'] = user.get_role()
         data['childs'] = user.get_childs()
         user_data.append(data)
-    return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
 @login_required(login_url='/login/')
 @require_POST
@@ -162,7 +168,6 @@ def user_delete(request):
 
 @login_required(login_url='/login/')
 def orders(request):
-    #apply_order_filters(request, 'order_filters')
     date = datetime.now()
     apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
@@ -171,7 +176,13 @@ def orders(request):
         admin_comment = request.POST.get('admin_comment', '').strip()
         codes = request.POST.get('order_codes', '').strip()
         if id > 0 and len(status) > 0:
-            Order.assign_status(id, status, admin_comment, codes)
+            try:
+                order = Order.objects.get(id=id)
+                op_result = order.assign_status(status, admin_comment, codes)
+                if op_result:
+                    send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
+            except Order.DoesNotExist:
+                pass
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
@@ -186,9 +197,12 @@ def orders(request):
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
     elif request.user.is_manager():
-        filters['users'] = request.user.get_childs()
+        filters['users'] = [{'id': request.user.id, 'first_name': request.user.first_name, 'last_name': request.user.last_name}]
+        for item in request.user.get_childs():
+            child = {'id': item['id'], 'first_name': item['first_name'], 'last_name': item['last_name']}
+            filters['users'].append(child)
     filters['status'] = OrderStatus.get_all_statuses()
-    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role(), 'path': ORDERS})
 
 @login_required(login_url='/login/')
 def stat_org(request):
@@ -233,7 +247,7 @@ def stat_org(request):
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
         data.append(item)
-    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role()})
+    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role(), 'path': STAT})
 
 @login_required(login_url='/login/')
 def exportxlsx(request, **kwargs):
@@ -251,17 +265,14 @@ def exportxlsx(request, **kwargs):
         response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
         return response
 
+@login_required(login_url='/login/')
 def exporttxt(request, **kwargs):
     if 'id' in kwargs:
         db_codes = Order.get_order_codes(request.user, kwargs['id'])
         codes = db_codes.split()
-        response = HttpResponse('\n'.join(codes), content_type='text/plain')
+        response = HttpResponse('\r\n'.join(codes), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=codes.txt'
         return response
-
-@csrf_exempt
-def test(request):
-    return JsonResponse({'orgs': User.get_organizations(), 'stats': OrderStatus.get_all_statuses()})
 
 def construct_pagination(request, data):
     page_size = 10
@@ -285,6 +296,8 @@ def user_reg(request):
         reg_form = UserCreationFormCustom(request.POST)
         user = user_save(reg_form)
         if user is not None:
+            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY.format(first_name = user.first_name , last_name = user.last_name , email = user.email , phone_number = user.phone_number , org = user.org , city = user.city ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
+            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT.format(first_name = user.first_name), TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY.format(login = user.username), EMAIL_HOST_USER, [user.email], fail_silently=False,)
             login(request, user)
             return redirect('products')
     else:
@@ -322,10 +335,18 @@ def user_save(user_form, request_user=None):
         ##Resolve group
         if user.groups.all().count() == 0 and not user.is_superuser:
             user_resolve_group(user, request_user)
-        if user.parent is None and request_user is not None and request_user.is_manager():
+        if user.parent is None and user.is_user() and request_user is not None and request_user.is_manager():
             user.parent = request_user
         if user.is_user() and (user.inn is None or user.org is None or len(user.inn) == 0 or len(user.org) == 0):
             user.inn = user.parent.inn
             user.org = user.parent.org
         user.save()
     return user
+
+@login_required(login_url='/login/')
+def feedback(request):
+    return render(request, 'ofd_app/feedback.html', {'user_role': request.user.get_role(), 'path': FEEDBACK})
+
+@login_required(login_url='/login/')
+def instruction(request):
+    return render(request, 'ofd_app/instruction.html', {'user_role': request.user.get_role(), 'path': INSTRUCTION})

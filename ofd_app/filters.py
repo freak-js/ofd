@@ -4,7 +4,7 @@ from datetime import date
 from datetime import timedelta
 
 def date_filter_format():
-    return "%Y-%m-%d";
+    return "%Y-%m-%d"
 
 def save_filters(request, key, apply_filters):
     session = request.session

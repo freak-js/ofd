@@ -89,7 +89,7 @@ class User(AbstractUser):
 
     @staticmethod
     def get_organizations():
-        orgs = User.objects.exclude(org__isnull=True).exclude(org='').values('org').distinct().order_by('org')
+        orgs = User.objects.exclude(org__isnull=True).exclude(org='').exclude(is_active=False).values('org').distinct().order_by('org')
         return list(map(lambda x: { 'id': x['org'], 'value': x['org']}, orgs))
 
     def has_access_to_user(self, user):
@@ -141,23 +141,20 @@ class Order(models.Model):
     amount = models.IntegerField("Количество")
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
 
-    @staticmethod
-    def assign_status(id, status, comment, codes):
+    def assign_status(self, status, comment, codes):
       try:
-          new_status = OrderStatus.objects.get(code=status);
-          try:
-            order = Order.objects.get(id=id)
-            if order.status.is_in_progress() and not new_status.is_in_progress():
-                order.status = new_status
-                if comment is not None and len(comment) > 0:
-                    order.admin_comment = comment
-                if codes is not None and len(codes) > 0:
-                    order.codes = codes
-                order.save()
-          except Order.DoesNotExist:
-            pass
+        new_status = OrderStatus.objects.get(code=status);
+        if self.status.is_in_progress() and not new_status.is_in_progress():
+            self.status = new_status
+            if comment is not None and len(comment) > 0:
+                self.admin_comment = comment
+            if codes is not None and len(codes) > 0:
+                self.codes = codes
+            self.save()
+            return True
       except OrderStatus.DoesNotExist:
           pass
+      return False
 
     @staticmethod
     def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None):
