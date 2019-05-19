@@ -38,6 +38,7 @@ urlpatterns = [
     path('orders/exportxlsx/<int:id>/', views.exportxlsx, name='exportxlsx'),
     path('orders/exporttxt/<int:id>/', views.exporttxt, name='exporttxt'),
     path('feedback/', views.feedback, name='feedback'),
+    path('contacts/', views.contacts, name='contacts'),
     path('instruction/', views.instruction, name='instruction'),
     path('change_password/', auth_views.PasswordChangeView.as_view(template_name='ofd_app/change_password.html', success_url='/products'), name="change_password"),
     path('forgot_password/', auth_views.PasswordResetView.as_view(template_name='ofd_app/forgot_password.html', success_url='/products'), name="forgot_password"),

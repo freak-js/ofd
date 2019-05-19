@@ -104,6 +104,14 @@ body{
 	text-decoration: none;
 	color: #426786;
 }
+.footer_link{
+	color: #485967;
+	font-size: 11px;
+}
+.footer_link:hover{
+	text-decoration: none;
+	color: #426786;
+}
 .page-link{
 	padding: 1px 7px !important;
 	color: #485967;

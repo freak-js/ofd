@@ -339,3 +339,6 @@ def feedback(request):
 @login_required(login_url='/login/')
 def instruction(request):
     return render(request, 'ofd_app/instruction.html', {'user_role': request.user.get_role(), 'path': INSTRUCTION})
+
+def contacts(request):
+    return render(request, 'ofd_app/contacts.html')
