@@ -20,8 +20,8 @@
         <div class="aside">
             <div class="aside__text">
                 <div class="aside__text-mod">
-                <h2>Красивый заголовок</h2>
-                <span>Очень крутое описание платформы, ее фишек, фич, удобства и прекрасного дизайна разработтаного настоящим профессионалом своего дела.</span>
+                <h2>Платформа партнёрских закупок MIR-OFD</h2>
+                <span>Добро пожаловать, дорогой партнер! Здесь Вы можете приобрести коды активации ОФД любого оператора по лучшим ценам в кратчайшие сроки.</span>
                 </div>
             </div>
             <div class="content__animation">
@@ -32,6 +32,7 @@
                 </div>
             </div>
         </div>
+        {{ msg }}
         <div class="registration_form">
             <form class="form-signin" id="input_form" method="POST" action="/login/">
 
@@ -42,7 +43,7 @@
 	            <input type="hidden" name="next" value="/products/">
 	            <button class="btn btn_authorization_form" type="submit">Войти</button>
 	        </form>
-            <a href="#" class="registration_link">Забыли пароль?</a>
+            <a href="/forgot_password" class="registration_link">Забыли пароль?</a>
             &nbsp;&nbsp;
             <a href="/reg/" class="registration_link">Зарегистрироваться</a>
             <a class="oferta_link" data-toggle="modal" data-target="#exampleModalLong" href="#">договор оферты</a>
@@ -168,8 +169,21 @@
         },4000 );
       });
     </script>
+
+    <div class="footer_div d-flex align-items-center justify-content-between">
+        <div style="width: 110px">
+            <span class="footer_span">mir-ofd.ru 2019</span>
+        </div>
+        <div> 
+            <a class="footer_link mr-1" href="#">О компании</a>
+            <a class="footer_link" href="/contacts">Контакты</a>
+        </div>
+        <div style="width: 110px"></div>
+    </div>
+</div>
 </body>
 </html>
+
 <!-- telegram @Barsik or @Manujli -->
 
 

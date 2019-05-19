@@ -33,12 +33,14 @@ urlpatterns = [
     path('user/delete', views.user_delete, name='user_delete'),
     path('user_product/<int:id>/', views.user_product, name='user_product'),
     path('reg/', views.user_reg, name='user_reg'),
-    #path('basket/', views.get_basket, name='basket'),
     path('orders/', views.orders, name='orders'),
     path('stat_org/', views.stat_org, name='stat_org'),
     path('orders/exportxlsx/<int:id>/', views.exportxlsx, name='exportxlsx'),
     path('orders/exporttxt/<int:id>/', views.exporttxt, name='exporttxt'),
     path('feedback/', views.feedback, name='feedback'),
+    path('contacts/', views.contacts, name='contacts'),
     path('instruction/', views.instruction, name='instruction'),
-
+    path('change_password/', auth_views.PasswordChangeView.as_view(template_name='ofd_app/change_password.html', success_url='/products'), name="change_password"),
+    path('forgot_password/', auth_views.PasswordResetView.as_view(template_name='ofd_app/forgot_password.html', success_url='/products'), name="forgot_password"),
+    path('password_reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='ofd_app/forgot_password.html', success_url='/login'), name="password_reset_confirm" )
 ]
