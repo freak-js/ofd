@@ -17,7 +17,6 @@ from datetime import timedelta
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
-#from ofd_app.filters import apply_user_filters, apply_order_filters
 from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int
 from openpyxl import Workbook
@@ -121,9 +120,9 @@ def user_product(request, **kwargs):
     if 'id' in kwargs:
         user = get_object_or_404(User, id=kwargs['id'])
         if not user.is_manager():
-            return redirect('users');
+            return redirect('users')
         if request.method == 'POST':
-            save_product_user_rel(request.POST, user, request.user.id)
+            ProductUserRel.save_product_user_rel(request.POST, user, request.user.id)
         products = user.get_products()
     return render(request, 'ofd_app/user_product.html', {'products': products, 'path': USERS})
 
@@ -157,13 +156,16 @@ def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
     for id in ids:
-        try:
-            user = User.objects.get(id=id)
-            user.is_active = False
-            user.save()
-            cnt_delete += 1
-        except User.DoesNotExist:
-            pass
+        iid = to_int(id, 0)
+        if iid > 0:
+            try:
+                user = User.objects.get(id=id)
+                if request.user.has_access_to_user(user):
+                    user.is_active = False
+                    user.save()
+                    cnt_delete += 1
+            except User.DoesNotExist:
+                pass
     return redirect('users')
 
 @login_required(login_url='/login/')
@@ -303,19 +305,6 @@ def user_reg(request):
     else:
         reg_form = UserCreationFormCustom()
     return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})
-
-def save_product_user_rel(costs, user, user_mod_id):
-    products = Product.objects.all()
-    for product in products:
-        cost = costs.get('product_' + str(product.product_id))
-        if cost is not None and int(cost.strip()) > 0 if cost else 0 > 0 :
-            try:
-                relation = ProductUserRel.objects.get(user=user, product=product)
-                relation.cost = cost
-                relation.user_mod = user_mod_id
-            except ProductUserRel.DoesNotExist:
-                relation = ProductUserRel(user=user, product=product, cost=cost, user_mod=user_mod_id)
-            relation.save()
 
 def user_assign_group(user, group_name):
     group = Group.objects.get(name=group_name).user_set.add(user)
