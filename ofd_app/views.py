@@ -23,7 +23,8 @@ from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
 from django.core.mail import send_mail
-from ofd.settings import EMAIL_HOST_USER
+from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
+from django.utils.timezone import pytz
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -63,7 +64,7 @@ def products(request):
                 order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
                 order.save()
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
-                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
+                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
                 return redirect('orders')
         ##TODO передать сообщение об ошибке
         return redirect('products')
