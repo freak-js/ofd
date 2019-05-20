@@ -53,9 +53,8 @@
         {% for user in users.data %}
 
         <div class="row ManagerBox">
-            <div class="col-1 p-1">
-                <a href="/user/{{user.id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
-                &nbsp
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <a href="/user/{{user.id}}" class="fontawesome_link mr-3"><i class="fas fa-edit"></i></a>
 
                 {% if perms.ofd_app.change_product %}
 
@@ -64,25 +63,25 @@
                 {% endif %}
 
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.first_name }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.last_name }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.org }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.inn }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.phone_number }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ user.city }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <input type="checkbox" class="form-check-input__ManagerBox" name="user_to_delete" value="{{user.id}}" form="top_form">
             </div>
         </div>

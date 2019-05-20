@@ -261,7 +261,7 @@ body{
 }
 .ManagerBox{
 	margin-top: 5px;
-	height: 35px;
+	min-height: 35px;
 	border-radius: 10px;
 	background-color: #d8dee3;
 }
