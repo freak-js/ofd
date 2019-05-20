@@ -119,7 +119,7 @@ class ProductUserRel(models.Model):
     def save_product_user_rel(post_costs, user, user_mod_id):
         products = Product.objects.all()
         for product in products:
-            cost = to_int(post_costs.get('product_' + str(product.product_id), 0))
+            cost = to_int(post_costs.get('product_' + str(product.product_id), 0), 0)
             if cost > 0:
                 try:
                     relation = ProductUserRel.objects.get(user=user, product=product)
