@@ -25,6 +25,11 @@ from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, 
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
+from django.template.loader import get_template
+import weasyprint
+from weasyprint import HTML, CSS
+from django.conf import settings
+
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -343,3 +348,14 @@ def instruction(request):
 
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
+
+
+
+@login_required(login_url='/login/')
+def invoicing(request):
+    html_template = get_template('ofd_app/invoicing.html')
+    rendered_html = html_template.render().encode(encoding="UTF-8")
+    pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(settings.STATIC_ROOT +  'logo-score.png')])
+    http_response = HttpResponse(pdf_file, content_type='application/pdf')
+    http_response['Content-Disposition'] = 'filename="score.pdf"'
+    return http_response
