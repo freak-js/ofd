@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'ofd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ofd',
-        'USER': 'ofd',
-        'PASSWORD': 'ofd',
+        'NAME': 'ofd_user',
+        'USER': 'ofd_user',
+        'PASSWORD': 'ofd_user',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -110,13 +110,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -125,3 +125,14 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+AUTH_USER_MODEL = 'ofd_app.User'
+
+LOGIN_REDIRECT_URL = '/products/'
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'info@mir-ofd.ru'
+EMAIL_HOST_PASSWORD = 'qwer1234+'
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
