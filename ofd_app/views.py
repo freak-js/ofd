@@ -25,7 +25,7 @@ from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, 
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
-from django.template.loader import get_template
+from django.template.loader import render_to_string
 import weasyprint
 from weasyprint import HTML, CSS
 from django.conf import settings
@@ -349,13 +349,15 @@ def instruction(request):
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
 
-
-
 @login_required(login_url='/login/')
 def invoicing(request):
-    html_template = get_template('ofd_app/invoicing.html')
-    rendered_html = html_template.render().encode(encoding="UTF-8")
+    order_id = to_int(request.POST.get('score_product_id', 0), 0)
+    order = Order.objects.get(id=order_id)
+
+    rendered_html = render_to_string('ofd_app/invoicing.html', {'id' : order.id, 'addate' : order.adddate, 'amount' : order.amount, 'date_invoicing' : datetime.now(), 'date_to' : datetime.now().strftime("%d.%m.%Y"), 'org' : order.user.org, 'inn' : order.user.inn, 'product_name' : order.product.product_name, 'cost' : order.product.product_cost, 'total' : order.product.product_cost * order.amount})
+
     pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(settings.STATIC_ROOT +  'logo-score.png')])
+    
     http_response = HttpResponse(pdf_file, content_type='application/pdf')
     http_response['Content-Disposition'] = 'filename="score.pdf"'
     return http_response

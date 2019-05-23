@@ -130,7 +130,7 @@
         </div>
         <div style="width: 70%;">
             <p style="font-size: 10px" class="header">
-                Внимание! Счет действителен до 22.05.2019.
+                Внимание! Счет действителен до {{ date_to }}.
                 Оплата данного счета означает согласие с условиями поставки товара.
                 Уведомление об оплате обязательно, в противном случае не гарантируется
                 наличие товара на складе. Товар отпускается по факту прихода денег
@@ -166,7 +166,7 @@
         </tbody>
     </table>
 
-    <h1>Счет на оплату № 00 от 00 месяц 2019 г.</h1>
+    <h1>Счет на оплату № {{ id }} от {{ date_invoicing }}</h1>
 
     <table class="contract">
         <tbody>
@@ -180,7 +180,7 @@
             <tr>
                 <td>Покупатель:</td>
                 <th>
-                    ПОКУПАТЕЛЬ, ИНН 0000000000
+                    {{ org }}, ИНН {{ inn }}
                 </th>
             </tr>
         </tbody>
@@ -199,12 +199,12 @@
         </thead>
         <tbody>
             <tr>
-                <td align="center">order.id</td>
-                <td align="left">order.name</td>
-                <td align="right">order.count</td>
+                <td align="center">{{ id }}</td>
+                <td align="left">{{ product_name }}</td>
+                <td align="right">{{ amount }}</td>
                 <td align="left">шт</td>
-                <td align="right">order.cost</td>
-                <td align="right">order.total</td>
+                <td align="right">{{ cost }}</td>
+                <td align="right">{{ total }}</td>
             </tr>
         </tbody>
         <tfoot>

@@ -453,6 +453,17 @@ body{
 .comment_show_button:focus{
 	box-shadow: none;
 }
+.score_button{
+	width: 40px;
+	padding: 0;
+	color: #485967;
+}
+.score_button:hover{
+    color: #ffffff;
+}
+.score_button:focus{
+	box-shadow: none;
+}
 .btn_to_complete_order{
 	width: 110px;
 	margin-top: 5px;
