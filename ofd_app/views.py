@@ -356,7 +356,7 @@ def invoicing(request):
     order_id = to_int(request.POST.get('score_product_id', 0), 0)
     order = Order.objects.get(id=order_id)
 
-    rendered_html = render_to_string('ofd_app/invoicing.html', {'id' : order.id, 'addate' : order.adddate, 'amount' : order.amount, 'date_invoicing' : datetime.now(), 'date_to' : datetime.now().strftime("%d.%m.%Y"), 'org' : order.user.org, 'inn' : order.user.inn, 'product_name' : order.product.product_name, 'cost' : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 'total' : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 'total_text' : num2text(order.cost * order.amount)})
+    rendered_html = render_to_string('ofd_app/invoicing.html', {'id' : order.id, 'add_date' : order.adddate.strftime("%Y.%m.%d"), 'amount' : order.amount, 'date_to' : datetime.now().strftime("%d.%m.%Y"), 'org' : order.user.org, 'inn' : order.user.inn, 'product_name' : order.product.product_name, 'cost' : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 'total' : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 'total_text' : num2text(order.cost * order.amount)})
 
     pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(settings.STATIC_ROOT +  'logo-score.png')])
     

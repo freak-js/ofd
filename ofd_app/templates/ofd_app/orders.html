@@ -120,16 +120,12 @@
 
                 {% endif %}
 
-                {% if user_role == "Admin" or user_role == "God" %}
-
                 <form action="/invoicing/" method="POST">
 
                     {% csrf_token %}
 
                     <button type="submit" class="btn score_button ml-1" name="score_product_id" value="{{ order.id }}"><i class="fas fa-handshake"></i></button>
                 </form>
-
-                {% endif %}
 
             </div>
             <div class="col-1 p-1 d-flex justify-content-center align-items-center">
