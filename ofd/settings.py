@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE¶ = True
+SESSION_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = ['.mir-ofd.ru', '5.253.61.163', 'localhost']
 
