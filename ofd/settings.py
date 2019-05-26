@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'vy$ey_uxwp67%9qz-73d7^-@*6su90uaftmf8u!4d9q@tysic9'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'ofd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ofd_user',
-        'USER': 'ofd_user',
-        'PASSWORD': 'ofd_user',
+        'NAME': os.environ['OFD_DB_NAME'],
+        'USER': os.environ['OFD_DB_USER'],
+        'PASSWORD': os.environ['OFD_DB_PASSWORD'],
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -132,7 +132,7 @@ LOGIN_REDIRECT_URL = '/products/'
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'info@mir-ofd.ru'
-EMAIL_HOST_PASSWORD = 'qwer1234+'
+EMAIL_HOST_USER = os.environ['OFD_EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['OFD_EMAIL_HOST_PASSWORD']
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
