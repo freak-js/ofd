@@ -204,6 +204,20 @@
 
           {% endif %}
 
+          {% if user_role == "God" or user_role == "Admin" %}
+
+          {% if path == "orders" %}
+
+          <button type="submit" class="btn dropdown-item" form="is_paid_form">Изменить статус оплаты</button>
+
+          {% else %}
+
+          <button type="submit" class="btn dropdown-item disabled" form="is_paid_form">Изменить статус оплаты</button>
+
+          {% endif %}
+
+          {% endif %}
+
           <a class="dropdown-item" href="/change_password">Сменить пароль</a>
         </div>
       </div>

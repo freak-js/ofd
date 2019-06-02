@@ -195,7 +195,7 @@ def orders(request):
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate.strftime("%d.%m.%y"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes})
+        order_data.append({'id': order.id, 'adddate': order.adddate.strftime("%d.%m.%y"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes, 'is_paid' : order.is_paid})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -343,3 +343,20 @@ def instruction(request):
 
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
+
+@login_required(login_url='/login/')
+@require_POST
+@permission_required('ofd_app.delete_product', login_url='/orders/')
+def order_change_pay_sign(request):
+    ids = request.POST.getlist('is_paid')
+    for id in ids:
+        order = Order.objects.get(id=id)
+        if int(id) > 0 and order.is_paid:
+            order.is_paid = False
+            order.save()
+        elif int(id) > 0:
+            order.is_paid = True
+            order.save()
+        else:
+            return redirect('orders')
+    return redirect('orders')
