@@ -43,5 +43,5 @@ urlpatterns = [
     path('change_password/', auth_views.PasswordChangeView.as_view(template_name='ofd_app/change_password.html', success_url='/products'), name="change_password"),
     path('forgot_password/', auth_views.PasswordResetView.as_view(template_name='ofd_app/forgot_password.html', success_url='/products'), name="forgot_password"),
     path('password_reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='ofd_app/forgot_password.html', success_url='/login'), name="password_reset_confirm" ),
-    path('invoicing/', views.invoicing, name='invoicing')
+    path('get_order_invoice/', views.get_order_invoice, name='get_order_invoice')
 ]
