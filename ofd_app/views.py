@@ -344,19 +344,20 @@ def instruction(request):
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_product', login_url='/orders/')
 def order_change_pay_sign(request):
     ids = request.POST.getlist('is_paid')
     for id in ids:
-        order = Order.objects.get(id=id)
-        if int(id) > 0 and order.is_paid:
-            order.is_paid = False
-            order.save()
-        elif int(id) > 0:
-            order.is_paid = True
-            order.save()
+        if int(id) > 0:
+            order = Order.objects.get(id=id)
+            if order.is_paid:
+                order.is_paid = False
+                order.save()
+            else:
+                order.is_paid = True
+                order.save()
         else:
-            return redirect('orders')
+            return redirect('orders')        
     return redirect('orders')
