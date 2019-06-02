@@ -155,6 +155,7 @@ class Order(models.Model):
     admin_comment = models.TextField("Ответ от администратора", null=True)
     amount = models.IntegerField("Количество")
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
+    is_paid = models.NullBooleanField("Статус оплаты заказа")
 
     def assign_status(self, status, comment, codes):
       try:
