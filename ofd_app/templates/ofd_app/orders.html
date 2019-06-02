@@ -29,7 +29,7 @@
             <div class="col-1 p-1">
                 <span>Клиент</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-1 p-1">
                 <span>Дата</span>
             </div>
             <div class="col-2 p-1">
@@ -48,6 +48,9 @@
                 <span>Статус</span>
             </div>
             <div class="col-1 p-1">
+                <span>Оплата</span>
+            </div>
+            <div class="col-1 p-1">
                 <span>Ком-рий</span>
             </div>
             <div class="col-1 p-1">
@@ -58,10 +61,10 @@
         {% for order in orders.data %}
 
         <div class="row global_order_nav_div">
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.id }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
                 {% if user_role == "Admin" or user_role == "God" %}
 
@@ -90,22 +93,22 @@
                 {% endif %}
 
             </div>
-            <div class="col-2 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.adddate }}</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.product_name }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.amount }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.cost }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.full_cost }}</span>
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
                 {% if order.status == "I" %}
 
@@ -122,7 +125,10 @@
                 {% endif %}
 
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <span>нет</span>
+            </div>
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
                 {% if order.comment %}
 
@@ -136,7 +142,7 @@
                 {% endif %}
 
             </div>
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
 
                 {% if order.status == "I" %}
