@@ -216,7 +216,7 @@ def stat_org(request):
     select 1 as id
          , u.org
          , u.inn
-         , coalesce(sum(q.total), 0) as total
+         , coalesce(sum(case when q.status = 'A' then q.total else 0 end), 0) as total
          , count(q.order_id) as cnt_all
          , sum(case when q.status = 'A' then 1 else 0 end) as cnt_approve
          , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
@@ -232,18 +232,37 @@ def stat_org(request):
             left outer join
             (
             select o.user_id
-                    , o.id as order_id
-                    , max(o.status_id) as status
-                    , sum(o.amount * o.cost) as total
-                from ofd_app_order o
+                 , o.id as order_id
+                 , o.status_id as status
+                 , o.amount * o.cost as total
+              from ofd_app_order o
              where adddate >= %s
                and adddate < %s
-                group by o.user_id
-                    , o.id
             ) q on u.id = q.user_id
      where u.is_superuser = false
        and ad.user_id is null
     group by org, inn
+    union
+    select 1 as id
+         , 'Общий итог' as org
+         , '' as inn
+         , coalesce(sum(case when o.status_id = 'A' then o.amount * o.cost else 0 end), 0) as total
+         , count(o.id) as cnt_all
+         , sum(case when o.status_id = 'A' then 1 else 0 end) as cnt_approve
+         , sum(case when o.status_id = 'I' then 1 else 0 end) as cnt_in_progress
+         , sum(case when o.status_id = 'R' then 1 else 0 end) as cnt_reject
+      from ofd_app_order o
+           inner join ofd_app_user u on o.user_id = u.id
+           left outer join (
+                select ug.user_id
+                 from ofd_app_user_groups ug
+                      inner join auth_group ag
+                              on ug.group_id = ag.id
+                where ag.name = 'Admin'
+            ) ad on u.id = ad.user_id
+     where u.is_superuser = false
+       and ad.user_id is null
+    order by total desc
     '''
     result = User.objects.raw(sql, [date_from, date_to])
     data = []
