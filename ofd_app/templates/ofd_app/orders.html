@@ -11,7 +11,6 @@
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
-    <link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/sunny/jquery-ui.css">
     <title>Заказы</title>
 </head>
 <body class="text-center">
@@ -21,6 +20,9 @@
     {% include "ofd_app/filter.html" %}
 
     <div class="container container_min_width flex-grow-1">
+        <form action="/order_change_pay_sign/" method="POST" id="is_paid_form">
+            {% csrf_token %}
+        </form>
 
         <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
@@ -126,7 +128,37 @@
 
             </div>
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
-                <span>нет</span>
+
+                {% if user_role == "Admin" or user_role == "God" %}
+
+                {% if order.is_paid %}
+
+                <input type="checkbox" class="checkbox_green" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                <label for="checkbox_{{ order.id }}"></label>
+                
+                {% else %}
+
+                <input type="checkbox" class="checkbox_red" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                <label for="checkbox_{{ order.id }}"></label>
+
+                {% endif %}
+
+                {% endif %}
+
+                {% if user_role == "Manager" or user_role == "User" %}
+
+                {% if order.is_paid %}
+
+                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
+                
+                {% else %}
+
+                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
+
+                {% endif %}
+
+                {% endif %}
+
             </div>
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 

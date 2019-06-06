@@ -61,7 +61,7 @@ def products(request):
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
                 db_product = Product.objects.get(product_id=product_id)
-                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
+                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost, is_paid = False)
                 order.save()
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
@@ -195,7 +195,7 @@ def orders(request):
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate.strftime("%d.%m.%y"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes})
+        order_data.append({'id': order.id, 'adddate': order.adddate.strftime("%d.%m.%y"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes, 'is_paid' : order.is_paid})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -362,3 +362,21 @@ def instruction(request):
 
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
+
+@require_POST
+@login_required(login_url='/login/')
+@permission_required('ofd_app.delete_product', login_url='/orders/')
+def order_change_pay_sign(request):
+    ids = request.POST.getlist('is_paid')
+    for id in ids:
+        if int(id) > 0:
+            order = Order.objects.get(id=id)
+            if order.is_paid:
+                order.is_paid = False
+                order.save()
+            else:
+                order.is_paid = True
+                order.save()
+        else:
+            return redirect('orders')        
+    return redirect('orders')
