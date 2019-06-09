@@ -61,7 +61,7 @@ def products(request):
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
                 db_product = Product.objects.get(product_id=product_id)
-                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
+                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost, is_paid = False)
                 order.save()
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
@@ -70,8 +70,8 @@ def products(request):
         return redirect('products')
     return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_product', login_url='/products/')
 def product_delete(request):
     ids = request.POST.getlist('product_to_delete')
@@ -150,15 +150,14 @@ def users(request):
         user_data.append(data)
     return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_user', login_url='/products/')
 def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
     for id in ids:
-        iid = to_int(id, 0)
-        if iid > 0:
+        if to_int(id, 0) > 0:
             try:
                 user = User.objects.get(id=id)
                 if request.user.has_access_to_user(user):
@@ -195,7 +194,7 @@ def orders(request):
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate, 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes})
+        order_data.append({'id': order.id, 'adddate': order.adddate.strftime("%d.%m.%y"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes, 'is_paid' : order.is_paid})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -216,7 +215,7 @@ def stat_org(request):
     select 1 as id
          , u.org
          , u.inn
-         , coalesce(sum(q.total), 0) as total
+         , coalesce(sum(case when q.status = 'A' then q.total else 0 end), 0) as total
          , count(q.order_id) as cnt_all
          , sum(case when q.status = 'A' then 1 else 0 end) as cnt_approve
          , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
@@ -232,18 +231,37 @@ def stat_org(request):
             left outer join
             (
             select o.user_id
-                    , o.id as order_id
-                    , max(o.status_id) as status
-                    , sum(o.amount * o.cost) as total
-                from ofd_app_order o
+                 , o.id as order_id
+                 , o.status_id as status
+                 , o.amount * o.cost as total
+              from ofd_app_order o
              where adddate >= %s
                and adddate < %s
-                group by o.user_id
-                    , o.id
             ) q on u.id = q.user_id
      where u.is_superuser = false
        and ad.user_id is null
     group by org, inn
+    union
+    select 1 as id
+         , 'Общий итог' as org
+         , '' as inn
+         , coalesce(sum(case when o.status_id = 'A' then o.amount * o.cost else 0 end), 0) as total
+         , count(o.id) as cnt_all
+         , sum(case when o.status_id = 'A' then 1 else 0 end) as cnt_approve
+         , sum(case when o.status_id = 'I' then 1 else 0 end) as cnt_in_progress
+         , sum(case when o.status_id = 'R' then 1 else 0 end) as cnt_reject
+      from ofd_app_order o
+           inner join ofd_app_user u on o.user_id = u.id
+           left outer join (
+                select ug.user_id
+                 from ofd_app_user_groups ug
+                      inner join auth_group ag
+                              on ug.group_id = ag.id
+                where ag.name = 'Admin'
+            ) ad on u.id = ad.user_id
+     where u.is_superuser = false
+       and ad.user_id is null
+    order by total desc
     '''
     result = User.objects.raw(sql, [date_from, date_to])
     data = []
@@ -343,3 +361,19 @@ def instruction(request):
 
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
+
+@require_POST
+@login_required(login_url='/login/')
+def order_change_pay_sign(request):
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
+    ids = request.POST.getlist('is_paid')
+    for id in ids:
+        if to_int(id, 0) > 0:
+            try:
+                order = Order.objects.get(id=id)
+                order.is_paid = not order.is_paid
+                order.save()
+            except Order.DoesNotExist:
+                pass    
+    return redirect('orders')

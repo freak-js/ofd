@@ -623,6 +623,96 @@ body{
     color: #485967;
 }
 
+/* ЗЕЛЕНЫЙ ЧЕКБОКС */
+
+.checkbox_green {
+	z-index: -1;
+	opacity: 0;
+  }
+  .checkbox_green + label {
+	position: relative;
+	padding: 0 0 0 43px;
+	cursor: pointer;
+  }
+  .checkbox_green + label:before {
+	content: '';
+	position: absolute;
+	top: -4px;
+	left: 0;
+	width: 35px;
+	height: 15px;
+	border-radius: 13px;
+	background: #49884bab;
+	box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+	transition: .2s;
+  }
+  .checkbox_green + label:after {
+	content: '';
+	position: absolute;
+	top: -4px;
+	left: 0px;
+	width: 15px;
+	height: 15px;
+	border-radius: 10px;
+	background: #f0f0f0;
+	box-shadow: 0 2px 5px rgba(0,0,0,.3);
+	transition: .2s;
+  }
+  .checkbox_green:checked + label:before {
+	background: #426786bf;
+  }
+  .checkbox_green:checked + label:after {
+	left: 20px;
+  }
+  .checkbox_green:focus + label:before {
+	box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+  }
+
+  /* КРАСНЫЙ ЧЕКБОКС */
+
+  .checkbox_red {
+	z-index: -1;
+	opacity: 0;
+  }
+  .checkbox_red + label {
+	position: relative;
+	padding: 0 0 0 43px;
+	cursor: pointer;
+  }
+  .checkbox_red + label:before {
+	content: '';
+	position: absolute;
+	top: -4px;
+	left: 0;
+	width: 35px;
+	height: 15px;
+	border-radius: 13px;
+	background: #bd3e35c2;
+	box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+	transition: .2s;
+  }
+  .checkbox_red + label:after {
+	content: '';
+	position: absolute;
+	top: -4px;
+	left: 0px;
+	width: 15px;
+	height: 15px;
+	border-radius: 10px;
+	background: #f0f0f0;
+	box-shadow: 0 2px 5px rgba(0,0,0,.3);
+	transition: .2s;
+  }
+  .checkbox_red:checked + label:before {
+	background: #426786bf;
+  }
+  .checkbox_red:checked + label:after {
+	left: 20px;
+  }
+  .checkbox_red:focus + label:before {
+	box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+  }
+
 /* TOOLTIP JAVA SCRIPT */
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
     border-left-color: #485967; /* цвет стрелочки */

@@ -59,7 +59,7 @@ class User(AbstractUser):
         return user.groups.filter(name='Admin').exists()
 
     def get_childs(self, as_dict=True):
-        users = User.objects.filter(parent=self).order_by('username')
+        users = User.objects.filter(parent=self).filter(is_active=True).order_by('username')
         return users.values() if as_dict else users
 
     def get_role(self):
@@ -155,6 +155,7 @@ class Order(models.Model):
     admin_comment = models.TextField("Ответ от администратора", null=True)
     amount = models.IntegerField("Количество")
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
+    is_paid = models.NullBooleanField("Статус оплаты заказа")
 
     def assign_status(self, status, comment, codes):
       try:
