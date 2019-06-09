@@ -70,8 +70,8 @@ def products(request):
         return redirect('products')
     return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_product', login_url='/products/')
 def product_delete(request):
     ids = request.POST.getlist('product_to_delete')
@@ -150,15 +150,14 @@ def users(request):
         user_data.append(data)
     return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_user', login_url='/products/')
 def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
     for id in ids:
-        iid = to_int(id, 0)
-        if iid > 0:
+        if to_int(id, 0) > 0:
             try:
                 user = User.objects.get(id=id)
                 if request.user.has_access_to_user(user):
@@ -365,18 +364,16 @@ def contacts(request):
 
 @require_POST
 @login_required(login_url='/login/')
-@permission_required('ofd_app.delete_product', login_url='/orders/')
 def order_change_pay_sign(request):
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
     ids = request.POST.getlist('is_paid')
     for id in ids:
-        if int(id) > 0:
-            order = Order.objects.get(id=id)
-            if order.is_paid:
-                order.is_paid = False
+        if to_int(id, 0) > 0:
+            try:
+                order = Order.objects.get(id=id)
+                order.is_paid = not order.is_paid
                 order.save()
-            else:
-                order.is_paid = True
-                order.save()
-        else:
-            return redirect('orders')        
+            except Order.DoesNotExist:
+                pass    
     return redirect('orders')
