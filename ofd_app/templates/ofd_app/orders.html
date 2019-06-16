@@ -29,7 +29,7 @@
                 <span>№</span>
             </div>
             <div class="col-1 p-1">
-                <span>Клиент</span>
+                <span>Оформил</span>
             </div>
             <div class="col-1 p-1">
                 <span>Дата</span>
@@ -66,31 +66,17 @@
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.id }}</span>
             </div>
-            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+            <div class="col-1 p-0 d-flex align-items-center justify-content-center">
 
                 {% if user_role == "Admin" or user_role == "God" %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}"><i class="fa fa-user"></i>
-                </button>
+                <button type="button" class="btn admin_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}">{{ order.user.org }}</button>
 
                 {% endif %}
 
-                {% if user_role == "Manager" and order.user_role == "Manager" %}
+                {% if user_role == "Manager" or user_role == "User" %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
-                </button>
-
-                {% elif user_role == "Manager" %}
-
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }}"><i class="fa fa-user"></i>
-                </button>
-
-                {% endif %}
-
-                {% if user_role == "User" %}
-
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
-                </button>
+                <button type="button" class="btn client_show_button w-100" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }}">{{ order.user.last_name }}</button>
 
                 {% endif %}
 

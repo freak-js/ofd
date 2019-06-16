@@ -9,6 +9,16 @@ body{
 	min-height: 100%;
 	font-size: 14px;
 }
+input:focus{
+	border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+select:focus{
+	border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
 
 /* CSS АНИМАЦИЯ НА СТРАНИЦЕ АВТОРИЗАЦИИ */
 @keyframes kassa{
@@ -318,6 +328,7 @@ body{
 }
 .pagination{
 	margin-bottom: 0;
+	margin-top: 5px;
 }
 .modal-content{
 	border: 2px solid #485967;
@@ -451,6 +462,30 @@ body{
     color: #ffffff;
 }
 .comment_show_button:focus{
+	box-shadow: none;
+}
+.client_show_button{
+	width: 100%;
+	padding: 0;
+	font-size: 14px;
+	color: #485967;
+}
+.client_show_button:hover{
+    color: #ffffff;
+}
+.client_show_button:focus{
+	box-shadow: none;
+}
+.admin_show_button{
+	width: 100%;
+	padding: 0;
+	font-size: 10px;
+	color: #485967;
+}
+.admin_show_button:hover{
+    color: #ffffff;
+}
+.admin_show_button:focus{
 	box-shadow: none;
 }
 .btn_to_complete_order{

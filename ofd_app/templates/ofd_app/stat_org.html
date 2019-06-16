@@ -27,31 +27,31 @@
 
         <div class="row global_order_nav_div font-bold">
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Организация</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>ИНН</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Сумма</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>Заказов</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>В работе</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Завершено</span>
             </div>
             
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Отклонено</span>
             </div>
 
@@ -59,41 +59,49 @@
 
         {% for stat in stat.data %}
 
+        {% if stat.org != 'Общий итог' %}
+
         <div class="row global_order_nav_div">
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.org }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.inn }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.total }}</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_all }}</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_in_progress }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_approve }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_reject }}</span>
             </div>
 
         </div>
 
+        {% endif %}
+
         {% endfor %}
 
         </form>
+
+        <div class="row my-4" style="font-size: 20px; font-weight: bold;">
+            <span>{{ grand_total.org }}:</span>&nbsp;<span>{{ grand_total.total }}</span>
+        </div>
 
     </div>
 
