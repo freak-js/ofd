@@ -100,7 +100,12 @@
         </form>
 
         <div class="row my-4" style="font-size: 20px; font-weight: bold;">
-            <span>{{ grand_total.org }}:</span>&nbsp;<span>{{ grand_total.total }}</span>
+            <span>{{ grand_total.org }}:</span>&nbsp;
+            <span>{{ grand_total.total }}р.</span>&nbsp;&nbsp;
+            <span>заказов: {{ grand_total.cnt_all }}</span>&nbsp;&nbsp;
+            <span>в работе: {{ grand_total.cnt_in_progress }}</span>&nbsp;&nbsp;
+            <span>завершено: {{ grand_total.cnt_approve }}</span>&nbsp;&nbsp;
+            <span>отклонено: {{ grand_total.cnt_reject }}</span>&nbsp;&nbsp;
         </div>
 
     </div>
