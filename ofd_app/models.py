@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db.models import FilteredRelation, Q, F
 from ofd_app.utils import to_int
+from datetime import timedelta
 
 # Create your models here.
 class Product(models.Model):
@@ -155,7 +156,7 @@ class Order(models.Model):
     admin_comment = models.TextField("Ответ от администратора", null=True)
     amount = models.IntegerField("Количество")
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
-    is_paid = models.NullBooleanField("Статус оплаты заказа")
+    is_paid = models.BooleanField("Статус оплаты заказа")
 
     def assign_status(self, status, comment, codes):
       try:
@@ -173,20 +174,23 @@ class Order(models.Model):
       return False
 
     @staticmethod
-    def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None):
+    def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None, paid=None):
       if user.is_admin() or user.is_superuser:
-          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(adddate__gte=date_from).filter(adddate__lt = date_to + timedelta(1))
           if org is not None and org != '*':
               orders = orders.filter(user__org=org)
+          if paid is not None and paid != '*':
+              orders = orders.filter(is_paid=bool(to_int(paid)))
       elif user.is_manager():
-          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(Q(user__parent=user) | Q(user=user)).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(Q(user__parent=user) | Q(user=user)).filter(adddate__gte=date_from).filter(adddate__lt = date_to + timedelta(1))
           if user_id is not None and user_id != '*':
             if int(user_id) > 0:
                 orders = orders.filter(user__id=int(user_id))
       else:
-          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(user=user).filter(adddate__range=[date_from, date_to])
+          orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(user=user).filter(adddate__gte=date_from).filter(adddate__lt = date_to + timedelta(1))
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
+      print(orders.query)
       return orders.order_by('-adddate')
 
     @staticmethod
