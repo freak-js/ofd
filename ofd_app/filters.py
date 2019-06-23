@@ -26,6 +26,8 @@ def save_filters(request, key, apply_filters):
     if 'user' in apply_filters:
         user_id = to_int(apply_filters['user'], 0) 
         session[key]['user'] = user_id if apply_filters['user'] is not None and user_id > 0 else '*'
+    if 'paid' in apply_filters:
+        session[key]['paid'] = apply_filters['paid'] if apply_filters['paid'] is not None and len(apply_filters['status']) > 0 else '*'
     session.save()
 
 def save_default_values(request, key, filters):
@@ -44,6 +46,8 @@ def save_default_values(request, key, filters):
         session[key]['status'] = '*'
     if 'user' in filters:
         session[key]['user'] = '*'
+    if 'paid' in filters:
+        session[key]['paid'] = '*'
     session.save()
 
 def apply_filters(request, key, filters = {'date'}):
@@ -68,4 +72,6 @@ def apply_filters(request, key, filters = {'date'}):
             apply_filters['status'] = request.POST.get('status_filter', '').strip()
         if 'user' in filters:
             apply_filters['user'] = request.POST.get('user_filter', '').strip()
+        if 'paid' in filters:
+            apply_filters['paid'] = request.POST.get('paid_filter', '').strip()
         save_filters(request, key, apply_filters)

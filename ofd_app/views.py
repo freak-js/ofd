@@ -171,7 +171,7 @@ def user_delete(request):
 @login_required(login_url='/login/')
 def orders(request):
     date = datetime.now()
-    apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
+    apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user', 'paid'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         id = to_int(request.POST.get('order_id', 0), 0)
         status = request.POST.get('status', '').strip()
@@ -190,7 +190,8 @@ def orders(request):
     org = request.session['order_filters']['org']
     status = request.session['order_filters']['status']
     user = request.session['order_filters']['user']
-    orders = Order.get_orders(request.user, date_from, date_to, status, org, user)
+    paid = request.session['order_filters']['paid']
+    orders = Order.get_orders(request.user, date_from, date_to, status, org, user, paid)
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
@@ -210,7 +211,7 @@ def orders(request):
 def stat_org(request):
     apply_filters(request, 'stat_org', {'date'})
     date_from = datetime.strptime(request.session['stat_org']['date_from'], date_filter_format())
-    date_to = datetime.strptime(request.session['stat_org']['date_to'], date_filter_format())
+    date_to = datetime.strptime(request.session['stat_org']['date_to'], date_filter_format()) + timedelta(1)
     sql = '''
     select 1 as id
          , u.org
@@ -261,9 +262,11 @@ def stat_org(request):
             ) ad on u.id = ad.user_id
      where u.is_superuser = false
        and ad.user_id is null
+       and adddate >= %s
+       and adddate < %s
     order by total desc
     '''
-    result = User.objects.raw(sql, [date_from, date_to])
+    result = User.objects.raw(sql, [date_from, date_to, date_from, date_to])
     data = []
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
