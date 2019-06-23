@@ -53,6 +53,10 @@ def save_default_values(request, key, filters):
 def apply_filters(request, key, filters = {'date'}):
     if key not in request.session:
         save_default_values(request, key, filters)
+    for k in filters:
+        if k not in request.session[key]:
+            save_default_values(request, key, filters)
+            break
     if request.method == 'POST' and request.POST.get('date_filter_button', '') == 'add_filter':
         apply_filters = {}
         if 'date' in filters:
