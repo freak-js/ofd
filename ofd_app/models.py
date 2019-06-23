@@ -190,7 +190,6 @@ class Order(models.Model):
           orders = Order.objects.all().annotate(user_role=F('user__groups__name')).filter(user=user).filter(adddate__gte=date_from).filter(adddate__lt = date_to + timedelta(1))
       if status_code is not None and status_code != '*':
           orders = orders.filter(status=status_code)
-      print(orders.query)
       return orders.order_by('-adddate')
 
     @staticmethod
