@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+
+    {% load static %}
+
+    {% load crispy_forms_tags %}
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    {% include "ofd_app/css_version.html" %}
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <title>Статистика</title>
+</head>
+<body class="text-center">
+
+    {% include "ofd_app/menu.html" %}
+
+    {% include "ofd_app/filter_stat.html" %}
+    
+    <div class="container container_min_width flex-grow-1">
+        <form action="/orders/" method="POST" id="status" name="status">
+
+        {% csrf_token %}
+
+        <div class="row global_order_nav_div font-bold">
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>Организация</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>ИНН</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>Сумма</span>
+            </div>
+
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <span>Заказов</span>
+            </div>
+
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <span>В работе</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>Завершено</span>
+            </div>
+            
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>Отклонено</span>
+            </div>
+
+        </div>
+
+        {% for stat in stat.data %}
+
+        {% if stat.org != 'Общий итог' %}
+
+        <div class="row global_order_nav_div">
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.org }}</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.inn }}</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.total }}</span>
+            </div>
+
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.cnt_all }}</span>
+            </div>
+
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.cnt_in_progress }}</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.cnt_approve }}</span>
+            </div>
+
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
+                <span>{{ stat.cnt_reject }}</span>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+        </form>
+
+        <div class="row my-4" style="font-size: 20px; font-weight: bold;">
+            <span>{{ grand_total.org }}:</span>&nbsp;
+            <span>{{ grand_total.total }}р.</span>&nbsp;&nbsp;
+            <span>заказов: {{ grand_total.cnt_all }}</span>&nbsp;&nbsp;
+            <span>в работе: {{ grand_total.cnt_in_progress }}</span>&nbsp;&nbsp;
+            <span>завершено: {{ grand_total.cnt_approve }}</span>&nbsp;&nbsp;
+            <span>отклонено: {{ grand_total.cnt_reject }}</span>&nbsp;&nbsp;
+        </div>
+
+    </div>
+
+    {% if stat.prev or stat.next %}
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+
+            {% if stat.prev %}
+
+            <li class="page-item">
+            <a class="page-link" href="?page={{ stat.prev }}">
+                <span>&laquo;</span>
+            </a>
+            </li>
+
+            {% else %}
+
+            <li class="page-item">
+            <a class="page-link disabled" href="#">
+                <span>&laquo;</span>
+            </a>
+            </li>
+
+            {% endif %}
+
+            {% for page in stat.count %}
+
+            {% if stat.page == forloop.counter %}
+
+            <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+
+            {% else %}
+
+            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+
+            {% endif %}
+
+            {% endfor %}
+
+            {% if stat.next %}
+
+            <li class="page-item">
+            <a class="page-link" href="?page={{ stat.next }}">
+                <span>&raquo;</span>
+            </a>
+            </li>
+
+            {% else %}
+
+            <li class="page-item">
+            <a class="page-link disabled" href="#">
+                <span>&raquo;</span>
+            </a>
+            </li>
+            
+            {% endif %}
+
+        </ul>
+    </nav>
+
+    {% endif %}
+
+    {% include "ofd_app/footer.html" %}
+
+</body>
+</html>

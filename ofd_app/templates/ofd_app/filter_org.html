@@ -1,0 +1,21 @@
+<div class="container container_min_width">
+	<form action="/users/" method="POST" name="date_filter">
+		{% csrf_token %}
+		<label for="org_filter">Организация:</label>
+		<select class="DatepickerBox__Filter" id="org_filter" name="org_filter">
+		  {% if request.session.user_filters.org == "*" %}
+		  <option selected value="*">Все</option>
+		  {% else %}
+		  <option value="*">Все</option>
+		  {% endif %}
+		  {% for org in filters.org %}
+		  {% if request.session.user_filters.org == org.id %}
+		  <option selected value="{{ org.id }}">{{ org.value }}</option>
+		  {% else %}
+		  <option value="{{ org.id }}">{{ org.value }}</option>
+		  {% endif %}
+		  {% endfor %}
+		</select>
+		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
+	</form>
+</div>

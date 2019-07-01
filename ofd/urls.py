@@ -20,8 +20,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', auth_views.LoginView.as_view(template_name='ofd_app/index.html'), name="login"),
-    path('login/', auth_views.LoginView.as_view(template_name='ofd_app/index.html'), name="login"),
+    path('', auth_views.LoginView.as_view(template_name='ofd_app/index.html', redirect_authenticated_user=True), name="login"),
+    path('login/', auth_views.LoginView.as_view(template_name='ofd_app/index.html', redirect_authenticated_user=True), name="login"),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name="logout"),
     path('product/', views.product, name='product'),
     path('product/<int:id>/', views.product, name='product'),
@@ -33,7 +33,15 @@ urlpatterns = [
     path('user/delete', views.user_delete, name='user_delete'),
     path('user_product/<int:id>/', views.user_product, name='user_product'),
     path('reg/', views.user_reg, name='user_reg'),
-    path('basket/', views.get_basket, name='basket'),
     path('orders/', views.orders, name='orders'),
-    path('order/<int:id>/', views.order, name='order'),
+    path('stat_org/', views.stat_org, name='stat_org'),
+    path('orders/exportxlsx/<int:id>/', views.exportxlsx, name='exportxlsx'),
+    path('orders/exporttxt/<int:id>/', views.exporttxt, name='exporttxt'),
+    path('feedback/', views.feedback, name='feedback'),
+    path('contacts/', views.contacts, name='contacts'),
+    path('instruction/', views.instruction, name='instruction'),
+    path('change_password/', auth_views.PasswordChangeView.as_view(template_name='ofd_app/change_password.html', success_url='/products'), name="change_password"),
+    path('forgot_password/', auth_views.PasswordResetView.as_view(template_name='ofd_app/forgot_password.html', success_url='/products'), name="forgot_password"),
+    path('password_reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='ofd_app/forgot_password.html', success_url='/login'), name="password_reset_confirm" ),
+    path('order_change_pay_sign/', views.order_change_pay_sign, name='order_change_pay_sign'),
 ]

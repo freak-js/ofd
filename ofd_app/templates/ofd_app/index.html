@@ -1,28 +1,190 @@
 <!doctype html>
 <html lang="ru">
 <head>
+
     {% load static %}
+
     {% load crispy_forms_tags %}
+
+    <meta name="yandex-verification" content="df7d219eb0aed573">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    {% include "ofd_app/css_version.html" %}
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz" rel="stylesheet">
     <title>Страница авторизации</title>
 </head>
 <body class="text-center">
-    <div class="d-flex justify-content-center">
+    <div class="content flex-grow-1">
+        <div class="aside">
+            <div class="aside__text">
+                <div class="aside__text-mod">
+                <h2>Платформа партнёрских закупок MIR-OFD</h2>
+                <span>Добро пожаловать, дорогой партнер! Здесь Вы можете приобрести коды активации ОФД любого оператора по лучшим ценам в кратчайшие сроки.</span>
+                </div>
+            </div>
+            <div class="content__animation">
+                <img src="/static/content-logo-275.png" alt="анимация кассового чека mir-ofd.ru">
+                <img src="/static/content-kassa-275.png" alt="выезжающий чек mir-ofd.ru" class="img-kassa">
+                <div class="random">
+                    <span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span><span class="nbr ltr">0</span>
+                </div>
+            </div>
+        </div>
+        {{ msg }}
         <div class="registration_form">
             <form class="form-signin" id="input_form" method="POST" action="/login/">
+
                 {% csrf_token %}
-	            {{ form|crispy }}
+
+                {{ form|crispy }}
+                
 	            <input type="hidden" name="next" value="/products/">
-	            <button class="btn btn-lg btn-primary btn_registration_form" type="submit" id="button_registration">Войти</button>
+	            <button class="btn btn_authorization_form" type="submit">Войти</button>
 	        </form>
-            <a href="#" class="registration_link">Забыли пароль?</a>
+            <a href="/forgot_password" class="registration_link">Забыли пароль?</a>
             &nbsp;&nbsp;
             <a href="/reg/" class="registration_link">Зарегистрироваться</a>
+            <a class="oferta_link" data-toggle="modal" data-target="#exampleModalLong" href="#">договор оферты</a>
+                <!-- Модальное окно -->
+                <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle"><strong>Договор оферты</strong></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-left">
+                            
+                            <span style="font-size:12px">
+                            <strong>ПУБЛИЧНАЯ ОФЕРТА</strong><br>
+                            Интернет-магазин «MIR-OFD», расположенный на доменном имени www.mir-ofd.ru, Индивидуальный предприниматель Баландюк Никита Олегович, и юридическим адресом 352556 Краснодарский край,мостовской район,ст-ца Бесленеевская,ул.Советская 12, в лице Баландюка Никиты Олеговича действующего на основании свидетельства, именуемое в дальнейшем «Продавец», публикует Публичную оферту о продаже Кода дистанционным способом.<br>
+                            <strong>1. ОПРЕДЕЛЕНИЕ ТЕРМИНОВ</strong><br>
+                            1.1. Публичная оферта (далее – «Оферта») - публичное предложение Продавца, адресованное неопределенному кругу лиц, заключить с Продавцом договор купли-продажи Кода дистанционным способом (далее - «Договор») на условиях, содержащихся в настоящей Оферте, включая все Приложения.<br>
+                            1.2. Заказ Кода на сайте Интернет-магазина – позиции указанные Покупателем из ассортимента Кода, предложенного к продаже, при оформлении заявки на приобретение Кода на сайте Интернет-магазина или через Оператора.<br>
+                            <strong>2. ОБЩИЕ ПОЛОЖЕНИЯ</strong><br>
+                            2.1. Заказ Покупателем Кода, размещенного на сайте Интернет-магазина означает, что Покупатель согласен со всеми условиями настоящей Оферты.<br>
+                            2.2. Администрация сайта Интернет-магазина имеет право вносить изменения в Оферту без уведомления Покупателя.<br>
+                            2.3. Срок действия Оферты не ограничен, если иное не указано на сайте Интернет-магазина.<br>
+                            2.4. Продавец предоставляет Покупателю полную и достоверную информацию о Коде, включая информацию об основных потребительских свойствах Кода на сайте Интернет магазина, в разделе ОФД.<br>
+                            <strong>3. ЦЕНА КОДА</strong><br>
+                            3.1. Цена на каждую позицию Кода указана на сайте Интернет-магазина.<br>
+                            3.2. Продавец имеет право в одностороннем порядке изменить цену на Коды.<br>
+                            3.3. В случае изменения цены на заказанный Код Продавец обязуется в течение пяти дней проинформировать Покупателя об изменении цены Кода.<br>
+                            3.4. Покупатель вправе подтвердить либо аннулировать Заказ на приобретение Кода, если цена изменена Продавцом после оформления Заказа.<br>
+                            3.5. Изменение Продавцом цены на оплаченный Покупателем Код не допускается.<br>
+                            3.6. Доставка Кода осуществляется в электронном виде в личном кабинете клиента на сайте интернет-магазина либо на электронную почту указанную при регистрации клиентом.<br>
+                            3.7. Обязательства Покупателя по оплате Кода считаются исполненными с момента поступления Продавцу денежных средств.<br>
+                            3.8. Расчеты между Продавцом и Покупателем за Код производятся способами, указанными на сайте Интернет-магазина в разделе Оплата.<br>
+                            <strong>4. ОФОРМЛЕНИЕ ЗАКАЗА</strong><br>
+                            4.1. Заказ Кода осуществляется Покупателем через сервис сайта Интернет-магазина www.mir-ofd.ru.<br>
+                            4.2. При регистрации на сайте Интернет-магазина Покупатель обязуется предоставить следующую регистрационную информацию:<br>
+                            4.2.1. Фамилия, имя, отчество Покупателя или указанного им лица (получателя);<br>
+                            4.2.2. Реквизиты Юридического лица от которого производится закупка Кода (Адрес, ИНН, КПП);<br>
+                            4.2.3. Адрес электронной почты;<br>
+                            4.2.4. Контактный телефон.<br>
+                            4.3. Наименование, количество, ассортимент, артикул, цена выбранного Покупателем Кода указываются в заказе Покупателя на сайте Интернет-магазина.<br>
+                            4.4. Если Продавцу необходима дополнительная информация, он вправе запросить ее у Покупателя. В случае не предоставления необходимой информации Покупателем, Продавец не несет ответственности за выбранный Покупателем Код.<br>
+                            4.5. Покупатель может самостоятельно добавлять ответственных лиц, которым доверяет право размещения заказа на сайте интернет-магазина, и несет всю ответственность за их действия.<br>
+                            4.6. Принятие Покупателем условий настоящей Оферты осуществляется посредством внесения Покупателем соответствующих данных в регистрационную форму на сайте Интернет-магазина или при оформлении Заказа через Оператора. <br>
+                            4.7. Продавец не несет ответственности за содержание и достоверность информации, предоставленной Покупателем при оформлении Заказа.<br>
+                            4.8. Покупатель несет ответственность за достоверность предоставленной информации при оформлении Заказа.<br>
+                            4.9. Договор купли-продажи дистанционным способом между Продавцом и Покупателем считается заключенным с момента получения Продавцом сообщения о намерении Покупателя приобрести Код.<br>
+                            <strong>5. ДОСТАВКА И ПЕРЕДАЧА КОДА ПОКУПАТЕЛЮ</strong><br>
+                            5.1. Продавец оказывает Покупателю услуги по доставке Кода в личный кабинет клиента Интернет-магазина или на указанную при регистрации электронную почту.<br>
+                            5.2. После передачи Кода покупателю он уже не может быть возвращен Продавцу, при условии что Код исправен и принят выпустившим его ОФД.<br>
+                            5.3. Место доставки Кода Покупатель указывает при оформлении Заказа на приобретение Кода.<br>
+                            5.4. Срок доставки Кода Покупателю состоит из срока обработки заказа.<br>
+                            <strong>6. РЕКВИЗИТЫ ПРОДАВЦА</strong><br>
+                            Продавец:<br>
+                            Индивидуальный предприниматель Баландюк Никита Олегович<br>
+                            ИНН 694904818986<br>
+                            Телефон:8(918)240-78-58, 8(953)071-84-34<br>
+                            Адрес: 352556,Краснодарский край, Мостовской район, ст-ца Бесленеевская, ул.Советская 12<br>
+                            Банковские реквизиты - указаны в счете<br>
+                            Внимательно ознакомьтесь с текстом публичной оферты, и если Вы не согласны с каким-либо пунктом оферты, Вы вправе отказаться от покупки Кодов, предоставляемых Продавцом, и не совершать действий, указанный в п. 2.1. настоящей Оферты.
+                            </span>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn_clear_basket" data-dismiss="modal">Закрыть</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src='/static/random.js'></script>
+    <script>
+    $(document).ready(function(){
+
+        setTimeout(function() {
+
+            var $randomnbr = $('.nbr');
+            var $timer= 10;
+            var $it;
+            var $data = 0;
+            var index;
+            var change;
+            var letters = ["M", "I", "R", "-", "O", "F", "D", ".", "R", "U"];
+            
+            $randomnbr.each(function(){
+                
+            change = Math.round(Math.random()*100);
+            $(this).attr('data-change', change);
+            
+            });
+            
+            function random(){
+            return Math.round(Math.random()*9);
+            };
+            
+            function select(){
+            return Math.round(Math.random()*$randomnbr.length+1);
+            };
+            
+            function value(){
+            $('.nbr:nth-child('+select()+')').html(''+random()+'');
+            $('.nbr:nth-child('+select()+')').attr('data-number', $data);
+            $data++;
+            
+            $randomnbr.each(function(){
+                if(parseInt($(this).attr('data-number')) > parseInt($(this).attr('data-change'))){
+                    index = $('.ltr').index(this);
+                    $(this).html(letters[index]);
+                    $(this).removeClass('nbr');
+                }
+            });
+            
+            };
+            
+            $it = setInterval(value, $timer);
+        },4000 );
+      });
+    </script>
+
+    <div class="footer_div d-flex align-items-center justify-content-between">
+        <div style="width: 110px">
+            <span class="footer_span">mir-ofd.ru 2019</span>
+        </div>
+        <div> 
+            <a class="footer_link mr-1" href="#">О компании</a>
+            <a class="footer_link" href="/contacts">Контакты</a>
+        </div>
+        <div style="width: 110px"></div>
+    </div>
+</div>
 </body>
 </html>
+
+<!-- telegram @Barsik or @Manujli -->
+
+
+
