@@ -383,3 +383,33 @@ def order_change_pay_sign(request):
             except Order.DoesNotExist:
                 pass    
     return redirect('orders')
+
+@require_POST
+@login_required(login_url='/login/')
+def change_order(request):
+
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
+
+    new_cost   = request.POST.get('cost', '').strip()
+    new_amount = request.POST.get('amount', '').strip()
+    order_id   = request.POST.get('order_id', '').strip()
+
+    try:
+        new_cost   = int(new_cost)
+        new_amount = int(new_amount)
+        order_id   = int(order_id)
+    except Exception:
+        return redirect('orders')
+
+    if order_id > 0:
+        order = Order.objects.get(id=order_id)
+        try:
+            order.amount = new_amount
+            order.cost   = new_cost
+        except Exception:
+            return redirect('orders')
+        order.save()
+
+    return redirect('orders')
+

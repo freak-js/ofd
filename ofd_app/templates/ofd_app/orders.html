@@ -190,22 +190,38 @@
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
-                            <form action="/orders/" method="POST">
-
-                                {% csrf_token %}
 
                                 <div class="modal-body">
-                                    <div>
-                                        <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes" id="textareaCodes_{{order.id}}"></textarea>
-                                    </div>
-                                    <div>
-                                        <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
-                                        <input type="number" name="order_id" value="{{order.id}}" style="display: none">
-                                    </div>
+
+                                    <form action="/orders/" method="POST" id="order_{{order.id}}">
+
+                                    {% csrf_token %}
+
+                                        <div>
+                                            <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes" id="textareaCodes_{{order.id}}"></textarea>
+                                        </div>
+                                        <div>
+                                            <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
+                                            <input type="number" name="order_id" value="{{order.id}}" style="display: none">
+                                        </div>
+
+                                    </form>
+
+                                    <form action="/change_order/" method="POST" class="modal-change">
+
+                                        {% csrf_token %}
+
+                                        <label class="m-0">Цена:&nbsp;<input type="number" name="cost" value="{{ order.product.cost }}" class="modal-input"></label>
+                                        <label class="m-0">Кол-во:&nbsp;<input type="number" name="amount" value="{{ order.product.amount }}" class="modal-input"></label>
+                                        <input type="number" name="order_id" value="{{ order.id }}" style="display: none">
+                                        <button type="submit" class="btn btn_to_change_order">Изменить</button>
+
+                                    </form>
+
                                 </div>
                                 <div class="ModalFooter" id="ModalFooter_{{order.id}}">
-                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R">Отклонить</button>
-                                    <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}">Завершить</button>
+                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="order_{{order.id}}">Отклонить</button>
+                                    <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}" form="order_{{order.id}}">Завершить</button>
                                 </div>
 
                                 <script type="text/javascript">
@@ -222,8 +238,6 @@
                                 }, 1000);
                                 
                                 </script>
-
-                            </form>
 
                         </div>
                     </div>
