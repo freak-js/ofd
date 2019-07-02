@@ -386,7 +386,7 @@ def order_change_pay_sign(request):
 
 @require_POST
 @login_required(login_url='/login/')
-def change_order(request):
+def change_order(request):      
 
     if not (request.user.is_superuser or request.user.is_admin()):
         return redirect('orders')
@@ -403,13 +403,15 @@ def change_order(request):
         return redirect('orders')
 
     if order_id > 0:
-        order = Order.objects.get(id=order_id)
         try:
+            order        = Order.objects.get(id=order_id)
             order.amount = new_amount
             order.cost   = new_cost
         except Exception:
             return redirect('orders')
         order.save()
+    else:
+        return redirect('orders')
 
     return redirect('orders')
 
