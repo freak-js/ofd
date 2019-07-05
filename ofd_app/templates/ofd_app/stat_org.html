@@ -134,13 +134,17 @@
 
             {% for page in stat.count %}
 
-            {% if stat.page == forloop.counter %}
+            {% if stat.page == page %}
 
-            <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link page-link-active" href="?page={{ page }}">{{ page }}</a></li>
 
+            {% elif page == '...' %}
+
+            <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+            
             {% else %}
 
-            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
 
             {% endif %}
 

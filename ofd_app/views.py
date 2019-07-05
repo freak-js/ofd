@@ -18,7 +18,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
 from ofd_app.filters import apply_filters
-from ofd_app.utils import to_int
+from ofd_app.utils import to_int, get_pages_list
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
@@ -302,7 +302,23 @@ def exporttxt(request, **kwargs):
         return response
 
 def construct_pagination(request, data):
-    page_size = 10
+
+    page = int(request.GET.get('page', 1))
+    p = Paginator(data, 10)
+    page_object = p.get_page(page)
+    pagination = {
+                'page' : page,
+                'data' : page_object.object_list,
+                'prev' : page_object.previous_page_number() if page_object.has_previous() else None,
+                'next' : page_object.next_page_number() if page_object.has_next() else None,
+                'count': get_pages_list(int(p.num_pages), page)
+                }
+
+    return pagination
+
+    '''
+    def construct_pagination(request, data):
+    page_size = 1
     page = request.GET.get('page', 1)
     p = Paginator(data, page_size)
     pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}
@@ -317,6 +333,7 @@ def construct_pagination(request, data):
     pagination['data'] = page_object.object_list
     pagination['cnt'] = p.num_pages
     return pagination
+    '''
 
 def user_reg(request):
     if request.method == 'POST':
@@ -373,7 +390,9 @@ def contacts(request):
 def order_change_pay_sign(request):
     if not (request.user.is_superuser or request.user.is_admin()):
         return redirect('orders')
+
     ids = request.POST.getlist('is_paid')
+
     for id in ids:
         if to_int(id, 0) > 0:
             try:
@@ -391,14 +410,10 @@ def change_order(request):
     if not (request.user.is_superuser or request.user.is_admin()):
         return redirect('orders')
 
-    new_cost   = request.POST.get('cost', '').strip()
-    new_amount = request.POST.get('amount', '').strip()
-    order_id   = request.POST.get('order_id', '').strip()
-
     try:
-        new_cost   = int(new_cost)
-        new_amount = int(new_amount)
-        order_id   = int(order_id)
+        new_cost   = int(request.POST.get('cost', 'error').strip())
+        new_amount = int(request.POST.get('amount', 'error').strip())
+        order_id   = int(request.POST.get('order_id', 'error').strip())
     except Exception:
         return redirect('orders')
 
