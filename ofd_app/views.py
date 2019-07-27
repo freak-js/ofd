@@ -18,7 +18,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
 from ofd_app.filters import apply_filters
-from ofd_app.utils import to_int
+from ofd_app.utils import to_int, get_pages_list
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
@@ -302,20 +302,16 @@ def exporttxt(request, **kwargs):
         return response
 
 def construct_pagination(request, data):
-    page_size = 10
-    page = request.GET.get('page', 1)
-    p = Paginator(data, page_size)
-    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}
-    try:
-      page_object = p.get_page(page)
-    except Paginator.InvalidPage:
-      page = 1
-      page_object = p.get_page(1)
-    pagination['page'] = int(page)
-    pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
-    pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
-    pagination['data'] = page_object.object_list
-    pagination['cnt'] = p.num_pages
+    page        = to_int(request.GET.get('page', 1), 1)
+    p           = Paginator(data, 1)
+    page_object = p.get_page(page)
+    pagination  = {
+                'page' : page if page <= p.num_pages else p.num_pages,
+                'data' : page_object.object_list,
+                'prev' : page_object.previous_page_number() if page_object.has_previous() else None,
+                'next' : page_object.next_page_number() if page_object.has_next() else None,
+                'count': get_pages_list(int(p.num_pages), page)
+                }
     return pagination
 
 def user_reg(request):
@@ -373,7 +369,9 @@ def contacts(request):
 def order_change_pay_sign(request):
     if not (request.user.is_superuser or request.user.is_admin()):
         return redirect('orders')
+
     ids = request.POST.getlist('is_paid')
+
     for id in ids:
         if to_int(id, 0) > 0:
             try:
@@ -381,5 +379,26 @@ def order_change_pay_sign(request):
                 order.is_paid = not order.is_paid
                 order.save()
             except Order.DoesNotExist:
-                pass    
+                pass
     return redirect('orders')
+
+@require_POST
+@login_required(login_url='/login/')
+def change_order(request):
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
+
+    new_cost   = to_int(request.POST.get('cost', '').strip(), 0)
+    new_amount = to_int(request.POST.get('amount', '').strip(), 0)
+    order_id   = to_int(request.POST.get('order_id', '').strip(), 0)
+
+    if order_id > 0 and new_amount > 0 and new_cost > 0:
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return redirect('orders')
+        order.amount = new_amount
+        order.cost   = new_cost
+        order.save()
+    return redirect('orders')
+
