@@ -6,15 +6,16 @@ def to_int(i, default=None):
 
 def get_pages_list(number_of_pages, current_page):    #Функция отдающая список для правильного формирования пагинации
     
-    lst        = [i for i in range(1, number_of_pages + 1)]
+    lst = [i for i in range(1, number_of_pages + 1)]
+
+    if number_of_pages <= 11:
+
+        return lst
+
     first_page = lst[0]
     last_page  = lst[len(lst) - 1]
     result     = []
     
-    if number_of_pages <= 11:
-
-        return range(1, number_of_pages + 1)
-
     if number_of_pages > 11 and current_page < 7:
         result.extend(lst[:9])
         result.append('...')
@@ -31,7 +32,7 @@ def get_pages_list(number_of_pages, current_page):    #Функция отдаю
         
         return result
     
-    if number_of_pages > 11 and current_page >= 7 and current_page in lst[last_page - 6:last_page + 1]:
+    else:
         result.append(first_page)
         result.append('...')
         result.extend(lst[last_page - 9:last_page + 1])
