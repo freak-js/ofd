@@ -302,7 +302,7 @@ def exporttxt(request, **kwargs):
         return response
 
 def construct_pagination(request, data):
-    page        = to_int(request.GET.get('page', 1), 1)
+    page        = to_int(request.GET.get('page', 10), 1)
     p           = Paginator(data, 1)
     page_object = p.get_page(page)
     pagination  = {
