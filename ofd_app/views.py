@@ -303,10 +303,10 @@ def exporttxt(request, **kwargs):
 
 def construct_pagination(request, data):
     page        = to_int(request.GET.get('page', 1), 1)
-    p           = Paginator(data, 10)
+    p           = Paginator(data, 1)
     page_object = p.get_page(page)
     pagination  = {
-                'page' : page,
+                'page' : page if page <= p.num_pages else p.num_pages,
                 'data' : page_object.object_list,
                 'prev' : page_object.previous_page_number() if page_object.has_previous() else None,
                 'next' : page_object.next_page_number() if page_object.has_next() else None,
