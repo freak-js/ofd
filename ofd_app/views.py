@@ -302,8 +302,7 @@ def exporttxt(request, **kwargs):
         return response
 
 def construct_pagination(request, data):
-
-    page        = int(request.GET.get('page', 1))
+    page        = to_int(request.GET.get('page', 1), 1)
     p           = Paginator(data, 10)
     page_object = p.get_page(page)
     pagination  = {
@@ -313,27 +312,7 @@ def construct_pagination(request, data):
                 'next' : page_object.next_page_number() if page_object.has_next() else None,
                 'count': get_pages_list(int(p.num_pages), page)
                 }
-
     return pagination
-
-    '''
-    def construct_pagination(request, data):
-    page_size = 1
-    page = request.GET.get('page', 1)
-    p = Paginator(data, page_size)
-    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}
-    try:
-      page_object = p.get_page(page)
-    except Paginator.InvalidPage:
-      page = 1
-      page_object = p.get_page(1)
-    pagination['page'] = int(page)
-    pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
-    pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
-    pagination['data'] = page_object.object_list
-    pagination['cnt'] = p.num_pages
-    return pagination
-    '''
 
 def user_reg(request):
     if request.method == 'POST':
@@ -400,33 +379,26 @@ def order_change_pay_sign(request):
                 order.is_paid = not order.is_paid
                 order.save()
             except Order.DoesNotExist:
-                pass    
+                pass
     return redirect('orders')
 
 @require_POST
 @login_required(login_url='/login/')
-def change_order(request):      
-
+def change_order(request):
     if not (request.user.is_superuser or request.user.is_admin()):
         return redirect('orders')
 
-    try:
-        new_cost   = int(request.POST.get('cost', 'error').strip())
-        new_amount = int(request.POST.get('amount', 'error').strip())
-        order_id   = int(request.POST.get('order_id', 'error').strip())
-    except Exception:
-        return redirect('orders')
+    new_cost   = to_int(request.POST.get('cost', '').strip(), 0)
+    new_amount = to_int(request.POST.get('amount', '').strip(), 0)
+    order_id   = to_int(request.POST.get('order_id', '').strip(), 0)
 
-    if order_id > 0:
+    if order_id > 0 and new_amount > 0 and new_cost > 0:
         try:
-            order        = Order.objects.get(id=order_id)
-            order.amount = new_amount
-            order.cost   = new_cost
-        except Exception:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
             return redirect('orders')
+        order.amount = new_amount
+        order.cost   = new_cost
         order.save()
-    else:
-        return redirect('orders')
-
     return redirect('orders')
 
