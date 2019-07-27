@@ -19,7 +19,7 @@ def get_pages_list(number_of_pages, current_page):
         result.extend(lst[:9])
         result.append('...')
         result.append(last_page)
-    else if current_page not in lst[last_page - 6:last_page + 1]:
+    elif current_page not in lst[last_page - 6:last_page + 1]:
         result.append(first_page)
         result.append('...')
         result.extend(lst[current_page - 4:current_page + 3])
