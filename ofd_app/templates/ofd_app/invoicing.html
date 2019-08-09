@@ -71,7 +71,7 @@
             padding: 0 2px;
             border: 1px solid #000;
             vertical-align: middle;
-            font-size: 11px;
+            font-size: 10px;
             line-height: 13px;
         }    
         .list tfoot th {
@@ -130,7 +130,6 @@
         </div>
         <div style="width: 70%;">
             <p style="font-size: 10px" class="header">
-                Внимание! Счет действителен до {{ date_to }}.
                 Оплата данного счета означает согласие с условиями поставки товара.
                 Уведомление об оплате обязательно, в противном случае не гарантируется
                 наличие товара на складе. Товар отпускается по факту прихода денег
@@ -166,7 +165,7 @@
         </tbody>
     </table>
 
-    <h1>Счет на оплату № {{ id }} от {{ add_date }}</h1>
+    <h1>Счет на оплату № MO-{{ id }} от {{ add_date }}</h1>
 
     <table class="contract">
         <tbody>
@@ -199,8 +198,8 @@
         </thead>
         <tbody>
             <tr>
-                <td align="center">{{ id }}</td>
-                <td align="left">{{ product_name }}</td>
+                <td align="center">1</td>
+                <td align="left">Код активации Промо тарифа {{ product_name }}</td>
                 <td align="right">{{ amount }}</td>
                 <td align="left">шт</td>
                 <td align="right">{{ cost }}</td>
