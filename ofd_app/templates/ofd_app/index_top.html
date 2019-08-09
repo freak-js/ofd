@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    {% include "ofd_app/css_version.html" %}
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
     <title>Доступные коды</title>
 </head>
@@ -105,7 +105,7 @@
 												<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 											</div>
 											
-											<form action="/products/" method="POST">
+											<form id="form_{{product.product_id}}" action="/products/" method="POST">
 
 												{% csrf_token %}
 
@@ -114,28 +114,43 @@
 														<label>Количество: <input type="number" class="form-control cost_input" name="quantity" id="input_by_{{product.product_id}}" min="1" value="1"> </label>
 													</div>
 
-													<script type="text/javascript">
-													
-													window.onload = setInterval(function totalCost() {
-															let cost = parseInt(document.getElementById("product_cost_{{product.product_id}}").innerHTML);
-															let input = parseInt(document.getElementById("input_by_{{product.product_id}}").value);
-															if (String(input) !== "NaN" ) {
-																	document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost * input + "р.";
-															} else {
-																	document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost + "р.";
-															}
-													}, 300);
-
-													</script>
-
 													<div>
 														<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="5" name="order_comment"></textarea>
 														<input type="number" name="product_id" value="{{product.product_id}}" style="display: none">
 													</div>
+													<div id="modal_body_{{product.product_id}}">
+
+													</div>
 												</div>
 												<div class="ModalFooter">
 													<button type="button" class="btn ModalExit" data-dismiss="modal">Отменить</button>
-													<button type="submit" class="btn ModalBuy">Оформить</button>
+													<button id="button_{{product.product_id}}" type="submit" class="btn ModalBuy">Оформить</button>
+
+													<script type="text/javascript">
+													
+														window.onload = setInterval(function totalCost() {
+																let cost = parseInt(document.getElementById("product_cost_{{product.product_id}}").innerHTML);
+																let input = parseInt(document.getElementById("input_by_{{product.product_id}}").value);
+																if (String(input) !== "NaN" ) {
+																		document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost * input + "р.";
+																} else {
+																		document.getElementById("h6_total_by_{{product.product_id}}").innerHTML = cost + "р.";
+																}
+														}, 300);
+	
+													</script>
+
+													<script type="text/javascript">
+													
+													function lockButton(){
+														document.getElementById('button_{{product.product_id}}').disabled=true;
+														document.getElementById("modal_body_{{product.product_id}}").innerHTML = '<h5 class="mt-3">Обработка заказа...</h5><i style="font-size: 30px;" class="fas fa-spinner fa-pulse"></i>';
+													};
+
+													form_{{product.product_id}}.onsubmit = lockButton;
+													
+													</script>
+
 												</div>
 
 											</form>

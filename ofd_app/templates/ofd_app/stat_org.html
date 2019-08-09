@@ -9,9 +9,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    {% include "ofd_app/css_version.html" %}
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
-    <link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/sunny/jquery-ui.css">
     <title>Статистика</title>
 </head>
 <body class="text-center">
@@ -27,31 +26,31 @@
 
         <div class="row global_order_nav_div font-bold">
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Организация</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>ИНН</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Сумма</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>Заказов</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>В работе</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Завершено</span>
             </div>
             
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>Отклонено</span>
             </div>
 
@@ -59,41 +58,54 @@
 
         {% for stat in stat.data %}
 
+        {% if stat.org != 'Общий итог' %}
+
         <div class="row global_order_nav_div">
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.org }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.inn }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.total }}</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_all }}</span>
             </div>
 
-            <div class="col-1 p-1">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_in_progress }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_approve }}</span>
             </div>
 
-            <div class="col-2 p-1">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ stat.cnt_reject }}</span>
             </div>
 
         </div>
 
+        {% endif %}
+
         {% endfor %}
 
         </form>
+
+        <div class="row my-4" style="font-size: 20px; font-weight: bold;">
+            <span>{{ grand_total.org }}:</span>&nbsp;
+            <span>{{ grand_total.total }}р.</span>&nbsp;&nbsp;
+            <span>заказов: {{ grand_total.cnt_all }}</span>&nbsp;&nbsp;
+            <span>в работе: {{ grand_total.cnt_in_progress }}</span>&nbsp;&nbsp;
+            <span>завершено: {{ grand_total.cnt_approve }}</span>&nbsp;&nbsp;
+            <span>отклонено: {{ grand_total.cnt_reject }}</span>&nbsp;&nbsp;
+        </div>
 
     </div>
 
@@ -122,13 +134,17 @@
 
             {% for page in stat.count %}
 
-            {% if stat.page == forloop.counter %}
+            {% if stat.page == page %}
 
-            <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link page-link-active" href="?page={{ page }}">{{ page }}</a></li>
 
+            {% elif page == '...' %}
+
+            <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+            
             {% else %}
 
-            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
 
             {% endif %}
 

@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    {% include "ofd_app/css_version.html" %}
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
     <title>Заказы</title>
 </head>
@@ -20,15 +20,18 @@
     {% include "ofd_app/filter.html" %}
 
     <div class="container container_min_width flex-grow-1">
+        <form action="/order_change_pay_sign/" method="POST" id="is_paid_form">
+            {% csrf_token %}
+        </form>
 
         <div class="row global_order_nav_div font-bold">
             <div class="col-1 p-1">
                 <span>№</span>
             </div>
             <div class="col-1 p-1">
-                <span>Клиент</span>
+                <span>Оформил</span>
             </div>
-            <div class="col-2 p-1">
+            <div class="col-1 p-1">
                 <span>Дата</span>
             </div>
             <div class="col-2 p-1">
@@ -47,6 +50,9 @@
                 <span>Статус</span>
             </div>
             <div class="col-1 p-1">
+                <span>Оплата</span>
+            </div>
+            <div class="col-1 p-1">
                 <span>Ком-рий</span>
             </div>
             <div class="col-1 p-1">
@@ -57,54 +63,40 @@
         {% for order in orders.data %}
 
         <div class="row global_order_nav_div">
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.id }}</span>
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-0 d-flex align-items-center justify-content-center">
 
                 {% if user_role == "Admin" or user_role == "God" %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}"><i class="fa fa-user"></i>
-                </button>
+                <button type="button" class="btn admin_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Организация: {{ order.user.org }} <br> ИНН: {{ order.user.inn }} <br> Почта: {{ order.user.email }} <br> Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Телефон: {{ order.user.phone_number }} <br> Роль: {{ order.user_role }}">{{ order.user.org }}</button>
 
                 {% endif %}
 
-                {% if user_role == "Manager" and order.user_role == "Manager" %}
+                {% if user_role == "Manager" or user_role == "User" %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
-                </button>
-
-                {% elif user_role == "Manager" %}
-
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }}"><i class="fa fa-user"></i>
-                </button>
-
-                {% endif %}
-
-                {% if user_role == "User" %}
-
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Этот заказ сделали Вы"><i class="fa fa-user"></i>
-                </button>
+                <button type="button" class="btn client_show_button w-100" data-container="body" data-toggle="popover" data-html="true" data-placement="top" data-content="Имя: {{ order.user.first_name }} <br> Фамилия: {{ order.user.last_name }} <br> Почта: {{ order.user.email }}  <br> Телефон: {{ order.user.phone_number }}">{{ order.user.last_name }}</button>
 
                 {% endif %}
 
             </div>
-            <div class="col-2 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.adddate }}</span>
             </div>
-            <div class="col-2 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-2 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.product_name }}</span>
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.amount }}</span>
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.cost }}</span>
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <span>{{ order.product.full_cost }}</span>
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
                 {% if order.status == "I" %}
 
@@ -128,7 +120,40 @@
                 </form>
 
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+
+                {% if user_role == "Admin" or user_role == "God" %}
+
+                {% if order.is_paid %}
+
+                <input type="checkbox" class="checkbox_green" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                <label for="checkbox_{{ order.id }}"></label>
+                
+                {% else %}
+
+                <input type="checkbox" class="checkbox_red" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                <label for="checkbox_{{ order.id }}"></label>
+
+                {% endif %}
+
+                {% endif %}
+
+                {% if user_role == "Manager" or user_role == "User" %}
+
+                {% if order.is_paid %}
+
+                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
+                
+                {% else %}
+
+                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
+
+                {% endif %}
+
+                {% endif %}
+
+            </div>
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
                 {% if order.comment %}
 
@@ -141,7 +166,7 @@
                 {% endif %}
 
             </div>
-            <div class="col-1 p-1 d-flex justify-content-center align-items-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
 
                 {% if order.status == "I" %}
@@ -171,22 +196,38 @@
                                 </div>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                             </div>
-                            <form action="/orders/" method="POST">
-
-                                {% csrf_token %}
 
                                 <div class="modal-body">
-                                    <div>
-                                        <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes" id="textareaCodes_{{order.id}}"></textarea>
-                                    </div>
-                                    <div>
-                                        <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
-                                        <input type="number" name="order_id" value="{{order.id}}" style="display: none">
-                                    </div>
+
+                                    <form action="/orders/" method="POST" id="order_{{order.id}}">
+
+                                    {% csrf_token %}
+
+                                        <div>
+                                            <textarea type="text" placeholder="Коды ОФД" class="form-control mb-3" rows="5" name="order_codes" id="textareaCodes_{{order.id}}"></textarea>
+                                        </div>
+                                        <div>
+                                            <textarea type="text" placeholder="Комментарий при необходимости" class="form-control" rows="5" name="admin_comment"></textarea>
+                                            <input type="number" name="order_id" value="{{order.id}}" style="display: none">
+                                        </div>
+
+                                    </form>
+
+                                    <form action="/change_order/" method="POST" class="modal-change">
+
+                                        {% csrf_token %}
+
+                                        <label class="m-0">Цена:&nbsp;<input type="number" name="cost" value="{{ order.product.cost }}" class="modal-input"></label>
+                                        <label class="m-0">Кол-во:&nbsp;<input type="number" name="amount" value="{{ order.product.amount }}" class="modal-input"></label>
+                                        <input type="number" name="order_id" value="{{ order.id }}" style="display: none">
+                                        <button type="submit" class="btn btn_to_change_order">Изменить</button>
+
+                                    </form>
+
                                 </div>
                                 <div class="ModalFooter" id="ModalFooter_{{order.id}}">
-                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R">Отклонить</button>
-                                    <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}">Завершить</button>
+                                    <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="order_{{order.id}}">Отклонить</button>
+                                    <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}" form="order_{{order.id}}">Завершить</button>
                                 </div>
 
                                 <script type="text/javascript">
@@ -203,8 +244,6 @@
                                 }, 1000);
                                 
                                 </script>
-
-                            </form>
 
                         </div>
                     </div>
@@ -336,13 +375,17 @@
 
             {% for page in orders.count %}
 
-            {% if orders.page == forloop.counter %}
+            {% if orders.page == page %}
 
-            <li class="page-item"><a class="page-link page-link-active" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link page-link-active" href="?page={{ page }}">{{ page }}</a></li>
+
+            {% elif page == '...' %}
+
+            <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
 
             {% else %}
 
-            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
 
             {% endif %}
 

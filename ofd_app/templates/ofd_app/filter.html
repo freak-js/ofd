@@ -68,24 +68,44 @@ jQuery(function($){
 			<option value="{{ status.id }}">{{ status.value }}</option>
 			{% endif %}
 			{% endfor %}
-			</select>
-			{% if user_role == 'Manager'%}
-			<label for="status_filter">Сотрудник:</label>
-			<select class="DatepickerBox__Filter" id="user_filter" name="user_filter">
-				{% if request.session.order_filters.user == "*" %}
-				<option selected value="*">Все</option>
-				{% else %}
-				<option value="*">Все</option>
-				{% endif %}
-				{% for user in filters.users %}
-				{% if request.session.order_filters.user == user.id %}
-				<option selected value="{{ user.id }}">{{ user.first_name }}&nbsp{{ user.last_name }}</option>
-				{% else %}
-				<option value="{{ user.id }}">{{ user.first_name }}&nbsp{{ user.last_name }}</option>
-				{% endif %}
-				{% endfor %}
-				</select>
+		</select>
+		{% if user_role == 'Admin' or request.user.is_superuser%}
+		<label for="paid_filter">Оплата:</label>
+		<select class="DatepickerBox__Filter" id="paid_filter" name="paid_filter">
+			{% if request.session.order_filters.paid == "*" %}
+			<option selected value="*">Все</option>
+			{% else %}
+			<option value="*">Все</option>
 			{% endif %}
+			{% if request.session.order_filters.paid == "1" %}
+			<option selected value="1">Оплачен</option>
+			{% else %}
+			<option value="1">Оплачен</option>
+			{% endif %}
+			{% if request.session.order_filters.paid == "0" %}
+			<option selected value="0">Не оплачен</option>
+			{% else %}
+			<option value="0">Не оплачен</option>
+			{% endif %}
+		</select>
+		{% endif %}
+		{% if user_role == 'Manager'%}
+		<label for="status_filter">Сотрудник:</label>
+		<select class="DatepickerBox__Filter" id="user_filter" name="user_filter">
+			{% if request.session.order_filters.user == "*" %}
+			<option selected value="*">Все</option>
+			{% else %}
+			<option value="*">Все</option>
+			{% endif %}
+			{% for user in filters.users %}
+			{% if request.session.order_filters.user == user.id %}
+			<option selected value="{{ user.id }}">{{ user.first_name }}&nbsp{{ user.last_name }}</option>
+			{% else %}
+			<option value="{{ user.id }}">{{ user.first_name }}&nbsp{{ user.last_name }}</option>
+			{% endif %}
+			{% endfor %}
+			</select>
+		{% endif %}
 		<button type="submit" class="btn DatepickerBox__FilterBtn" name="date_filter_button" value="add_filter">Применить</button>
 	</form>
 </div>

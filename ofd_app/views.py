@@ -18,7 +18,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
 from ofd_app.filters import apply_filters
-from ofd_app.utils import to_int
+from ofd_app.utils import to_int, get_pages_list
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
@@ -67,7 +67,7 @@ def products(request):
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
                 db_product = Product.objects.get(product_id=product_id)
-                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost)
+                order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost, is_paid = False)
                 order.save()
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
                 send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
@@ -76,8 +76,8 @@ def products(request):
         return redirect('products')
     return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_product', login_url='/products/')
 def product_delete(request):
     ids = request.POST.getlist('product_to_delete')
@@ -156,15 +156,14 @@ def users(request):
         user_data.append(data)
     return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
-@login_required(login_url='/login/')
 @require_POST
+@login_required(login_url='/login/')
 @permission_required('ofd_app.delete_user', login_url='/products/')
 def user_delete(request):
     ids = request.POST.getlist('user_to_delete')
     cnt_delete = 0
     for id in ids:
-        iid = to_int(id, 0)
-        if iid > 0:
+        if to_int(id, 0) > 0:
             try:
                 user = User.objects.get(id=id)
                 if request.user.has_access_to_user(user):
@@ -178,7 +177,7 @@ def user_delete(request):
 @login_required(login_url='/login/')
 def orders(request):
     date = datetime.now()
-    apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user'})
+    apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user', 'paid'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
         id = to_int(request.POST.get('order_id', 0), 0)
         status = request.POST.get('status', '').strip()
@@ -197,11 +196,12 @@ def orders(request):
     org = request.session['order_filters']['org']
     status = request.session['order_filters']['status']
     user = request.session['order_filters']['user']
-    orders = Order.get_orders(request.user, date_from, date_to, status, org, user)
+    paid = request.session['order_filters']['paid']
+    orders = Order.get_orders(request.user, date_from, date_to, status, org, user, paid)
     order_data = []
     for order in orders:
         product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate, 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes})
+        order_data.append({'id': order.id, 'adddate': order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%d.%m.%y %H:%M"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes, 'is_paid' : order.is_paid})
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -217,12 +217,12 @@ def orders(request):
 def stat_org(request):
     apply_filters(request, 'stat_org', {'date'})
     date_from = datetime.strptime(request.session['stat_org']['date_from'], date_filter_format())
-    date_to = datetime.strptime(request.session['stat_org']['date_to'], date_filter_format())
+    date_to = datetime.strptime(request.session['stat_org']['date_to'], date_filter_format()) + timedelta(1)
     sql = '''
     select 1 as id
          , u.org
          , u.inn
-         , coalesce(sum(q.total), 0) as total
+         , coalesce(sum(case when q.status = 'A' then q.total else 0 end), 0) as total
          , count(q.order_id) as cnt_all
          , sum(case when q.status = 'A' then 1 else 0 end) as cnt_approve
          , sum(case when q.status = 'I' then 1 else 0 end) as cnt_in_progress
@@ -238,25 +238,49 @@ def stat_org(request):
             left outer join
             (
             select o.user_id
-                    , o.id as order_id
-                    , max(o.status_id) as status
-                    , sum(o.amount * o.cost) as total
-                from ofd_app_order o
+                 , o.id as order_id
+                 , o.status_id as status
+                 , o.amount * o.cost as total
+              from ofd_app_order o
              where adddate >= %s
                and adddate < %s
-                group by o.user_id
-                    , o.id
             ) q on u.id = q.user_id
      where u.is_superuser = false
        and ad.user_id is null
     group by org, inn
+    union
+    select 1 as id
+         , 'Общий итог' as org
+         , '' as inn
+         , coalesce(sum(case when o.status_id = 'A' then o.amount * o.cost else 0 end), 0) as total
+         , count(o.id) as cnt_all
+         , sum(case when o.status_id = 'A' then 1 else 0 end) as cnt_approve
+         , sum(case when o.status_id = 'I' then 1 else 0 end) as cnt_in_progress
+         , sum(case when o.status_id = 'R' then 1 else 0 end) as cnt_reject
+      from ofd_app_order o
+           inner join ofd_app_user u on o.user_id = u.id
+           left outer join (
+                select ug.user_id
+                 from ofd_app_user_groups ug
+                      inner join auth_group ag
+                              on ug.group_id = ag.id
+                where ag.name = 'Admin'
+            ) ad on u.id = ad.user_id
+     where u.is_superuser = false
+       and ad.user_id is null
+       and adddate >= %s
+       and adddate < %s
+    order by total desc
     '''
-    result = User.objects.raw(sql, [date_from, date_to])
+    result = User.objects.raw(sql, [date_from, date_to, date_from, date_to])
     data = []
     for row in result:
         item = {'org': row.org, 'inn': row.inn, 'total': row.total, 'cnt_all': row.cnt_all, 'cnt_approve': row.cnt_approve, 'cnt_in_progress': row.cnt_in_progress, 'cnt_reject': row.cnt_reject}
-        data.append(item)
-    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role(), 'path': STAT})
+        data.append(item) 
+    for i in data:
+        if i['org'] == 'Общий итог':
+            grand_total = i
+    return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role(), 'path': STAT, 'grand_total' : grand_total})
 
 @login_required(login_url='/login/')
 def exportxlsx(request, **kwargs):
@@ -284,20 +308,16 @@ def exporttxt(request, **kwargs):
         return response
 
 def construct_pagination(request, data):
-    page_size = 10
-    page = request.GET.get('page', 1)
-    p = Paginator(data, page_size)
-    pagination = {'page': None, 'data': None, 'prev': None, 'next': None, 'count': range(p.num_pages)}
-    try:
-      page_object = p.get_page(page)
-    except Paginator.InvalidPage:
-      page = 1
-      page_object = p.get_page(1)
-    pagination['page'] = int(page)
-    pagination['prev'] = page_object.previous_page_number() if page_object.has_previous() else None
-    pagination['next'] = page_object.next_page_number() if page_object.has_next() else None
-    pagination['data'] = page_object.object_list
-    pagination['cnt'] = p.num_pages
+    page        = to_int(request.GET.get('page', 1), 1)
+    p           = Paginator(data, 10)
+    page_object = p.get_page(page)
+    pagination  = {
+                'page' : page if 0 < page <= p.num_pages else p.num_pages,
+                'data' : page_object.object_list,
+                'prev' : page_object.previous_page_number() if page_object.has_previous() else None,
+                'next' : page_object.next_page_number() if page_object.has_next() else None,
+                'count': get_pages_list(int(p.num_pages), page if 0 < page <= p.num_pages else p.num_pages)
+                }
     return pagination
 
 def user_reg(request):
@@ -393,3 +413,41 @@ def get_order_invoice(request):
 
     else:
         return redirect('orders')
+@require_POST
+@login_required(login_url='/login/')
+def order_change_pay_sign(request):
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
+
+    ids = request.POST.getlist('is_paid')
+
+    for id in ids:
+        if to_int(id, 0) > 0:
+            try:
+                order = Order.objects.get(id=id)
+                order.is_paid = not order.is_paid
+                order.save()
+            except Order.DoesNotExist:
+                pass
+    return redirect('orders')
+
+@require_POST
+@login_required(login_url='/login/')
+def change_order(request):
+    if not (request.user.is_superuser or request.user.is_admin()):
+        return redirect('orders')
+
+    new_cost   = to_int(request.POST.get('cost', '').strip(), 0)
+    new_amount = to_int(request.POST.get('amount', '').strip(), 0)
+    order_id   = to_int(request.POST.get('order_id', '').strip(), 0)
+
+    if order_id > 0 and new_amount > 0 and new_cost > 0:
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return redirect('orders')
+        order.amount = new_amount
+        order.cost   = new_cost
+        order.save()
+    return redirect('orders')
+
