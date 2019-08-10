@@ -26,8 +26,7 @@ from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
 from django.template.loader import render_to_string
-import weasyprint
-from weasyprint import HTML, CSS
+from weasyprint import HTML
 from django.conf import settings
 from ofd_app.number_to_text import num2text
 
@@ -373,11 +372,12 @@ def contacts(request):
 '''
 Функция автоматического выставления счета
 get_order_invoice - принимает request, возвращает http_response с готовым pdf
-испльзует сторонние библиотеки weasyprint, number_to_text
+испльзует сторонние библиотеки: 
+weasyprint(https://weasyprint.readthedocs.io/en/latest/install.html)
+number_to_text(https://github.com/seriyps/ru_number_to_text)
 зависимости и порядок импортов: 
     from django.template.loader import render_to_string
-    import weasyprint
-    from weasyprint import HTML, CSS
+    from weasyprint import HTML
     from django.conf import settings
     from ofd_app.number_to_text import num2text
 '''
@@ -389,30 +389,25 @@ def get_order_invoice(request):
         order = get_object_or_404(Order, id=order_id)
 
         if request.user.has_access_to_user(order.user):
-            rendered_html = render_to_string('ofd_app/invoicing.html', {
+            rendered_html = render_to_string('ofd_app/invoicing.html', context={
                 'id'           : order.id, 
                 'add_date'     : order.adddate.strftime("%Y.%m.%d"), 
                 'amount'       : order.amount, 
                 'date_to'      : datetime.now().strftime("%d.%m.%Y"), 
-                'org'          : order.user.org, 'inn' : order.user.inn, 
+                'org'          : order.user.org, 
+                'inn'          : order.user.inn, 
                 'product_name' : order.product.product_name, 
                 'cost'         : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
                 'total'        : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
                 'total_text'   : num2text(order.cost * order.amount)
                 })
-            pdf_file = HTML(
-                string=rendered_html, 
-                base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(settings.STATIC_ROOT +  'logo-score.png')]
-                )
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
-            http_response['Content-Disposition'] = 'filename="Invoice.pdf"'
+            http_response['Content-Disposition'] = 'filename={number}'.format(number='MO-' + str(order.id))
             return http_response
 
-        else:
-            return redirect('orders')
+    return redirect('orders')
 
-    else:
-        return redirect('orders')
 @require_POST
 @login_required(login_url='/login/')
 def order_change_pay_sign(request):
