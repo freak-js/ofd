@@ -112,17 +112,6 @@
 
                 {% endif %}
 
-                {% if not order.is_paid and order.status != "R"%}
-
-                <form action="/get_order_invoice/" method="POST">
-
-                    {% csrf_token %}
-
-                    <button type="submit" class="btn score_button ml-1" name="score_product_id" value="{{ order.id }}"><i class="fas fa-file-invoice-dollar"></i></button>
-                </form>
-
-                {% endif %}
-
             </div>
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
 
@@ -150,7 +139,16 @@
                 
                 {% else %}
 
-                <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
+                {% if not order.is_paid and order.status != "R"%}
+
+                <form action="/get_order_invoice/" target="_blank" method="POST">
+
+                    {% csrf_token %}
+
+                    <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">Счёт</button>
+                </form>
+
+                {% endif %}
 
                 {% endif %}
 
