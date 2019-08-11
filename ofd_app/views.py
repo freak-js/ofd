@@ -393,7 +393,6 @@ def get_order_invoice(request):
                 'id'           : order.id, 
                 'add_date'     : order.adddate.strftime("%Y.%m.%d"), 
                 'amount'       : order.amount, 
-                'date_to'      : datetime.now().strftime("%d.%m.%Y"), 
                 'org'          : order.user.org, 
                 'inn'          : order.user.inn, 
                 'product_name' : order.product.product_name, 
@@ -403,7 +402,7 @@ def get_order_invoice(request):
                 })
             pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
-            http_response['Content-Disposition'] = 'filename={number}'.format(number='MO-' + str(order.id))
+            http_response['Content-Disposition'] = f'filename=MO-{order.id}'
             return http_response
 
     return redirect('orders')
