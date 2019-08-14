@@ -407,6 +407,36 @@ def get_order_invoice(request):
 
     return redirect('orders')
 
+'''
+Функция автоматического выставления УПД
+полностью идентична по алгоритму работы и зависимостям 
+с get_order_invoice кроме сторонней библиотеки number_to_text
+'''
+@login_required(login_url='/login/')
+def get_upd(request):
+    order_id = to_int(request.POST.get('score_product_id', 0), 0)
+
+    if order_id > 0:
+        order = get_object_or_404(Order, id=order_id)
+
+        if request.user.has_access_to_user(order.user):
+            rendered_html = render_to_string('ofd_app/upd.html', context={
+                'id'           : order.id, 
+                'add_date'     : order.adddate.strftime("%Y.%m.%d"), 
+                'amount'       : order.amount, 
+                'org'          : order.user.org, 
+                'inn'          : order.user.inn, 
+                'product_name' : order.product.product_name, 
+                'cost'         : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
+                'total'        : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
+                })
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
+            http_response = HttpResponse(pdf_file, content_type='application/pdf')
+            http_response['Content-Disposition'] = f'filename=UPD-MO-{order.id}'
+            return http_response
+
+    return redirect('orders')
+
 @require_POST
 @login_required(login_url='/login/')
 def order_change_pay_sign(request):

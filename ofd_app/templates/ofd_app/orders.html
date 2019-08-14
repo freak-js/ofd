@@ -117,40 +117,45 @@
 
                 {% if user_role == "Admin" or user_role == "God" %}
 
-                {% if order.is_paid %}
+                    {% if order.is_paid %}
 
-                <input type="checkbox" class="checkbox_green" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
-                <label for="checkbox_{{ order.id }}"></label>
-                
-                {% else %}
+                        <input type="checkbox" class="checkbox_green" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                        <label for="checkbox_{{ order.id }}"></label>
+                    
+                    {% else %}
 
-                <input type="checkbox" class="checkbox_red" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
-                <label for="checkbox_{{ order.id }}"></label>
+                        <input type="checkbox" class="checkbox_red" id="checkbox_{{ order.id }}" name="is_paid" value="{{order.id}}" form="is_paid_form"">
+                        <label for="checkbox_{{ order.id }}"></label>
 
-                {% endif %}
+                    {% endif %}
 
                 {% endif %}
 
                 {% if user_role == "Manager" or user_role == "User" %}
 
-                {% if order.is_paid %}
+                    {% if order.is_paid %}
 
-                <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
-                
-                {% else %}
+                    <form action="/get_upd/" target="_blank" method="POST">
 
-                {% if not order.is_paid and order.status != "R"%}
+                        {% csrf_token %}
 
-                <form action="/get_order_invoice/" target="_blank" method="POST">
+                        <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">УПД</button>
+                    </form>
+                    
+                    {% else %}
 
-                    {% csrf_token %}
+                        {% if not order.is_paid and order.status != "R"%}
 
-                    <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">Счёт</button>
-                </form>
+                            <form action="/get_order_invoice/" target="_blank" method="POST">
 
-                {% endif %}
+                                {% csrf_token %}
 
-                {% endif %}
+                                <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">Счёт</button>
+                            </form>
+
+                        {% endif %}
+
+                    {% endif %}
 
                 {% endif %}
 
@@ -159,11 +164,11 @@
 
                 {% if order.comment %}
 
-                <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i></button>
+                    <button type="button" class="btn comment_show_button" data-container="body" data-toggle="popover" data-placement="top" data-content="{{order.comment}}"><i class="fa fa-comment"></i></button>
 
                 {% else %}
 
-                <span>Нет</span>
+                    <span>Нет</span>
 
                 {% endif %}
 
@@ -171,20 +176,16 @@
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
                 <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
 
-                {% if order.status == "I" %}
+                {% if order.status == "I" and perms.ofd_app.change_product %}
 
-                {% if perms.ofd_app.change_product %}
-
-                <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-I{{order.id}}"><i class="fas fa-cannabis"></i></button>
-            
-                {% endif %}
+                    <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-I{{order.id}}"><i class="fas fa-cannabis"></i></button>
 
                 {% endif %}
 
                 <!-- Кнопка ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
                 {% if order.status == "A" or order.status == "R"%}
 
-                <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-AR{{order.id}}"><i class="fas fa-info-circle"></i></button>
+                    <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-AR{{order.id}}"><i class="fas fa-info-circle"></i></button>
 
                 {% endif %}
 
@@ -253,95 +254,95 @@
 
                 {% if order.status == "A" or order.status == "R"%}
 
-                <!-- Модальное окно ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
-                <div class="modal fade" id="exampleModalCenter-AR{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered ModalWidth" role="document">
-                        <div class="modal-content">
-                            <div class="ModalHeaderClose">
-                                <div class="w-100">
-                                    <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.product.full_cost }}р.</h5> 
+                    <!-- Модальное окно ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
+                    <div class="modal fade" id="exampleModalCenter-AR{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered ModalWidth" role="document">
+                            <div class="modal-content">
+                                <div class="ModalHeaderClose">
+                                    <div class="w-100">
+                                        <h5 class="mt-2">Заказ № {{ order.id }} на сумму {{ order.product.full_cost }}р.</h5> 
+                                    </div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                                 </div>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                                <form action="/orders/" method="POST">
+
+                                    {% csrf_token %}
+
+                                    <div class="ModalBody">
+
+                                        {% if order.codes and order.admin_comment %}
+
+                                            <div class="w-50 ModalBodyContent border-right">
+                                                <h6>Коды ОФД:</h6>
+                                                <div class="text-dark">
+                                                    <span>{{ order.codes }}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="w-50 ModalBodyContent">
+                                                <h6>Комментарий администратора:</h6>
+                                                <div class="text-dark">
+                                                    <span>{{ order.admin_comment }}</span>
+                                                </div>
+                                            </div>
+
+                                        {% endif %}
+
+                                        {% if order.codes and not order.admin_comment %}
+
+                                            <div class="w-100 ModalBodyContent">
+                                                <h6>Коды ОФД:</h6>
+                                                <div class="text-dark">
+                                                    <span>{{ order.codes }}</span>
+                                                </div>
+                                            </div>
+
+                                        {% endif %}
+
+                                        {% if not order.codes and not order.admin_comment and order.status == "R" %}
+
+                                            <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
+                                                <h6>Администратор отклонил Ваш заказ без указания какого-либо комментария.</h6>
+                                            </div>
+
+                                        {% endif %}
+
+                                        {% if not order.codes and not order.admin_comment and order.status == "A" %}
+
+                                            <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
+                                                <h6>Если вы видите это сообщение, пожалуйста свяжитесь с командой mir-ofd.ru через форму обратной связи, произошел небольшой технический сбой.</h6>
+                                            </div>
+
+                                        {% endif %}
+
+                                        {% if not order.codes and order.admin_comment and order.status == "R" %}
+
+                                            <div class="w-100 ModalBodyContent">
+                                                <h6>Комментарий администратора:</h6>
+                                                <div class="text-secondary">
+                                                    <span>{{ order.admin_comment }}</span>
+                                                </div>
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    {% if order.codes %}
+
+                                        <div class="ModalFooterCodes">
+                                            <span>Скачать коды ОФД в формате:</span>
+                                            <a href="exportxlsx/{{order.id}}">&nbsp&nbsp.xlsx</a>
+                                            <a href="exporttxt/{{order.id}}">&nbsp&nbsp&nbsp&nbsp.txt</a>
+                                        </div>
+
+                                    {% endif %}
+
+                                </form>
+                                
                             </div>
-                            <form action="/orders/" method="POST">
-
-                                {% csrf_token %}
-
-                                <div class="ModalBody">
-
-                                    {% if order.codes and order.admin_comment %}
-
-                                    <div class="w-50 ModalBodyContent border-right">
-                                        <h6>Коды ОФД:</h6>
-                                        <div class="text-dark">
-                                            <span>{{ order.codes }}</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="w-50 ModalBodyContent">
-                                        <h6>Комментарий администратора:</h6>
-                                        <div class="text-dark">
-                                            <span>{{ order.admin_comment }}</span>
-                                        </div>
-                                    </div>
-
-                                    {% endif %}
-
-                                    {% if order.codes and not order.admin_comment %}
-
-                                    <div class="w-100 ModalBodyContent">
-                                        <h6>Коды ОФД:</h6>
-                                        <div class="text-dark">
-                                            <span>{{ order.codes }}</span>
-                                        </div>
-                                    </div>
-
-                                    {% endif %}
-
-                                    {% if not order.codes and not order.admin_comment and order.status == "R" %}
-
-                                    <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
-                                            <h6>Администратор отклонил Ваш заказ без указания какого-либо комментария.</h6>
-                                    </div>
-
-                                    {% endif %}
-
-                                    {% if not order.codes and not order.admin_comment and order.status == "A" %}
-
-                                    <div class="w-100 d-flex justify-content-center align-items-center text-secondary">
-                                            <h6>Если вы видите это сообщение, пожалуйста свяжитесь с командой mir-ofd.ru через форму обратной связи, произошел небольшой технический сбой.</h6>
-                                    </div>
-
-                                    {% endif %}
-
-                                    {% if not order.codes and order.admin_comment and order.status == "R" %}
-
-                                    <div class="w-100 ModalBodyContent">
-                                        <h6>Комментарий администратора:</h6>
-                                        <div class="text-secondary">
-                                            <span>{{ order.admin_comment }}</span>
-                                        </div>
-                                    </div>
-
-                                    {% endif %}
-
-                                </div>
-
-                                {% if order.codes %}
-
-                                <div class="ModalFooterCodes">
-                                    <span>Скачать коды ОФД в формате:</span>
-                                    <a href="exportxlsx/{{order.id}}">&nbsp&nbsp.xlsx</a>
-                                    <a href="exporttxt/{{order.id}}">&nbsp&nbsp&nbsp&nbsp.txt</a>
-                                </div>
-
-                                {% endif %}
-
-                            </form>
-                            
                         </div>
                     </div>
-                </div>
 
                 {% endif %}
 
