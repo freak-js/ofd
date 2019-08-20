@@ -422,7 +422,8 @@ def get_upd(request):
         if request.user.has_access_to_user(order.user):
             rendered_html = render_to_string('ofd_app/upd.html', context={
                 'id'           : order.id, 
-                'add_date'     : order.adddate.strftime("%Y.%m.%d"), 
+                'today'        : datetime.today().strftime("%d.%m.%Y"), 
+                'add_date'     : order.adddate.strftime("%d.%m.%Y"),
                 'amount'       : order.amount, 
                 'org'          : order.user.org, 
                 'inn'          : order.user.inn, 
