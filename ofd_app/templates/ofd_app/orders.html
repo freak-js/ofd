@@ -50,7 +50,17 @@
                 <span>Статус</span>
             </div>
             <div class="col-1 p-1">
+
+                {% if user_role == "Admin" or user_role == "God" %}
+
                 <span>Оплата</span>
+
+                {% else %}
+
+                <span>Документы</span>
+
+                {% endif %}
+
             </div>
             <div class="col-1 p-1">
                 <span>Ком-рий</span>
@@ -139,7 +149,7 @@
 
                         {% csrf_token %}
 
-                        <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">УПД</button>
+                        <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}" data-toggle="tooltip" data-placement="right" title="Нажмите для получения УПД, это может занять немного времени">УПД</button>
                     </form>
                     
                     {% else %}
