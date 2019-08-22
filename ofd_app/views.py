@@ -421,15 +421,15 @@ def get_upd(request):
 
         if request.user.has_access_to_user(order.user):
             rendered_html = render_to_string('ofd_app/upd.html', context={
-                'id'           : order.id, 
-                'today'        : datetime.today().strftime("%d.%m.%Y"), 
-                'add_date'     : order.adddate.strftime("%d.%m.%Y"),
-                'amount'       : order.amount, 
-                'org'          : order.user.org, 
-                'inn'          : order.user.inn, 
-                'product_name' : order.product.product_name, 
-                'cost'         : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
-                'total'        : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
+                'id'             : order.id, 
+                'add_date'       : order.adddate.strftime("%d.%m.%Y"),
+                'date_of_payment': order.date_of_payment.strftime("%d.%m.%Y") if order.date_of_payment else Order.write_date(order),
+                'amount'         : order.amount, 
+                'org'            : order.user.org, 
+                'inn'            : order.user.inn, 
+                'product_name'   : order.product.product_name, 
+                'cost'           : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
+                'total'          : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
                 })
             pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
@@ -450,7 +450,11 @@ def order_change_pay_sign(request):
         if to_int(id, 0) > 0:
             try:
                 order = Order.objects.get(id=id)
-                order.is_paid = not order.is_paid
+                if order.is_paid:
+                    order.is_paid = False
+                else:
+                    order.is_paid = True
+                    order.date_of_payment = datetime.today()
                 order.save()
             except Order.DoesNotExist:
                 pass

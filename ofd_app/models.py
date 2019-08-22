@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db.models import FilteredRelation, Q, F
 from ofd_app.utils import to_int
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 # Create your models here.
 class Product(models.Model):
@@ -157,6 +157,7 @@ class Order(models.Model):
     amount = models.IntegerField("Количество")
     cost = models.IntegerField("Итоговая стоимость для одного продукта")
     is_paid = models.BooleanField("Статус оплаты заказа")
+    date_of_payment = models.DateField("Дата оплаты заказа", null=True)
 
     def assign_status(self, status, comment, codes):
       try:
@@ -205,3 +206,9 @@ class Order(models.Model):
             return ''
         except Order.DoesNotExist:
             return ''
+    
+    @staticmethod
+    def write_date(order_object):
+        order_object.date_of_payment = datetime.today()
+        order_object.save()
+        return order_object.date_of_payment.strftime("%d.%m.%Y")
