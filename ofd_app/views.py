@@ -450,15 +450,12 @@ def order_change_pay_sign(request):
         if to_int(id, 0) > 0:
             try:
                 order = Order.objects.get(id=id)
-                if order.is_paid:
-                    order.is_paid = False
-                else:
-                    order.is_paid = True
-                    order.date_of_payment = datetime.today()
+                order.is_paid = not order.is_paid
                 order.save()
             except Order.DoesNotExist:
                 pass
     return redirect('orders')
+
 
 @require_POST
 @login_required(login_url='/login/')

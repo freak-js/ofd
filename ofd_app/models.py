@@ -136,8 +136,10 @@ class OrderStatus(models.Model):
 
     def is_in_progress(self):
         return self.code == 'I'
+
     def is_approved(self):
         return self.code == 'A'
+
     def is_rejected(self):
         return self.code == 'R'
 
@@ -160,19 +162,22 @@ class Order(models.Model):
     date_of_payment = models.DateField("Дата оплаты заказа", null=True)
 
     def assign_status(self, status, comment, codes):
-      try:
-        new_status = OrderStatus.objects.get(code=status);
+        try:
+            new_status = OrderStatus.objects.get(code=status)
+        except OrderStatus.DoesNotExist:
+            return False
+
         if self.status.is_in_progress() and not new_status.is_in_progress():
             self.status = new_status
-            if comment is not None and len(comment) > 0:
+            if comment:
                 self.admin_comment = comment
-            if codes is not None and len(codes) > 0:
+            if codes:
                 self.codes = codes
-            self.save()
+            if self.status.is_approved():
+                self.date_of_payment = datetime.today()
+            self.save(update_fields=['status', 'admin_comment', 'codes', 'date_of_payment'])
             return True
-      except OrderStatus.DoesNotExist:
-          pass
-      return False
+        return False
 
     @staticmethod
     def get_orders(user, date_from=None, date_to=None, status_code=None, org=None, user_id=None, paid=None):

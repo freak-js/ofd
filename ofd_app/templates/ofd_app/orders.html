@@ -123,7 +123,7 @@
                 {% endif %}
 
             </div>
-            <div class="col-1 p-1 d-flex align-items-center justify-content-center">
+            <div class="col-1 p-1 d-flex align-items-center justify-content-center flex-column">
 
                 {% if user_role == "Admin" or user_role == "God" %}
 
@@ -143,29 +143,39 @@
 
                 {% if user_role == "Manager" or user_role == "User" %}
 
-                    {% if order.is_paid and order.status == "A" %}
+                    {% if order.is_paid %}
 
-                    <form action="/get_upd/" target="_blank" method="POST">
-
-                        {% csrf_token %}
-
-                        <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}" data-toggle="tooltip" data-placement="right" title="Нажмите для получения УПД, это может занять немного времени">УПД</button>
-                    </form>
+                    <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
                     
                     {% else %}
 
-                        {% if order.status != "R"%}
-
-                            <form action="/get_order_invoice/" target="_blank" method="POST">
-
-                                {% csrf_token %}
-
-                                <button type="submit" class="btn client_show_button w-100" name="score_product_id" value="{{ order.id }}">Счёт</button>
-                            </form>
-
-                        {% endif %}
+                    <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
 
                     {% endif %}
+
+                    <!-- РАСКОММЕНТИРОВАТЬ ПОСЛЕ УТВЕРЖДЕНИЯ
+                    {% if order.status != "R" and not order.is_paid %}
+
+                        <form action="/get_order_invoice/" target="_blank" method="POST">
+
+                            {% csrf_token %}
+
+                            <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">Счёт</button>
+                        </form>
+
+                    {% endif %}
+
+                    {% if order.status == "A" %}
+
+                        <form action="/get_upd/" target="_blank" method="POST">
+
+                            {% csrf_token %}
+
+                            <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">УПД</button>
+                        </form>
+
+                    {% endif %}
+                    -->
 
                 {% endif %}
 
@@ -184,20 +194,22 @@
 
             </div>
             <div class="col-1 p-1 d-flex align-items-center justify-content-center">
-                <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
 
                 {% if order.status == "I" and perms.ofd_app.change_product %}
 
+                    <!-- Кнопка ДЛЯ ЗАКАЗА В РАБОТЕ -->
                     <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-I{{order.id}}"><i class="fas fa-cannabis"></i></button>
 
                 {% endif %}
 
-                <!-- Кнопка ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
                 {% if order.status == "A" or order.status == "R"%}
 
+                    <!-- Кнопка ДЛЯ ОТКЛОНЕННОГО/ПОДТВЕРЖДЕННОГО ЗАКАЗА -->
                     <button type="button" class="btn card_btn" data-toggle="modal" data-target="#exampleModalCenter-AR{{order.id}}"><i class="fas fa-info-circle"></i></button>
 
                 {% endif %}
+
+                {% if order.status == "I" and perms.ofd_app.change_product %}
 
                 <!-- Модальное окно ДЛЯ ЗАКАЗА В РАБОТЕ -->
                 <div class="modal fade" id="exampleModalCenter-I{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -237,10 +249,27 @@
 
                                     </form>
 
+                                    <div class="d-flex justify-content-start pl-2">
+
+                                        {% if user_role == "Admin" or user_role == "God" %}
+
+                                            <form action="/get_order_invoice/" target="_blank" method="POST">
+        
+                                                {% csrf_token %}
+                    
+                                                <button type="submit" class="btn modal_btn" name="score_product_id" value="{{ order.id }}">Сформировать счёт</button>
+                                            </form>
+    
+                                        {% endif %}
+
+                                    </div>
+
                                 </div>
                                 <div class="ModalFooter" id="ModalFooter_{{order.id}}">
+
                                     <button type="submit" class="btn btn_to_reject_order" name="status" value="R" form="order_{{order.id}}">Отклонить</button>
                                     <button type="submit" class="btn btn_to_complete_order disabled" name="status" value="A" id="btnA_{{order.id}}" form="order_{{order.id}}">Завершить</button>
+
                                 </div>
 
                                 <script type="text/javascript">
@@ -261,6 +290,8 @@
                         </div>
                     </div>
                 </div>
+
+                {% endif %}
 
                 {% if order.status == "A" or order.status == "R"%}
 
@@ -350,6 +381,44 @@
 
                                 </form>
                                 
+                                {% if user_role == "Admin" or user_role == "God" %}
+
+                                <!-- Блок для АДМИНИСТРАТОРА -->
+                                <div class="d-flex justify-content-start px-2 pt-2 pb-3">
+
+                                    {% if order.status == "A" and not order.is_paid %}
+
+                                    <form action="/get_order_invoice/" target="_blank" method="POST">
+
+                                        {% csrf_token %}
+            
+                                        <button type="submit" class="btn modal_btn" name="score_product_id" value="{{ order.id }}">Сформировать счёт</button>
+                                    </form>
+
+                                    <form action="/get_upd/" target="_blank" method="POST">
+
+                                        {% csrf_token %}
+            
+                                        <button type="submit" class="btn modal_btn ml-2" name="score_product_id" value="{{ order.id }}">Сформировать УПД</button>
+                                    </form>
+
+                                    {% endif %}
+
+                                    {% if order.status == "A" and order.is_paid %}
+
+                                    <form action="/get_upd/" target="_blank" method="POST">
+
+                                        {% csrf_token %}
+            
+                                        <button type="submit" class="btn modal_btn" name="score_product_id" value="{{ order.id }}">Сформировать УПД</button>
+                                    </form>
+
+                                    {% endif %}
+                                        
+                                </div>
+
+                            {% endif %}
+
                             </div>
                         </div>
                     </div>
