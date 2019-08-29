@@ -25,6 +25,11 @@ from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, 
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.conf import settings
+from ofd_app.number_to_text import num2text
+
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
@@ -306,11 +311,11 @@ def construct_pagination(request, data):
     p           = Paginator(data, 10)
     page_object = p.get_page(page)
     pagination  = {
-                'page' : page if page <= p.num_pages else p.num_pages,
+                'page' : page if 0 < page <= p.num_pages else p.num_pages,
                 'data' : page_object.object_list,
                 'prev' : page_object.previous_page_number() if page_object.has_previous() else None,
                 'next' : page_object.next_page_number() if page_object.has_next() else None,
-                'count': get_pages_list(int(p.num_pages), page)
+                'count': get_pages_list(int(p.num_pages), page if 0 < page <= p.num_pages else p.num_pages)
                 }
     return pagination
 
@@ -364,6 +369,75 @@ def instruction(request):
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
 
+'''
+Функция автоматического выставления счета
+get_order_invoice - принимает request, возвращает http_response с готовым pdf
+испльзует сторонние библиотеки: 
+weasyprint(https://weasyprint.readthedocs.io/en/latest/install.html)
+number_to_text(https://github.com/seriyps/ru_number_to_text)
+зависимости и порядок импортов: 
+    from django.template.loader import render_to_string
+    from weasyprint import HTML
+    from django.conf import settings
+    from ofd_app.number_to_text import num2text
+'''
+@login_required(login_url='/login/')
+def get_order_invoice(request):
+    order_id = to_int(request.POST.get('score_product_id', 0), 0)
+
+    if order_id > 0:
+        order = get_object_or_404(Order, id=order_id)
+
+        if request.user.has_access_to_user(order.user):
+            rendered_html = render_to_string('ofd_app/invoicing.html', context={
+                'id'           : order.id, 
+                'add_date'     : order.adddate.strftime("%Y.%m.%d"), 
+                'amount'       : order.amount, 
+                'org'          : order.user.org, 
+                'inn'          : order.user.inn, 
+                'product_name' : order.product.product_name, 
+                'cost'         : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
+                'total'        : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
+                'total_text'   : num2text(order.cost * order.amount)
+                })
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
+            http_response = HttpResponse(pdf_file, content_type='application/pdf')
+            http_response['Content-Disposition'] = f'filename=MO-{order.id}'
+            return http_response
+
+    return redirect('orders')
+
+'''
+Функция автоматического выставления УПД
+полностью идентична по алгоритму работы и зависимостям 
+с get_order_invoice кроме сторонней библиотеки number_to_text
+'''
+@login_required(login_url='/login/')
+def get_upd(request):
+    order_id = to_int(request.POST.get('score_product_id', 0), 0)
+
+    if order_id > 0:
+        order = get_object_or_404(Order, id=order_id)
+
+        if request.user.has_access_to_user(order.user):
+            rendered_html = render_to_string('ofd_app/upd.html', context={
+                'id'             : order.id, 
+                'add_date'       : order.adddate.strftime("%d.%m.%Y"),
+                'date_of_payment': order.date_of_payment.strftime("%d.%m.%Y") if order.date_of_payment else Order.write_date(order),
+                'amount'         : order.amount, 
+                'org'            : order.user.org, 
+                'inn'            : order.user.inn, 
+                'product_name'   : order.product.product_name, 
+                'cost'           : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
+                'total'          : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
+                })
+            pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
+            http_response = HttpResponse(pdf_file, content_type='application/pdf')
+            http_response['Content-Disposition'] = f'filename=UPD-MO-{order.id}'
+            return http_response
+
+    return redirect('orders')
+
 @require_POST
 @login_required(login_url='/login/')
 def order_change_pay_sign(request):
@@ -381,6 +455,7 @@ def order_change_pay_sign(request):
             except Order.DoesNotExist:
                 pass
     return redirect('orders')
+
 
 @require_POST
 @login_required(login_url='/login/')

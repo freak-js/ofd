@@ -4,19 +4,18 @@ def to_int(i, default=None):
     except ValueError:
         return default
 
-#Функция отдающая список для правильного формирования пагинации
-def get_pages_list(number_of_pages, current_page):
+'''
+get_pages_list - принимает два обязательных аргумента 
+(количество страниц : int, запрашиваемая страница : int)
+возвращает list() по которому происходит итерация в шаблоне.
+'''
+def get_pages_list(number_of_pages: int, current_page: int) -> list:
     lst = [i for i in range(1, number_of_pages + 1)]
 
     if number_of_pages <= 11:
         return lst
-    
-    if current_page > number_of_pages:
-        current_page = number_of_pages
 
-    first_page = lst[0]
-    last_page  = lst[len(lst) - 1]
-    result     = []
+    first_page, last_page, result = lst[0], lst[-1], []
 
     if current_page < 7:
         result.extend(lst[:9])
