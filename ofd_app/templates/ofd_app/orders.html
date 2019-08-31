@@ -147,6 +147,7 @@
 
                 {% if user_role == "Manager" or user_role == "User" %}
 
+                    <!--
                     {% if order.is_paid %}
 
                     <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
@@ -156,8 +157,8 @@
                     <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
 
                     {% endif %}
+                    -->
 
-                    <!-- РАСКОММЕНТИРОВАТЬ ПОСЛЕ УТВЕРЖДЕНИЯ
                     {% if order.status != "R" and not order.is_paid and order.allow_receipt %}
 
                         <form action="/get_order_invoice/" target="_blank" method="POST">
@@ -166,6 +167,10 @@
 
                             <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">Счёт</button>
                         </form>
+                    
+                    {% elif order.status != "R" and not order.is_paid and not order.allow_receipt %}
+
+                    <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
 
                     {% endif %}
 
@@ -177,9 +182,11 @@
 
                             <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">УПД</button>
                         </form>
+                    {% elif order.is_paid and not order.allow_receipt %}
+
+                    <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
 
                     {% endif %}
-                    -->
 
                 {% endif %}
 
