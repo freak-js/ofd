@@ -211,9 +211,3 @@ class Order(models.Model):
             return ''
         except Order.DoesNotExist:
             return ''
-    
-    @staticmethod
-    def write_date(order_object):
-        order_object.date_of_payment = datetime.today()
-        order_object.save()
-        return order_object.date_of_payment.strftime("%d.%m.%Y")

@@ -158,7 +158,7 @@
                     {% endif %}
 
                     <!-- РАСКОММЕНТИРОВАТЬ ПОСЛЕ УТВЕРЖДЕНИЯ
-                    {% if order.status != "R" and not order.is_paid %}
+                    {% if order.status != "R" and not order.is_paid and order.allow_receipt %}
 
                         <form action="/get_order_invoice/" target="_blank" method="POST">
 
@@ -169,7 +169,7 @@
 
                     {% endif %}
 
-                    {% if order.status == "A" %}
+                    {% if order.status == "A" and order.allow_receipt %}
 
                         <form action="/get_upd/" target="_blank" method="POST">
 
@@ -257,12 +257,16 @@
 
                                         {% if user_role == "Admin" or user_role == "God" %}
 
+                                            {% if order.allow_receipt and not order.is_paid %}
+
                                             <form action="/get_order_invoice/" target="_blank" method="POST">
         
                                                 {% csrf_token %}
                     
                                                 <button type="submit" class="btn modal_btn" name="score_product_id" value="{{ order.id }}">Сформировать счёт</button>
-                                            </form>
+                                            </form> 
+
+                                            {% endif %}
     
                                         {% endif %}
 
@@ -390,7 +394,7 @@
                                 <!-- Блок для АДМИНИСТРАТОРА -->
                                 <div class="d-flex justify-content-start px-2 pt-2 pb-3">
 
-                                    {% if order.status == "A" and not order.is_paid %}
+                                    {% if order.status == "A" and not order.is_paid and order.allow_receipt %}
 
                                     <form action="/get_order_invoice/" target="_blank" method="POST">
 
@@ -408,7 +412,7 @@
 
                                     {% endif %}
 
-                                    {% if order.status == "A" and order.is_paid %}
+                                    {% if order.status == "A" and order.is_paid and order.allow_receipt %}
 
                                     <form action="/get_upd/" target="_blank" method="POST">
 
