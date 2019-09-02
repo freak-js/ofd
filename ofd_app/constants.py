@@ -42,5 +42,5 @@ MESSAGES[2] = 'Завершён'
 
 #Дата после которой будет работать функция выставления счета и УПД
 
-DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED = datetime(2019, 8, 30, 10, 10, 10).replace(tzinfo=timezone.utc).astimezone(tz=None)
+DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED = datetime(2019, 9, 1, 10, 10, 10).replace(tzinfo=timezone.utc).astimezone(tz=None)
 

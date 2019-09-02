@@ -51,19 +51,15 @@
             </div>
             <div class="col-1 p-1">
 
-                <span>Оплата</span> <!-- УБРАТЬ ПОСЛЕ РАСКОММЕНТИРОВАНИЯ КОДА НИЖЕ! -->
-
-                <!--
                 {% if user_role == "Admin" or user_role == "God" %}
 
-                <span>Оплата</span>
+                    <span>Оплата</span>
 
                 {% else %}
 
-                <span>Документы</span>
+                    <span>Документы</span>
 
                 {% endif %}
-                -->
 
             </div>
             <div class="col-1 p-1">
@@ -146,18 +142,6 @@
                 {% endif %}
 
                 {% if user_role == "Manager" or user_role == "User" %}
-
-                    <!--
-                    {% if order.is_paid %}
-
-                    <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
-                    
-                    {% else %}
-
-                    <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
-
-                    {% endif %}
-                    -->
 
                     {% if order.status != "R" and not order.is_paid and order.allow_receipt %}
 
