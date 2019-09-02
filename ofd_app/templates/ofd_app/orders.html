@@ -51,19 +51,15 @@
             </div>
             <div class="col-1 p-1">
 
-                <span>Оплата</span> <!-- УБРАТЬ ПОСЛЕ РАСКОММЕНТИРОВАНИЯ КОДА НИЖЕ! -->
-
-                <!--
                 {% if user_role == "Admin" or user_role == "God" %}
 
-                <span>Оплата</span>
+                    <span>Оплата</span>
 
                 {% else %}
 
-                <span>Документы</span>
+                    <span>Документы</span>
 
                 {% endif %}
-                -->
 
             </div>
             <div class="col-1 p-1">
@@ -147,18 +143,7 @@
 
                 {% if user_role == "Manager" or user_role == "User" %}
 
-                    {% if order.is_paid %}
-
-                    <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
-                    
-                    {% else %}
-
-                    <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
-
-                    {% endif %}
-
-                    <!-- РАСКОММЕНТИРОВАТЬ ПОСЛЕ УТВЕРЖДЕНИЯ
-                    {% if order.status != "R" and not order.is_paid %}
+                    {% if order.status != "R" and not order.is_paid and order.allow_receipt %}
 
                         <form action="/get_order_invoice/" target="_blank" method="POST">
 
@@ -166,10 +151,14 @@
 
                             <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">Счёт</button>
                         </form>
+                    
+                    {% elif order.status != "R" and not order.is_paid and not order.allow_receipt %}
+
+                    <i class="fa fa-times" data-toggle="tooltip" data-placement="right" title="Ожидается оплата" style="color: #bd3e35"></i>
 
                     {% endif %}
 
-                    {% if order.status == "A" %}
+                    {% if order.status == "A" and order.allow_receipt %}
 
                         <form action="/get_upd/" target="_blank" method="POST">
 
@@ -177,9 +166,11 @@
 
                             <button type="submit" class="btn client_show_button w-100 link_btn" name="score_product_id" value="{{ order.id }}">УПД</button>
                         </form>
+                    {% elif order.is_paid and not order.allow_receipt %}
+
+                    <i class="fa fa-check" data-toggle="tooltip" data-placement="right" title="Заказ оплачен" style="color: #49884b"></i>
 
                     {% endif %}
-                    -->
 
                 {% endif %}
 
@@ -257,12 +248,16 @@
 
                                         {% if user_role == "Admin" or user_role == "God" %}
 
+                                            {% if order.allow_receipt and not order.is_paid %}
+
                                             <form action="/get_order_invoice/" target="_blank" method="POST">
         
                                                 {% csrf_token %}
                     
                                                 <button type="submit" class="btn modal_btn" name="score_product_id" value="{{ order.id }}">Сформировать счёт</button>
-                                            </form>
+                                            </form> 
+
+                                            {% endif %}
     
                                         {% endif %}
 
@@ -390,7 +385,7 @@
                                 <!-- Блок для АДМИНИСТРАТОРА -->
                                 <div class="d-flex justify-content-start px-2 pt-2 pb-3">
 
-                                    {% if order.status == "A" and not order.is_paid %}
+                                    {% if order.status == "A" and not order.is_paid and order.allow_receipt %}
 
                                     <form action="/get_order_invoice/" target="_blank" method="POST">
 
@@ -408,7 +403,7 @@
 
                                     {% endif %}
 
-                                    {% if order.status == "A" and order.is_paid %}
+                                    {% if order.status == "A" and order.is_paid and order.allow_receipt %}
 
                                     <form action="/get_upd/" target="_blank" method="POST">
 

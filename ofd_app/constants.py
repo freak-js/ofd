@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 # Used for top menu navigation
 PRODUCTS = 'products'
 USERS = 'users'
@@ -37,4 +39,8 @@ TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY = 'Статус заказа № {number} 
 MESSAGES = {}
 MESSAGES[1] = 'Отклонён'
 MESSAGES[2] = 'Завершён'
+
+#Дата после которой будет работать функция выставления счета и УПД
+
+DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED = datetime(2019, 9, 1, 10, 10, 10).replace(tzinfo=timezone.utc).astimezone(tz=None)
 

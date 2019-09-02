@@ -11,9 +11,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login
-from datetime import datetime
-from datetime import date
-from datetime import timedelta
+from datetime import datetime, date, timedelta
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from ofd_app.filters import date_filter_format
@@ -21,7 +19,7 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int, get_pages_list
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from ofd_app.constants import PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
+from ofd_app.constants import DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED, PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
@@ -199,8 +197,24 @@ def orders(request):
     orders = Order.get_orders(request.user, date_from, date_to, status, org, user, paid)
     order_data = []
     for order in orders:
-        product = {'product_name': order.product.product_name, 'amount': order.amount, 'cost': order.cost, 'full_cost': order.amount * order.cost}
-        order_data.append({'id': order.id, 'adddate': order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%d.%m.%y %H:%M"), 'comment': order.comment, 'product': product, 'status': order.status.code, 'user': order.user, 'user_role': order.user_role, 'admin_comment': order.admin_comment, 'codes': order.codes, 'is_paid' : order.is_paid})
+        product = {
+            'product_name': order.product.product_name, 
+            'amount'      : order.amount, 'cost': order.cost, 
+            'full_cost'   : order.amount * order.cost
+            }
+        order_data.append({
+            'id'           : order.id, 
+            'adddate'      : order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%d.%m.%y %H:%M"), 
+            'comment'      : order.comment, 
+            'product'      : product, 
+            'status'       : order.status.code, 
+            'user'         : order.user, 
+            'user_role'    : order.user_role, 
+            'admin_comment': order.admin_comment, 
+            'codes'        : order.codes, 
+            'is_paid'      : order.is_paid,
+            'allow_receipt': (DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED - order.adddate).days < 0
+        })
     filters = {}
     if request.user.is_superuser or request.user.is_admin():
         filters['org'] = User.get_organizations()
@@ -398,7 +412,7 @@ def get_order_invoice(request):
                 'product_name' : order.product.product_name, 
                 'cost'         : '{0:,}'.format(order.cost).replace(',', ' ') + ',00', 
                 'total'        : '{0:,}'.format(order.cost * order.amount).replace(',', ' ') + ',00', 
-                'total_text'   : num2text(order.cost * order.amount)
+                'total_text'   : num2text(order.cost * order.amount),
                 })
             pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
@@ -409,7 +423,7 @@ def get_order_invoice(request):
 
 '''
 Функция автоматического выставления УПД
-полностью идентична по алгоритму работы и зависимостям 
+get_upd - полностью идентична по алгоритму работы и зависимостям 
 с get_order_invoice кроме сторонней библиотеки number_to_text
 '''
 @login_required(login_url='/login/')
@@ -423,7 +437,7 @@ def get_upd(request):
             rendered_html = render_to_string('ofd_app/upd.html', context={
                 'id'             : order.id, 
                 'add_date'       : order.adddate.strftime("%d.%m.%Y"),
-                'date_of_payment': order.date_of_payment.strftime("%d.%m.%Y") if order.date_of_payment else Order.write_date(order),
+                'date_of_payment': order.date_of_payment.strftime("%d.%m.%Y"),
                 'amount'         : order.amount, 
                 'org'            : order.user.org, 
                 'inn'            : order.user.inn, 
@@ -456,7 +470,11 @@ def order_change_pay_sign(request):
                 pass
     return redirect('orders')
 
-
+'''
+Функция изменения стоимости и/или количества индивидуального заказа.
+change_order - принимает из request словарь с ключами: cost, amount, order_id.
+Производит обновление соответсвующих ключам (cost, amount) полей в БД.
+'''
 @require_POST
 @login_required(login_url='/login/')
 def change_order(request):
@@ -474,6 +492,6 @@ def change_order(request):
             return redirect('orders')
         order.amount = new_amount
         order.cost   = new_cost
-        order.save()
+        order.save(update_fields=['amount', 'cost'])
     return redirect('orders')
 
