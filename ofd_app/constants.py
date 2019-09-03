@@ -36,9 +36,7 @@ TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY = 'Статус заказа № {number} 
 
 ##MESSAGES##
 
-MESSAGES = {}
-MESSAGES[1] = 'Отклонён'
-MESSAGES[2] = 'Завершён'
+MESSAGES = ('"Отклонён"', '"Завершён"')
 
 #Дата после которой будет работать функция выставления счета и УПД
 
