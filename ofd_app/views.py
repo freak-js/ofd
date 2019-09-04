@@ -194,7 +194,8 @@ def orders(request):
                             product = order.product.product_name, 
                             amount = order.amount, 
                             status = MESSAGES[0] if status == 'R' else MESSAGES[1], 
-                            comment = admin_comment
+                            comment_template = 'Комментарий администратора: ' if admin_comment else '',
+                            comment = admin_comment if admin_comment else ''
                             ), 
                         EMAIL_HOST_USER, 
                         [order.user.email], 
