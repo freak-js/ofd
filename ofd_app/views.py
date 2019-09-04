@@ -19,7 +19,7 @@ from ofd_app.filters import apply_filters
 from ofd_app.utils import to_int, get_pages_list
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-from ofd_app.constants import DATE_AFTER_WHICH_INVOICES_WILL_BE_ISSUED, PRODUCTS, USERS, ORDERS, MY_CARD, STAT, FEEDBACK, INSTRUCTION, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY, TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY , TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY, MESSAGES
+from ofd_app.constants import *
 from django.core.mail import send_mail
 from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
 from django.utils.timezone import pytz
@@ -185,7 +185,22 @@ def orders(request):
                 order = Order.objects.get(id=id)
                 op_result = order.assign_status(status, admin_comment, codes)
                 if op_result:
-                    send_mail(TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(number = id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), total = order.amount * order.cost, product = order.product.product_name, amount = order.amount, status = MESSAGES[1] if status == 'R' else MESSAGES[2], comment = admin_comment), EMAIL_HOST_USER, [order.user.email], fail_silently=False,)
+                    send_mail(
+                        TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, 
+                        TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(
+                            number = id, 
+                            date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), 
+                            total = order.amount * order.cost, 
+                            product = order.product.product_name, 
+                            amount = order.amount, 
+                            status = MESSAGES[0] if status == 'R' else MESSAGES[1], 
+                            comment_template = 'Комментарий администратора: ' if admin_comment else '',
+                            comment = admin_comment if admin_comment else ''
+                            ), 
+                        EMAIL_HOST_USER, 
+                        [order.user.email], 
+                        fail_silently=False
+                        )
             except Order.DoesNotExist:
                 pass
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())

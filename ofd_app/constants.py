@@ -32,13 +32,11 @@ TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY = 'Пользователь: {first_name} {l
 #Template change order status user
 
 TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT = 'Статус заказа изменен.'
-TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY = 'Статус заказа № {number} от {date} на сумму {total} р. на {product} в количестве {amount} шт. изменен на {status}. \nКомментарий администратора: {comment}'
+TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY = 'Статус заказа № {number} от {date} на сумму {total} р. на {product} в количестве {amount} шт. изменен на {status}. \n{comment_template} {comment}'
 
 ##MESSAGES##
 
-MESSAGES = {}
-MESSAGES[1] = 'Отклонён'
-MESSAGES[2] = 'Завершён'
+MESSAGES = ('"Отклонён"', '"Завершён"')
 
 #Дата после которой будет работать функция выставления счета и УПД
 

@@ -102,9 +102,45 @@
             <span>{{ grand_total.org }}:</span>&nbsp;
             <span>{{ grand_total.total }}р.</span>&nbsp;&nbsp;
             <span>заказов: {{ grand_total.cnt_all }}</span>&nbsp;&nbsp;
-            <span>в работе: {{ grand_total.cnt_in_progress }}</span>&nbsp;&nbsp;
-            <span>завершено: {{ grand_total.cnt_approve }}</span>&nbsp;&nbsp;
-            <span>отклонено: {{ grand_total.cnt_reject }}</span>&nbsp;&nbsp;
+            <span>в работе: 
+                
+                {% if grand_total.cnt_in_progress %}
+                
+                    {{ grand_total.cnt_in_progress }}
+
+                {% else %}
+
+                    0
+
+                {% endif %}
+
+            </span>&nbsp;&nbsp;
+            <span>завершено: 
+                
+                {% if grand_total.cnt_approve %}
+                
+                    {{ grand_total.cnt_approve }}
+
+                {% else %}
+
+                    0
+
+                {% endif %}
+
+            </span>&nbsp;&nbsp;
+            <span>отклонено: 
+                
+                {% if grand_total.cnt_reject %}
+                
+                    {{ grand_total.cnt_reject }}
+
+                {% else %}
+
+                    0
+
+                {% endif %}
+
+            </span>&nbsp;&nbsp;
         </div>
 
     </div>
