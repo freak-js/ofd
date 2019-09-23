@@ -21,57 +21,118 @@ from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import *
 from django.core.mail import send_mail
-from ofd.settings import EMAIL_HOST_USER, TIME_ZONE
+from ofd.settings import EMAIL_HOST_USER, TIME_ZONE, BASE_DIR
 from django.utils.timezone import pytz
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.conf import settings
 from ofd_app.number_to_text import num2text
+import logging
+
+
+'''
+Конфигурирование логгера из модуля logging стандартной библиотеки python
+'''
+logging.basicConfig(
+    filename=BASE_DIR + '/logging.log', 
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    )
 
 
 @login_required(login_url='/login/')
 def product(request, **kwargs):
+
     if 'id' in kwargs:
+
         if not request.user.has_perm('ofd_app.change_product'):
+            logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался изменить продукт id:{kwargs["id"]}')
             return redirect('products')
         product = get_object_or_404(Product, product_id=kwargs['id'])
+
         if request.method == 'POST':
             form = ProductForm(request.POST, instance = product)
+
             if form.is_valid():
                 form.save()
+                logging.info(f'id:{request.user.id}, username:{request.user.username} - изменил продукт id:{kwargs["id"]}')
         else:
             form = ProductForm(instance=product)
     else:
+
         if not request.user.has_perm('ofd_app.add_product'):
+            logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался добавить новый продукт')
             return redirect('products')
+
         if request.method == 'POST':
             form = ProductForm(request.POST)
+            
             if form.is_valid():
                 product = form.save()
+                logging.info(f'id:{request.user.id}, username:{request.user.username} - добавил новый продукт id:{product.product_id}')
         else:
             form = ProductForm()
     return render(request, 'ofd_app/index_product_add.html', {'form': form, 'user_role': request.user.get_role(), 'path': PRODUCTS})
 
+
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_product', login_url='/products/')
 def products(request):
+
     if request.method == 'POST':
         product_id = to_int(request.POST.get('product_id', '').strip(), 0)
         order_comment = request.POST.get('order_comment', '').strip()
         quantity = to_int(request.POST.get('quantity', '').strip(), 1)
+
         if product_id > 0:
             product = request.user.get_product(product_id)
+
             if product is not None:
                 cost = product.by_user__cost if product.by_user__cost is not None and product.by_user__cost > 0 else product.product_cost
                 db_product = Product.objects.get(product_id=product_id)
                 order = Order(user = request.user, product=db_product, comment = order_comment, amount = quantity, cost = cost, is_paid = False)
                 order.save()
-                send_mail(TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(first_name = request.user.first_name , last_name = request.user.last_name, corg=request.user.org, product = db_product.product_name , amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
-                send_mail(TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(number = order.id, date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), product = db_product.product_name, amount = quantity , total = quantity * cost ), EMAIL_HOST_USER, [request.user.email], fail_silently=False,)
+                send_mail(
+                    TEMPLATE_EMAIL_NEW_ORDER_ADMIN_SUBJECT, 
+                    TEMPLATE_EMAIL_NEW_ORDER_ADMIN_BODY.format(
+                        first_name = request.user.first_name, 
+                        last_name = request.user.last_name, 
+                        corg=request.user.org, 
+                        product = db_product.product_name, 
+                        amount = quantity, 
+                        total = quantity * cost 
+                        ), 
+                    EMAIL_HOST_USER, 
+                    [EMAIL_HOST_USER], 
+                    fail_silently=False
+                    )
+                send_mail(
+                    TEMPLATE_EMAIL_NEW_ORDER_USER_SUBJECT, 
+                    TEMPLATE_EMAIL_NEW_ORDER_USER_BODY.format(
+                        number = order.id, 
+                        date = order.adddate.astimezone(pytz.timezone(TIME_ZONE)).strftime("%Y.%m.%d %H:%M:%S"), 
+                        product = db_product.product_name, 
+                        amount = quantity, 
+                        total = quantity * cost 
+                        ), 
+                    EMAIL_HOST_USER, 
+                    [request.user.email], 
+                    fail_silently=False
+                    )
                 return redirect('orders')
-        ##TODO передать сообщение об ошибке
+
         return redirect('products')
-    return render(request, 'ofd_app/index_top.html', {'products': request.user.get_products(), 'can_delete': request.user.has_perm('ofd_app.delete_product'), 'user_role': request.user.get_role(), 'path': PRODUCTS})
+
+    return render(
+        request, 
+        'ofd_app/index_top.html', 
+            {
+            'products': request.user.get_products(), 
+            'can_delete': request.user.has_perm('ofd_app.delete_product'), 
+            'user_role': request.user.get_role(), 
+            'path': PRODUCTS
+            })
+
 
 @require_POST
 @login_required(login_url='/login/')
@@ -88,6 +149,7 @@ def product_delete(request):
         except Product.DoesNotExist:
             pass
     return redirect('products')
+
 
 @login_required(login_url='/login/')
 def user(request, **kwargs):
@@ -118,6 +180,7 @@ def user(request, **kwargs):
         user_form = UserCreationFormCustom(requested_user = request.user)
     return render(request, 'ofd_app/user.html', {'user_form': user_form, 'user_role': request.user.get_role(), 'path': MY_CARD if my_card else USERS})
 
+
 @login_required(login_url='/login/')
 @permission_required('ofd_app.change_productuserrel', login_url='/products/')
 def user_product(request, **kwargs):
@@ -129,6 +192,7 @@ def user_product(request, **kwargs):
             ProductUserRel.save_product_user_rel(request.POST, user, request.user.id)
         products = user.get_products()
     return render(request, 'ofd_app/user_product.html', {'products': products, 'path': USERS})
+
 
 @login_required(login_url='/login/')
 @permission_required('ofd_app.view_user', login_url='/products/')
@@ -153,6 +217,7 @@ def users(request):
         user_data.append(data)
     return render(request, 'ofd_app/users.html', {'users': construct_pagination(request, user_data), 'can_delete': request.user.has_perm('ofd_app.delete_user'), 'filters': filters, 'user_role': request.user.get_role(), 'path': USERS})
 
+
 @require_POST
 @login_required(login_url='/login/')
 @permission_required('ofd_app.delete_user', login_url='/products/')
@@ -167,24 +232,30 @@ def user_delete(request):
                     user.is_active = False
                     user.save()
                     cnt_delete += 1
+                    logging.info(f'id:{request.user.id}, username:{request.user.username} - удалил пользователя id:{id}')
             except User.DoesNotExist:
-                pass
+                logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался удалить несуществующего пользователя')
     return redirect('users')
+
 
 @login_required(login_url='/login/')
 def orders(request):
     date = datetime.now()
     apply_filters(request, 'order_filters', {'date', 'status', 'org', 'user', 'paid'})
     if request.method == 'POST' and request.user.has_perm('ofd_app.manage_order_status'):
+
         id = to_int(request.POST.get('order_id', 0), 0)
         status = request.POST.get('status', '').strip()
         admin_comment = request.POST.get('admin_comment', '').strip()
         codes = request.POST.get('order_codes', '').strip()
+
         if id > 0 and len(status) > 0:
             try:
                 order = Order.objects.get(id=id)
                 op_result = order.assign_status(status, admin_comment, codes)
+
                 if op_result:
+                    logging.info(f'id:{request.user.id}, username:{request.user.username} - изменил статус заказа № МО-{order.id} на {status}')
                     send_mail(
                         TEMPLATE_EMAIL_ORDER_STATUS_USER_SUBJECT, 
                         TEMPLATE_EMAIL_ORDER_STATUS_USER_BODY.format(
@@ -201,8 +272,10 @@ def orders(request):
                         [order.user.email], 
                         fail_silently=False
                         )
+                    logging.info(f'Отправлен email на {order.user.email}')
             except Order.DoesNotExist:
-                pass
+                logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался изменить статус несуществующего заказа')
+
     date_from = datetime.strptime(request.session['order_filters']['date_from'], date_filter_format())
     date_to = datetime.strptime(request.session['order_filters']['date_to'], date_filter_format())
     org = request.session['order_filters']['org']
@@ -240,6 +313,7 @@ def orders(request):
             filters['users'].append(child)
     filters['status'] = OrderStatus.get_all_statuses()
     return render(request, 'ofd_app/orders.html', {'orders': construct_pagination(request, order_data), 'filters': filters, 'user_role': request.user.get_role(), 'path': ORDERS})
+
 
 @login_required(login_url='/login/')
 def stat_org(request):
@@ -308,7 +382,9 @@ def stat_org(request):
     for i in data:
         if i['org'] == 'Общий итог':
             grand_total = i
+    logging.info(f'id:{request.user.id}, username:{request.user.username} - смотрит статистику')
     return render(request, 'ofd_app/stat_org.html', {'stat': construct_pagination(request, data), 'user_role': request.user.get_role(), 'path': STAT, 'grand_total' : grand_total})
+
 
 @login_required(login_url='/login/')
 def exportxlsx(request, **kwargs):
@@ -324,7 +400,9 @@ def exportxlsx(request, **kwargs):
             ix = ix + 1
         response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=codes.xlsx'
+        logging.info(f'id:{request.user.id}, username:{request.user.username} - забрал XLSX с кодами к заказу № МО-{kwargs["id"]}')
         return response
+
 
 @login_required(login_url='/login/')
 def exporttxt(request, **kwargs):
@@ -333,7 +411,9 @@ def exporttxt(request, **kwargs):
         codes = db_codes.split()
         response = HttpResponse('\r\n'.join(codes), content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=codes.txt'
+        logging.info(f'id:{request.user.id}, username:{request.user.username} - забрал TXT с кодами к заказу № МО-{kwargs["id"]}')
         return response
+
 
 def construct_pagination(request, data):
     page        = to_int(request.GET.get('page', 1), 1)
@@ -348,21 +428,46 @@ def construct_pagination(request, data):
                 }
     return pagination
 
+
 def user_reg(request):
     if request.method == 'POST':
         reg_form = UserCreationFormCustom(request.POST)
         user = user_save(reg_form)
+        logging.info(f'id:{user.id}, username:{user.username} - успешно зарегестрировался')
         if user is not None:
-            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY.format(first_name = user.first_name , last_name = user.last_name , email = user.email , phone_number = user.phone_number , org = user.org , city = user.city ), EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False,)
-            send_mail(TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT.format(first_name = user.first_name), TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY.format(login = user.username), EMAIL_HOST_USER, [user.email], fail_silently=False,)
+            send_mail(
+                TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_SUBJECT, 
+                TEMPLATE_EMAIL_NEW_LOGIN_ADMIN_BODY.format(
+                    first_name = user.first_name, 
+                    last_name = user.last_name, 
+                    email = user.email, 
+                    phone_number = user.phone_number, 
+                    org = user.org, 
+                    city = user.city 
+                    ), 
+                EMAIL_HOST_USER, 
+                [EMAIL_HOST_USER], 
+                fail_silently=False
+                )
+            logging.info(f'Отправлен email на {EMAIL_HOST_USER}')
+            send_mail(
+                TEMPLATE_EMAIL_NEW_LOGIN_USER_SUBJECT.format(first_name = user.first_name), 
+                TEMPLATE_EMAIL_NEW_LOGIN_USER_BODY.format(login = user.username), 
+                EMAIL_HOST_USER, 
+                [user.email], 
+                fail_silently=False
+                )
+            logging.info(f'Отправлен email на {user.email}')
             login(request, user)
             return redirect('products')
     else:
         reg_form = UserCreationFormCustom()
     return render(request, 'ofd_app/user_reg.html', {'reg_form': reg_form})
 
+
 def user_assign_group(user, group_name):
     group = Group.objects.get(name=group_name).user_set.add(user)
+
 
 def user_resolve_group(user, request_user):
     group_name = 'Manager'
@@ -371,6 +476,7 @@ def user_resolve_group(user, request_user):
     elif request_user is not None and request_user.is_superuser:
         group_name = 'Admin'
     user_assign_group(user, group_name)
+
 
 def user_save(user_form, request_user=None):
     user = None
@@ -387,16 +493,20 @@ def user_save(user_form, request_user=None):
         user.save()
     return user
 
+
 @login_required(login_url='/login/')
 def feedback(request):
     return render(request, 'ofd_app/feedback.html', {'user_role': request.user.get_role(), 'path': FEEDBACK})
+
 
 @login_required(login_url='/login/')
 def instruction(request):
     return render(request, 'ofd_app/instruction.html', {'user_role': request.user.get_role(), 'path': INSTRUCTION})
 
+
 def contacts(request):
     return render(request, 'ofd_app/contacts.html')
+
 
 '''
 Функция автоматического выставления счета
@@ -432,9 +542,11 @@ def get_order_invoice(request):
             pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
             http_response['Content-Disposition'] = f'filename=MO-{order.id}'
+            logging.info(f'id:{request.user.id}, username:{request.user.username} - забрал счет к заказу № МО-{order_id}')
             return http_response
-
+    logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался получить доступ к счету заказа № МО-{order_id}!')
     return redirect('orders')
+
 
 '''
 Функция автоматического выставления УПД
@@ -463,14 +575,17 @@ def get_upd(request):
             pdf_file = HTML(string=rendered_html, base_url=request.build_absolute_uri()).write_pdf()
             http_response = HttpResponse(pdf_file, content_type='application/pdf')
             http_response['Content-Disposition'] = f'filename=UPD-MO-{order.id}'
+            logging.info(f'id:{request.user.id}, username:{request.user.username} - забрал УПД к заказу № МО-{order_id}')
             return http_response
-
+    logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался получить доступ к УПД заказа № МО-{order_id}!')
     return redirect('orders')
+
 
 @require_POST
 @login_required(login_url='/login/')
 def order_change_pay_sign(request):
     if not (request.user.is_superuser or request.user.is_admin()):
+        logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался изменить статус оплаты заказа!')
         return redirect('orders')
 
     ids = request.POST.getlist('is_paid')
@@ -481,9 +596,11 @@ def order_change_pay_sign(request):
                 order = Order.objects.get(id=id)
                 order.is_paid = not order.is_paid
                 order.save()
+                logging.info(f'id:{request.user.id}, username:{request.user.username} - изменение статуса оплаты заказа № МО-{id} на {order.is_paid}')
             except Order.DoesNotExist:
-                pass
+                logging.warning(f'id:{request.user.id}, username:{request.user.username} - попытался изменить статус оплаты несуществующего заказа!')
     return redirect('orders')
+
 
 '''
 Функция изменения стоимости и/или количества индивидуального заказа.
@@ -494,6 +611,7 @@ change_order - принимает из request словарь с ключами:
 @login_required(login_url='/login/')
 def change_order(request):
     if not (request.user.is_superuser or request.user.is_admin()):
+        logging.warning(f'id:{request.user.id}, username:{request.user.username} - попытался воспользоваться change_order!')
         return redirect('orders')
 
     new_cost   = to_int(request.POST.get('cost', '').strip(), 0)
@@ -508,5 +626,6 @@ def change_order(request):
         order.amount = new_amount
         order.cost   = new_cost
         order.save(update_fields=['amount', 'cost'])
+        logging.info(f'id:{request.user.id}, username:{request.user.username} - изменил заказ № МО-{order.id}')
     return redirect('orders')
 
