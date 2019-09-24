@@ -1,3 +1,6 @@
+from ofd.settings import BASE_DIR
+
+
 def to_int(i, default=None):
     try:
         return int(i)
@@ -32,3 +35,27 @@ def get_pages_list(number_of_pages: int, current_page: int) -> list:
         result.append('...')
         result.extend(lst[last_page - 9:last_page + 1])
     return result
+
+
+'''
+sort_logs - не принимает аргументов, открывает файл logging.log 
+сортирует логи по четырем спискам и возвращает список из этих списков.
+'''
+def sort_logs() -> list:
+    info, warning, error, critical = [], [], [], []
+
+    with open(BASE_DIR + '/logging.log') as log_file:
+        for log in reversed(list(log_file)):    
+
+            if 'INFO' in log:
+                info.append(log)
+            
+            if 'WARNING' in log:
+                warning.append(log)
+
+            if 'ERROR' in log:
+                error.append(log)
+
+            if 'CRITICAL' in log:
+                critical.append(log)
+    return [info, warning, error, critical]

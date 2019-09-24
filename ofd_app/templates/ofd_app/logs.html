@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+
+    {% load static %}
+
+    {% load crispy_forms_tags %}
+
+    <meta charset="utf-8">
+    <!-- <meta http-equiv="refresh" content="15"> -->
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    {% include "ofd_app/css_version.html" %}
+    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style type="text/css">
+        .list-group-item.active {  
+         background-color: #485967;
+         border-color: #485967;
+        }
+    </style>
+    <title>Логи</title>
+</head>
+<body class="text-center">
+
+    <div class="container container_min_width flex-grow-1">
+
+        <div class="mt-5">
+
+            <div class="d-flex flex-row justify-content-around">
+
+              <div class="list-group d-flex flex-row" id="list-tab" role="tablist">
+
+                <a style="border-radius: 15px; width: 130px;" class="list-group-item list-group-item-action active m-1" id="list-info-list" data-toggle="list" href="#list-info" role="tab" aria-controls="info"><b>INFO {{ info_count }}</b></a>
+
+                <a style="border-radius: 15px; width: 130px;" class="list-group-item list-group-item-action m-1" id="list-warning-list" data-toggle="list" href="#list-warning" role="tab" aria-controls="warning"><b>WARNING {{ warning_count }}</b></WARNING></a>
+
+                <a style="border-radius: 15px; width: 130px;" class="list-group-item list-group-item-action m-1" id="list-error-list" data-toggle="list" href="#list-error" role="tab" aria-controls="error"><b>ERROR {{ error_count }}</b></a>
+
+                <a style="border-radius: 15px; width: 130px;" class="list-group-item list-group-item-action m-1" id="list-critical-list" data-toggle="list" href="#list-critical" role="tab" aria-controls="critical"><b>CRITICAL {{ critical_count }}</b></a>
+
+              </div>
+
+            </div>
+
+            <div class="d-flex flex-column mt-5">
+
+              <div class="tab-content" id="nav-tabContent">
+
+                <div class="tab-pane fade show active text-left" id="list-info" role="tabpanel" aria-labelledby="list-info-list">
+
+                    {% for log in info %}
+
+                        <h6>{{ log }}</h6>
+                    
+                    {% endfor %}
+
+                </div>
+
+                <div class="tab-pane fade text-left" id="list-warning" role="tabpanel" aria-labelledby="list-warning-list">
+
+                    {% for log in warning %}
+
+                        <h6>{{ log }}</h6>
+                    
+                    {% endfor %}
+
+                </div>
+
+                <div class="tab-pane fade text-left" id="list-error" role="tabpanel" aria-labelledby="list-error-list">
+
+                    {% for log in error %}
+
+                        <h6>{{ log }}</h6>
+                    
+                    {% endfor %}
+
+                </div>
+
+                <div class="tab-pane fade text-left" id="list-critical" role="tabpanel" aria-labelledby="list-critical-list">
+
+                    {% for log in critical %}
+
+                        <h6>{{ log }}</h6>
+                    
+                    {% endfor %}
+
+                </div>
+
+              </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
