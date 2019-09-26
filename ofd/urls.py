@@ -48,4 +48,5 @@ urlpatterns = [
     path('change_order/', views.change_order, name='change_order'),
     path('get_upd/', views.get_upd, name='get_upd'),
     path('logs/', views.logs, name='logs'),
+    path('get_log_file/', views.get_log_file, name='get_log_file'),
 ]

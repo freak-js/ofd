@@ -1,4 +1,4 @@
-from ofd.settings import BASE_DIR
+from ofd_app.constants import PATH_TO_THE_LOGS
 
 
 def to_int(i, default=None):
@@ -44,7 +44,7 @@ sort_logs - не принимает аргументов, открывает ф�
 def sort_logs() -> list:
     info, warning, error, critical = [], [], [], []
 
-    with open(BASE_DIR + '/logging.log') as log_file:
+    with open(PATH_TO_THE_LOGS) as log_file:
         for log in reversed(list(log_file)):    
 
             if 'INFO' in log:
