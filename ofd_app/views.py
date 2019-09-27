@@ -28,16 +28,60 @@ from weasyprint import HTML
 from django.conf import settings
 from ofd_app.number_to_text import num2text
 import logging
+from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 
 '''
-Конфигурирование логгера из модуля logging стандартной библиотеки python
+Конфигурирование логгера из модуля logging
 '''
 logging.basicConfig(
     filename=PATH_TO_THE_LOGS, 
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     )
+
+
+'''
+@receiver(user_logged_in) - приемник сигнала и сигнал внутри.
+user_logged_in - событие django об успешной авторизации пользователя.
+signal_user_logged_in - логирует событие полученное приемником.
+'''
+@receiver(user_logged_in)
+def signal_user_logged_in(sender, user, request, **kwargs):
+    logging.info(f'id:{user.id}, username:{user.username} - Успешно залогинился.')
+
+
+'''
+Аналагично предыдущему
+'''
+@receiver(user_logged_out)
+def signal_user_logged_out(sender, user, request, **kwargs):
+    logging.info(f'id:{user.id}, username:{user.username} - Разлогинился.')
+
+
+'''
+Аналагично предыдущему
+'''
+@receiver(user_login_failed)
+def signal_user_login_failed(sender, credentials, request, **kwargs):
+    logging.warning(f'{credentials["username"]} - Ошибка аутентификации!')
+
+
+@receiver(pre_save, sender=User)
+def signal_pre_save_change_password(sender, **kwargs):
+    user = kwargs.get('instance', None)
+
+    if user:
+        new_password = user.password
+        try:
+            old_password = User.objects.get(id=user.id).password
+        except User.DoesNotExist:
+            old_password = None
+
+        if new_password != old_password:
+            logging.info(f'id:{user.id}, username:{user.username} - изменил пароль')
 
 
 @login_required(login_url='/login/')
