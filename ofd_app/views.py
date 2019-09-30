@@ -50,28 +50,31 @@ signal_user_logged_in - логирует событие полученное п�
 '''
 @receiver(user_logged_in)
 def signal_user_logged_in(sender, user, request, **kwargs):
-    logging.info(f'id:{user.id}, username:{user.username} - Успешно залогинился.')
+    logging.info(f'id:{user.id}, username:{user.username} - успешно залогинился.')
 
 
 '''
-Аналагично предыдущему
+Аналагично предыдущему.
 '''
 @receiver(user_logged_out)
 def signal_user_logged_out(sender, user, request, **kwargs):
-    logging.info(f'id:{user.id}, username:{user.username} - Разлогинился.')
+    logging.info(f'id:{user.id}, username:{user.username} - разлогинился.')
 
 
 '''
-Аналагично предыдущему
+Аналагично предыдущему.
 '''
 @receiver(user_login_failed)
 def signal_user_login_failed(sender, credentials, request, **kwargs):
-    logging.warning(f'{credentials["username"]} - Ошибка аутентификации!')
+    logging.warning(f'{credentials["username"]} - ошибка аутентификации!')
 
 
+'''
+signal_pre_save_change_password - отлавливает момент изменения пароля.
+'''
 @receiver(pre_save, sender=User)
 def signal_pre_save_change_password(sender, **kwargs):
-    user = kwargs.get('instance', None)
+    user = kwargs.get('instance')
 
     if user:
         new_password = user.password
@@ -81,7 +84,7 @@ def signal_pre_save_change_password(sender, **kwargs):
             old_password = None
 
         if new_password != old_password:
-            logging.info(f'id:{user.id}, username:{user.username} - изменил пароль')
+            logging.info(f'id:{user.id}, username:{user.username} - изменил пароль.')
 
 
 @login_required(login_url='/login/')
@@ -506,7 +509,6 @@ def user_reg(request):
                 )
             logging.info(f'Отправлен email на {user.email}.')
             login(request, user)
-            logging.info(f'id:{user.id}, username:{user.username} - залогинился.')
             return redirect('products')
     else:
         reg_form = UserCreationFormCustom()
