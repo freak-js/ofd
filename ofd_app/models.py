@@ -9,6 +9,7 @@ from django.db.models import FilteredRelation, Q, F
 from ofd_app.utils import to_int
 from datetime import timedelta, datetime
 
+
 # Create your models here.
 class Product(models.Model):
     product_id = models.AutoField(primary_key = True)

@@ -49,4 +49,5 @@ urlpatterns = [
     path('get_upd/', views.get_upd, name='get_upd'),
     path('logs/', views.logs, name='logs'),
     path('get_log_file/', views.get_log_file, name='get_log_file'),
+    path('add_codes/', views.add_codes, name='add_codes'),
 ]

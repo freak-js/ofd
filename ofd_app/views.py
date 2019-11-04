@@ -17,7 +17,7 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 from ofd_app.filters import date_filter_format
 from ofd_app.filters import apply_filters
 from ofd_app.utils import *
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import *
 from django.core.mail import send_mail
@@ -734,6 +734,9 @@ def logs(request):
             })
 
 
+'''
+get_log_file - отдает админу, или суперпользователю файл формата .txt
+'''
 @login_required(login_url='/login/')
 def get_log_file(request):
 
@@ -743,3 +746,26 @@ def get_log_file(request):
     
     logging.info(f'id:{request.user.id}, username:{request.user.username} - скачал логи.')
     return FileResponse(open(PATH_TO_THE_LOGS, 'rb'),  as_attachment = True, filename=f'logs_{datetime.today().strftime("%m_%d_%Y")}.log')
+
+
+'''
+add_codes - принимает от фронта файл формата xls/xlsx и id продута,
+(дописать по факту расширения функционала)
+'''
+@require_POST
+@login_required(login_url='/login/')
+def add_codes(request):
+    
+    if not (request.user.is_superuser or request.user.is_admin()):
+        logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался загрузить на сервер коды!')
+        return redirect('orders')
+    
+    try:
+        product_id = request.POST.get('product_id')
+        xls_file = request.FILES.get('new_codes_file')
+        wb = load_workbook(xls_file)
+    except:
+        logging.warning(f'id:{request.user.id}, username:{request.user.username} - ошибка с загружаемым файлом, или id продукта!')
+        return redirect('orders')
+    
+    return redirect('users')

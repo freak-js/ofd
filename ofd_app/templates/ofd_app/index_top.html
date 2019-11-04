@@ -37,22 +37,32 @@
 
 					</div>
 					<div class="col-2 p-1">
-						<span></span>
+						<span>
+							
+							{% if user_role == "Admin" or user_role == "God" %}
+							
+							Остаток
+						
+							{% endif %}
+
+						</span>
 					</div>
 				</div>
 
 				{% for product in products %}
 
 						<div class="row container__ProductDiv">
-								<div class="col-2 p-1 my-auto">
 
-						{% if perms.ofd_app.change_product %}
+							<div class="col-2 p-1 d-flex justify-content-center align-items-center">
 
-						<a href="/product/{{product.product_id}}" class="fontawesome_link"><i class="fas fa-edit"></i></a>
+								{% if perms.ofd_app.change_product %}
 
-						{% endif %}
+									<input type="checkbox" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+									<a href="/product/{{product.product_id}}" class="fontawesome_link ml-3"><i class="fas fa-edit"></i></a>
+									
+								{% endif %}
 
-								</div>
+							</div>
 								<div class="col-4 p-1 my-auto Font-18">
 										<span>{{ product.product_name }}</span>
 								</div>
@@ -159,15 +169,66 @@
 									</div>
 								</div>
 							</div>
-								<div class="col-2 p-1 my-auto mx-auto">
 
-						{% if perms.ofd_app.change_product %}
+							<div class="col-2 p-1 d-flex justify-content-between align-items-center">
 
-						<input type="checkbox" name="product_to_delete" value="{{product.product_id}}" form="top_form">
+								{% if user_role == "Admin" or user_role == "God" %}
 
-						{% endif %}
+									<!-- Button trigger modal -->
+									<button type="button" class="btn CodesAdd" data-toggle="modal" data-target="#codesModalCenter{{product.product_id}}">Добавить</button>
 
-								</div>
+									<!-- Modal -->
+									<div class="modal fade" id="codesModalCenter{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="codesModalCenterTitle{{product.product_id}}" aria-hidden="true">
+
+										<div class="modal-dialog modal-dialog-centered" role="document">
+
+											<div class="modal-content">
+
+												<div class="ModalHeader">
+
+													<h6 class="modal-title" id="exampleModalLongTitle">Загрузка кодов для {{ product.product_name }}</h6>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+
+												</div>
+												
+												<form id="codes_{{product.product_id}}" action="/add_codes/" method="POST" enctype="multipart/form-data">
+	
+													{% csrf_token %}
+	
+													<div class="modal-body">
+
+														<p class="mt-2 mb-3">Необходим файл формата .xlsx/.xls</p>
+
+														<div>
+
+															<input class="my-4" type="file" name="new_codes_file" style="width: 100%;">
+															<input type="number" name="product_id" value="{{product.product_id}}" style="display: none">
+
+														</div>
+
+													</div>
+
+													<div class="ModalFooter">
+
+														<button type="button" class="btn ModalExit" data-dismiss="modal">Отменить</button>
+														<button id="button_{{product.product_id}}" type="submit" class="btn ModalBuy">Отправить</button>
+	
+													</div>
+	
+												</form>
+	
+											</div>
+
+										</div>
+
+									</div>
+
+									<div class="CodesCount d-flex justify-content-center align-items-center">{{ product.product_cost }}</div>	
+
+								{% endif %}
+								
+							</div>
+
 				</div>
 
 				{% endfor %}
