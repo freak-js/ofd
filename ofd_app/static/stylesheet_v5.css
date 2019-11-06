@@ -638,7 +638,24 @@ select:focus{
 .CodesAdd:focus{
 	box-shadow: none;
 }
-
+.HarkBack{
+	width: 230px;
+    height: 54px;
+    border-radius: 25px;
+    padding: 0;
+    font-size: 20px;
+    font-weight: bold;
+    border: 2px solid;
+    color: #485967
+}
+.HarkBack:hover{
+	background-color: #426786;
+	border-color: #426786;
+	color: #fff;
+}
+.HarkBack:focus{
+	box-shadow: none;
+}
 /* ФОРМЫ */
 .registration_form{
 	width: 260px;

@@ -17,7 +17,8 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 from ofd_app.filters import date_filter_format
 from ofd_app.filters import apply_filters
 from ofd_app.utils import *
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
+import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 from ofd_app.constants import *
 from django.core.mail import send_mail
@@ -749,8 +750,11 @@ def get_log_file(request):
 
 
 '''
-add_codes - принимает от фронта файл формата xls/xlsx и id продута,
-(дописать по факту расширения функционала)
+add_codes - принимает из request файл формата xlsx и id продута,
+читает данные из ячеек, вносит изменения в соответсвующие таблицы базы.
+Встретив пустую ячейку - прекращает считывание и завершает цикл.
+Выполнив более 500 итераций прекращает считывание, логирует ошибку 
+и высылает уведомление на email.
 '''
 @require_POST
 @login_required(login_url='/login/')
@@ -759,13 +763,34 @@ def add_codes(request):
     if not (request.user.is_superuser or request.user.is_admin()):
         logging.warning(f'id:{request.user.id}, username:{request.user.username} - пытался загрузить на сервер коды!')
         return redirect('orders')
-    
+
     try:
-        product_id = request.POST.get('product_id')
-        xls_file = request.FILES.get('new_codes_file')
-        wb = load_workbook(xls_file)
+        xlsx_file = request.FILES.get('new_codes_file')
+        wb = openpyxl.load_workbook(xlsx_file)
+        ws = wb.active
     except:
-        logging.warning(f'id:{request.user.id}, username:{request.user.username} - ошибка с загружаемым файлом, или id продукта!')
-        return redirect('orders')
-    
-    return redirect('users')
+        logging.warning(f'id:{request.user.id}, username:{request.user.username} - ошибка с загружаемым файлом!')
+        return render(request, 'ofd_app/results.html', {'exception': True})
+
+    product_id = to_int(request.POST.get('product_id'))
+
+    if product_id:
+        iteration = 2 #Начинаем с двойки из-за названий колонок в первых ячейках
+
+        while iteration <= 501:
+            cell_A = ws[f'A{iteration}'].value
+            cell_B = ws[f'B{iteration}'].value
+
+            if cell_A is None or cell_B is None:
+                break
+
+            # Выполняем проверку на количество итераций на случай не явного наличия данных в ячейках документа.
+
+            if iteration > 500:
+                logging.critical('Ошибка в процессе загрузки кодов! Загружено более 500 кодов, или не были соблюдены условия выхода из цикла!')
+                send_mail('Ошибка при загрузке кодов!', 'Загружено более 500 кодов, или не были соблюдены условия выхода из цикла!', EMAIL_HOST_USER, [EMAIL_HOST_USER], fail_silently=False)
+                return render(request, 'ofd_app/results.html', {'exception': True})
+
+            iteration += 1
+
+    return render(request, 'ofd_app/results.html', {'exception': False, 'iteration': iteration - 1})
