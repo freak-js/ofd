@@ -4,40 +4,48 @@
 	{% load static %}
 	{% load crispy_forms_tags %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=930, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
-    <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
+    {% include "ofd_app/css_version.html" %}
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}">
     <title>Корзина</title>
 </head>
 <body class="text-center">
 	{% include "ofd_app/menu.html" %}
-    <div class="container">
-	        <table class="table table-striped table-sm">
-	            <thead>
-	                <tr>
-	                    <th scope="col">Наименование продукта</th>
-						<th scope="col">Стоимость</th>
-                        <th scope="col">Количество</th>
-                        <th scope="col">Сумма</th>
-	                </tr>
-	            </thead>
-	            <tbody>
-	                {% for product in products %}
-	                <tr>
-	                    <td>{{ product.name }}</td>
-	                    <td>{{ product.cost }}</td>
-                        <td>{{ product.quantity }}</td>
-                        <td>{{ product.sum }}</td>
-	                </tr>
-	                {% endfor %}
-	            </tbody>
-            </table>
-			<h4>Итог: {{total}}</h4>
+    <div class="container container_min_width flex-grow-1">
+		{% if request.session.basket %}
+		<table class="table table-striped table-sm">
+			<thead>
+				<tr>
+					<th scope="col">Наименование продукта</th>
+					<th scope="col">Стоимость</th>
+					<th scope="col">Количество</th>
+					<th scope="col">Сумма</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for product in products %}
+				<tr>
+					<td>{{ product.name }}</td>
+					<td>{{ product.cost }}</td>
+					<td>{{ product.quantity }}</td>
+					<td>{{ product.sum }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<h4>Итог: {{total}}</h4>
 		<form action="/basket/" method="POST" id="basket_form">{% csrf_token %}
-				<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="3" form="basket_form" name="basket_comment"></textarea>
-			<button type="submit" class="btn btn-lg btn-primary btn_registration_form">Оформить</button>
+			<textarea type="text" placeholder="Комментарий при необходимости" class="form-control comment_input" rows="3" form="basket_form" name="basket_comment"></textarea>
+			<button name="p_act" type="submit" class="btn btn-lg btn-primary btn_registration_form" value="create">Оформить</button>
+			<button name="p_act" type="submit" class="btn btn-lg btn_clear_basket" value="clear">Очистить</button>
 		</form>
-    </div>
+		{% else %}
+		<div class="none_basket_div">
+			<h3>В вашей корзине пусто</h3>
+		</div>
+		{% endif %}
+	</div>
+	{% include "ofd_app/footer.html" %}
 </body>
 </html>
